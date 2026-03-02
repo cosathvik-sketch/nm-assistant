@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -40,8 +40,8 @@ header{border-bottom:1px solid rgba(8,145,178,.18);background:rgba(2,12,20,.95);
 .btn-key{font-size:.7rem;color:var(–muted);background:rgba(255,255,255,.04);border:1px solid var(–border);border-radius:6px;padding:.3rem .65rem;cursor:pointer;}
 
 /* NAV */
-nav{display:flex;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(2,12,20,.7);overflow-x:auto;flex-shrink:0;position:sticky;top:61px;z-index:99;}
-nav button{padding:.7rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(–muted);cursor:pointer;font-size:.76rem;font-weight:400;white-space:nowrap;transition:all .18s;font-family:‘DM Sans’,sans-serif;}
+nav{display:flex;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(2,12,20,.98);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;position:sticky;top:61px;z-index:200;}
+nav button{padding:.75rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(–muted);cursor:pointer;font-size:.76rem;font-weight:400;white-space:nowrap;transition:all .18s;font-family:‘DM Sans’,sans-serif;-webkit-tap-highlight-color:rgba(8,145,178,.15);touch-action:manipulation;min-height:44px;display:inline-flex;align-items:center;}
 nav button.active{color:#f0f9ff;font-weight:600;}
 nav button[data-tab=“paper”].active{border-bottom-color:var(–cyan);background:rgba(8,145,178,.1);}
 nav button[data-tab=“qa”].active{border-bottom-color:var(–purple);background:rgba(124,58,237,.1);}
@@ -267,8 +267,21 @@ header,nav,main{position:relative;z-index:1;}
     <button class="tgl on" id="tgl-model" onclick="setQAMode('model')">📝 Model Answer</button>
     <button class="tgl"    id="tgl-check" onclick="setQAMode('check')">✅ Answer Checker</button>
   </div>
-  <span class="qa-lbl">Question</span>
-  <textarea id="qaQ" class="b-purple" style="min-height:90px" placeholder="Type your DNB question, or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy." onkeydown="ke(event,'qa')"></textarea>
+  <span class="qa-lbl">Question — type, paste text, or upload an image of the question paper</span>
+  <textarea id="qaQ" class="b-purple" style="min-height:90px" placeholder="Type your DNB question, or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy.&#10;Or upload a photo of your question paper below 👇" onkeydown="ke(event,'qa')"></textarea>
+
+  <!-- IMAGE UPLOAD FOR QA -->
+  <div style="margin-top:.6rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+    <label style="padding:.45rem 1rem;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:8px;color:#c4b5fd;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">
+      📷 Upload Question Paper Image
+      <input type="file" id="qa-img-input" accept="image/*" style="display:none" onchange="handleQAImage(this)"/>
+    </label>
+    <span id="qa-img-name" style="font-size:.72rem;color:var(--muted)"></span>
+    <button id="qa-img-clear" onclick="clearQAImage()" style="display:none;padding:.4rem .7rem;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);border-radius:6px;color:#f87171;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Remove image</button>
+  </div>
+  <div id="qa-img-preview" style="margin-top:.5rem;display:none;">
+    <img id="qa-img-thumb" style="max-height:120px;border-radius:6px;border:1px solid rgba(124,58,237,.3);object-fit:contain;background:#000;"/>
+  </div>
   <div id="qa-ans-wrap" style="display:none;margin-top:.75rem">
     <span class="qa-lbl" style="margin-top:.5rem">Your Answer</span>
     <textarea id="qaA" class="b-purple" style="min-height:120px;background:rgba(124,58,237,.04)" placeholder="Write your answer here. Then click Check My Answer to see what key points you missed."></textarea>
@@ -614,14 +627,20 @@ async function gen(tab){
     sysPrompt   = paperPrompt(S.paperM);
   } else if(tab==='qa'){
     var q = gv('qaQ'), a = gv('qaA');
-    if(!q){ toast('Enter a question first','err'); return; }
+    if(!q && !qaImageB64){ toast('Enter a question or upload an image first','err'); return; }
     if(S.qaMode==='check'){
       if(!a){ toast('Write your answer first, then click Check','err'); return; }
-      userContent = 'Question: '+q+'\n\nStudent Answer:\n'+a;
+      userContent = 'Question: '+(q||'(see image)')+'\n\nStudent Answer:\n'+a;
       sysPrompt   = checkPrompt(S.qaM);
     } else {
-      userContent = q;
-      sysPrompt   = qaPrompt(S.qaM);
+      if(qaImageB64){
+        // image-based question — will be sent as multimodal
+        userContent = q ? q : 'Answer all questions shown in this image as per DNB exam style ('+S.qaM+'-marker answers).';
+        sysPrompt   = qaPrompt(S.qaM);
+      } else {
+        userContent = q;
+        sysPrompt   = qaPrompt(S.qaM);
+      }
     }
   } else if(tab==='guidelines'){
     userContent = gv('guidelinesInput');
@@ -655,12 +674,18 @@ async function gen(tab){
   try {
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
         system: sysPrompt,
-        messages: [{ role: 'user', content: userContent }]
+        messages: [{
+          role: 'user',
+          content: (tab==='qa' && qaImageB64) ? [
+            { type: 'image', source: { type: 'base64', media_type: qaImageMime, data: qaImageB64 } },
+            { type: 'text', text: userContent }
+          ] : userContent
+        }]
       })
     });
 
@@ -836,8 +861,34 @@ function updDevBanner(){
 }
 
 // ════════════════════════════
-// LESION BUILDER
+// QA IMAGE UPLOAD
 // ════════════════════════════
+var qaImageB64 = null;
+var qaImageMime = 'image/jpeg';
+
+function handleQAImage(input){
+  var file = input.files[0];
+  if(!file) return;
+  qaImageMime = file.type || 'image/jpeg';
+  document.getElementById('qa-img-name').textContent = file.name;
+  document.getElementById('qa-img-clear').style.display = 'inline-block';
+  var reader = new FileReader();
+  reader.onload = function(e){
+    qaImageB64 = e.target.result.split(',')[1];
+    document.getElementById('qa-img-thumb').src = e.target.result;
+    document.getElementById('qa-img-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearQAImage(){
+  qaImageB64 = null;
+  document.getElementById('qa-img-name').textContent = '';
+  document.getElementById('qa-img-clear').style.display = 'none';
+  document.getElementById('qa-img-preview').style.display = 'none';
+  document.getElementById('qa-img-thumb').src = '';
+  document.getElementById('qa-img-input').value = '';
+}
 function gv(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
 
 function buildSentence(){
@@ -896,7 +947,7 @@ async function aiSentence(){
 
   try {
     var res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:300,
         system:'You are an expert Nuclear Medicine radiologist. Write precise formal PET/CT report sentences only.',
         messages:[{role:'user',content:prompt}] })
@@ -1070,7 +1121,7 @@ async function dcmAI(){
 
   try {
     var res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800,
         system:'You are an expert Nuclear Medicine physician and radiologist. Analyse the provided medical image (rendered from a DICOM file). Provide structured description:\n## Image Description\nModality, body region, image quality\n## Key Findings\nAbnormal areas, masses, significant structures\n## Anatomical Structures\nVisible structures\n## Observations\nNotable features for documentation\n\nNote: single 2D slice — full clinical interpretation needs complete series review by qualified physician.',
         messages:[{role:'user',content:[
