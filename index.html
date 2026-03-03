@@ -1,461 +1,493 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>NM · DNB Assist</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#020c14;--surface:rgba(255,255,255,.028);--border:rgba(255,255,255,.08);
-  --cyan:#0891b2;--purple:#7c3aed;--green:#059669;--amber:#b45309;--red:#dc2626;--pink:#e879f9;
-  --text:#e2e8f0;--muted:#64748b;--dim:#334155;
+  --bg:#f8fafc;--surface:#ffffff;--surface2:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --text:#1e293b;--text2:#334155;--muted:#64748b;--dim:#94a3b8;
+  --cyan:#0891b2;--cyan-bg:#e0f2fe;--cyan-light:#f0f9ff;
+  --purple:#7c3aed;--purple-bg:#ede9fe;--purple-light:#faf5ff;
+  --green:#059669;--green-bg:#d1fae5;--green-light:#f0fdf4;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-light:#fffbeb;
+  --pink:#db2777;--pink-bg:#fce7f3;--pink-light:#fdf2f8;
+  --red:#dc2626;--red-bg:#fee2e2;--red-light:#fef2f2;
+  --r6:6px;--r8:8px;--r12:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-thumb{background:rgba(8,145,178,.3);border-radius:3px;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
 
-/* API OVERLAY */
-#apiOverlay{position:fixed;inset:0;background:#020c14;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:1.5rem;padding:2rem;}
-#apiOverlay.hidden{display:none;}
-.api-box{background:rgba(8,145,178,.07);border:1px solid rgba(8,145,178,.25);border-radius:16px;padding:2.5rem;max-width:480px;width:100%;text-align:center;}
-.api-box h1{font-family:‘DM Mono’,monospace;font-size:1.5rem;color:#67e8f9;margin-bottom:.5rem;}
-.api-box p{color:var(–muted);font-size:.85rem;margin-bottom:1.5rem;line-height:1.6;}
-.api-box input{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.05);border:1px solid rgba(8,145,178,.3);border-radius:8px;color:var(–text);font-size:.88rem;outline:none;font-family:monospace;margin-bottom:1rem;}
-.api-box input:focus{border-color:var(–cyan);}
-.btn-primary{padding:.7rem 2rem;background:linear-gradient(135deg,var(–cyan),#06b6d4cc);border:none;border-radius:8px;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;width:100%;}
-.api-note{font-size:.72rem;color:var(–dim);max-width:480px;text-align:center;line-height:1.5;}
+/* OVERLAYS */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1.5rem;}
+.modal.off{display:none;}
+.modal-box{background:var(–surface);border-radius:16px;padding:2rem;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-box h2{font-size:1.25rem;font-weight:700;color:var(–text);margin-bottom:.4rem;}
+.modal-box p{color:var(–muted);font-size:.83rem;margin-bottom:1.2rem;line-height:1.65;}
+.modal-box input{width:100%;padding:.7rem 1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.88rem;outline:none;font-family:‘DM Mono’,monospace;margin-bottom:.8rem;}
+.modal-box input:focus{border-color:var(–cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
+.modal-icon{font-size:2rem;margin-bottom:.75rem;}
+.note-sm{font-size:.72rem;color:var(–dim);margin-top:.75rem;line-height:1.55;}
+.note-sm a{color:var(–cyan);}
+.steps{background:var(–surface2);border-radius:var(–r8);padding:.9rem 1rem;margin-bottom:1rem;font-size:.78rem;color:var(–text2);line-height:2;}
+.steps strong{color:var(–text);}
+.step-num{display:inline-flex;width:18px;height:18px;background:var(–cyan);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;align-items:center;justify-content:center;margin-right:.35rem;}
 
 /* LAYOUT */
-#app{display:flex;flex-direction:column;height:100vh;}
-header{border-bottom:1px solid rgba(8,145,178,.18);background:rgba(2,12,20,.95);backdrop-filter:blur(12px);padding:.7rem 1.4rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;}
-.logo{display:flex;align-items:center;gap:.75rem;}
-.logo-icon{width:36px;height:36px;border-radius:50%;background:conic-gradient(from 0deg,#0891b2,#7c3aed,#059669,#e879f9,#0891b2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 0 18px rgba(8,145,178,.4);flex-shrink:0;}
-.logo-title{font-family:‘DM Mono’,monospace;font-weight:700;font-size:1rem;color:#e0f2fe;letter-spacing:.05em;}
-.logo-sub{font-size:.6rem;color:var(–muted);letter-spacing:.1em;text-transform:uppercase;}
-.header-right{display:flex;align-items:center;gap:1rem;}
-.lib-count{font-size:.7rem;color:var(–dim);font-family:‘DM Mono’,monospace;}
-.btn-key{font-size:.7rem;color:var(–muted);background:rgba(255,255,255,.04);border:1px solid var(–border);border-radius:6px;padding:.3rem .65rem;cursor:pointer;}
+#app{display:flex;flex-direction:column;min-height:100vh;}
+header{background:var(–surface);border-bottom:1.5px solid var(–border);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:500;box-shadow:var(–shadow);}
+.logo{display:flex;align-items:center;gap:.6rem;}
+.logo-orb{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:var(–shadow);}
+.logo-text{font-weight:700;font-size:.95rem;color:var(–text);}
+.logo-sub{font-size:.55rem;color:var(–muted);letter-spacing:.08em;text-transform:uppercase;}
+.hdr-r{display:flex;align-items:center;gap:.5rem;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:.3rem;}
+.sync-dot.off{background:var(–dim);}
+.sync-dot.spin{background:#f59e0b;animation:blink .8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-btn{font-size:.72rem;color:var(–muted);background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r6);padding:.28rem .65rem;cursor:pointer;font-family:‘Inter’,sans-serif;touch-action:manipulation;}
+.hdr-btn:hover{background:var(–border);color:var(–text);}
 
 /* NAV */
-nav{display:flex;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(2,12,20,.98);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;position:sticky;top:61px;z-index:200;}
-nav button{padding:.75rem 1rem;background:transparent;border:none;border-bottom:2px solid transparent;color:var(–muted);cursor:pointer;font-size:.76rem;font-weight:400;white-space:nowrap;transition:all .18s;font-family:‘DM Sans’,sans-serif;-webkit-tap-highlight-color:rgba(8,145,178,.15);touch-action:manipulation;min-height:44px;display:inline-flex;align-items:center;}
-nav button.active{color:#f0f9ff;font-weight:600;}
-nav button[data-tab=“paper”].active{border-bottom-color:var(–cyan);background:rgba(8,145,178,.1);}
-nav button[data-tab=“qa”].active{border-bottom-color:var(–purple);background:rgba(124,58,237,.1);}
-nav button[data-tab=“guidelines”].active{border-bottom-color:var(–green);background:rgba(5,150,105,.1);}
-nav button[data-tab=“doubt”].active{border-bottom-color:#f59e0b;background:rgba(245,158,11,.1);}
-nav button[data-tab=“report”].active{border-bottom-color:var(–pink);background:rgba(232,121,249,.1);}
-nav button[data-tab=“library”].active{border-bottom-color:var(–amber);background:rgba(180,83,9,.1);}
-nav button[data-tab=“dev”].active{border-bottom-color:var(–red);background:rgba(220,38,38,.08);}
+nav{background:var(–surface);border-bottom:1.5px solid var(–border);overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:53px;z-index:499;display:flex;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+.ntab{padding:.6rem .9rem;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(–muted);cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;transition:all .15s;font-family:‘Inter’,sans-serif;touch-action:manipulation;min-height:44px;display:inline-flex;align-items:center;gap:.3rem;}
+.ntab:hover{color:var(–text);background:var(–surface2);}
+.ntab.on{color:var(–text);font-weight:700;}
+.ntab[data-t=“papers”].on{border-bottom-color:var(–cyan);background:var(–cyan-light);color:var(–cyan);}
+.ntab[data-t=“qa”].on{border-bottom-color:var(–purple);background:var(–purple-light);color:var(–purple);}
+.ntab[data-t=“guidelines”].on{border-bottom-color:var(–green);background:var(–green-light);color:var(–green);}
+.ntab[data-t=“doubt”].on{border-bottom-color:var(–amber);background:var(–amber-light);color:var(–amber);}
+.ntab[data-t=“report”].on{border-bottom-color:var(–pink);background:var(–pink-light);color:var(–pink);}
+.ntab[data-t=“library”].on{border-bottom-color:#6366f1;background:#eef2ff;color:#6366f1;}
+.ntab[data-t=“dev”].on{border-bottom-color:var(–red);background:var(–red-light);color:var(–red);}
 
 /* MAIN */
-main{flex:1;overflow-y:auto;padding:1.4rem 1rem;}
-.container{max-width:940px;margin:0 auto;}
-.tab-pane{display:none;}.tab-pane.active{display:block;}
+main{flex:1;padding:1.2rem 1rem 3rem;}
+.wrap{max-width:880px;margin:0 auto;}
+.pane{display:none;}.pane.on{display:block;}
 
-/* COMMON */
-.hint-bar{margin-bottom:1rem;padding:.55rem 1rem;border-left:3px solid var(–cyan);border-radius:0 6px 6px 0;font-size:.76rem;color:#94a3b8;background:rgba(8,145,178,.05);}
-.hint-bar.purple{border-left-color:var(–purple);background:rgba(124,58,237,.05);}
-.hint-bar.green{border-left-color:var(–green);background:rgba(5,150,105,.05);}
-.hint-bar.amber{border-left-color:#f59e0b;background:rgba(245,158,11,.05);}
-.hint-bar.pink{border-left-color:var(–pink);background:rgba(232,121,249,.05);}
-.hint-bar.red{border-left-color:var(–red);background:rgba(220,38,38,.05);}
+/* HINT BAR */
+.hbar{margin-bottom:1rem;padding:.5rem 1rem;border-left:3px solid var(–cyan);border-radius:0 var(–r8) var(–r8) 0;font-size:.76rem;color:var(–text2);background:var(–cyan-light);}
+.hbar.p{border-left-color:var(–purple);background:var(–purple-light);color:var(–purple);}
+.hbar.g{border-left-color:var(–green);background:var(–green-light);color:var(–green);}
+.hbar.a{border-left-color:var(–amber);background:var(–amber-light);color:var(–amber);}
+.hbar.pk{border-left-color:var(–pink);background:var(–pink-light);color:var(–pink);}
+.hbar.r{border-left-color:var(–red);background:var(–red-light);color:var(–red);}
 
 /* MARKER BAR */
-.marker-bar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
-.marker-bar label{font-size:.7rem;color:var(–muted);font-family:‘DM Mono’,monospace;text-transform:uppercase;letter-spacing:.08em;align-self:center;}
-.mbtn{padding:.4rem .9rem;border-radius:20px;border:1.5px solid var(–border);background:rgba(255,255,255,.03);color:var(–muted);font-size:.75rem;cursor:pointer;transition:all .18s;font-family:‘DM Sans’,sans-serif;display:flex;flex-direction:column;align-items:center;line-height:1.3;}
-.mbtn span.sub{font-size:.6rem;opacity:.7;}
-.mbtn.on-cyan{border-color:var(–cyan);background:rgba(8,145,178,.16);color:#e0f2fe;font-weight:700;}
-.mbtn.on-purple{border-color:var(–purple);background:rgba(124,58,237,.16);color:#e0f2fe;font-weight:700;}
-.mbtn.on-green{border-color:var(–green);background:rgba(5,150,105,.16);color:#e0f2fe;font-weight:700;}
-.mdesc{font-size:.7rem;color:var(–dim);padding:.28rem .6rem;background:rgba(255,255,255,.03);border:1px solid var(–border);border-radius:6px;align-self:center;}
+.mbar{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
+.mbar-lbl{font-size:.7rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;align-self:center;}
+.mk{padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface);color:var(–muted);font-size:.73rem;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;display:flex;flex-direction:column;align-items:center;line-height:1.3;touch-action:manipulation;font-weight:500;}
+.mk .sw{font-size:.58rem;opacity:.65;}
+.mk.c{border-color:var(–cyan);background:var(–cyan-bg);color:var(–cyan);font-weight:700;}
+.mk.p{border-color:var(–purple);background:var(–purple-bg);color:var(–purple);font-weight:700;}
+.mk.g{border-color:var(–green);background:var(–green-bg);color:var(–green);font-weight:700;}
+.mk-desc{font-size:.68rem;color:var(–muted);padding:.25rem .6rem;background:var(–surface2);border:1px solid var(–border);border-radius:20px;align-self:center;}
 
-/* TEXTAREA */
-textarea{width:100%;min-height:110px;background:rgba(255,255,255,.025);border:1px solid rgba(8,145,178,.25);border-radius:10px;color:var(–text);padding:1rem;font-size:.875rem;font-family:‘DM Sans’,sans-serif;resize:vertical;outline:none;line-height:1.6;transition:border-color .2s;}
-textarea:focus{border-color:rgba(8,145,178,.55);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
-textarea.b-purple{border-color:rgba(124,58,237,.25);}
-textarea.b-purple:focus{border-color:rgba(124,58,237,.55);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
-textarea.b-green{border-color:rgba(5,150,105,.25);}
-textarea.b-amber{border-color:rgba(245,158,11,.25);}
-textarea.b-pink{border-color:rgba(232,121,249,.25);}
-textarea.b-red{border-color:rgba(220,38,38,.25);}
+/* INPUTS */
+textarea,select,.ipt{width:100%;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);padding:.75rem 1rem;font-size:.88rem;font-family:‘Inter’,sans-serif;outline:none;line-height:1.65;transition:border-color .2s,box-shadow .2s;}
+textarea{resize:vertical;min-height:110px;}
+textarea:focus,select:focus,.ipt:focus{border-color:var(–cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
+textarea.bp:focus{border-color:var(–purple);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
+textarea.bg:focus{border-color:var(–green);box-shadow:0 0 0 3px rgba(5,150,105,.1);}
+textarea.ba:focus{border-color:var(–amber);box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+textarea.bpk:focus{border-color:var(–pink);box-shadow:0 0 0 3px rgba(219,39,119,.1);}
+select option{background:var(–surface);color:var(–text);}
+.fgrp{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.75rem;}
+.fgrp label{font-size:.68rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.65rem;margin-bottom:.9rem;}
 
-/* ACTIONS */
-.action-row{display:flex;gap:.7rem;margin-top:.75rem;align-items:center;flex-wrap:wrap;}
-.btn{padding:.65rem 1.6rem;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:‘DM Sans’,sans-serif;}
-.btn:disabled{background:rgba(255,255,255,.05)!important;color:var(–muted)!important;cursor:not-allowed!important;box-shadow:none!important;}
-.btn.cyan{background:linear-gradient(135deg,var(–cyan),#06b6d4bb);box-shadow:0 0 18px rgba(8,145,178,.35);}
-.btn.purple{background:linear-gradient(135deg,var(–purple),#8b5cf6bb);box-shadow:0 0 18px rgba(124,58,237,.35);}
-.btn.green{background:linear-gradient(135deg,var(–green),#10b981bb);box-shadow:0 0 18px rgba(5,150,105,.35);}
-.btn.amber{background:linear-gradient(135deg,#f59e0b,#fbbf24bb);box-shadow:0 0 18px rgba(245,158,11,.35);}
-.btn.pink{background:linear-gradient(135deg,#a855f7,var(–pink));box-shadow:0 0 18px rgba(232,121,249,.3);}
-.btn.red{background:linear-gradient(135deg,var(–red),#ef4444bb);box-shadow:0 0 16px rgba(220,38,38,.3);}
-.btn.ghost{background:rgba(255,255,255,.05);border:1px solid var(–border);color:#94a3b8;box-shadow:none;}
-.btn.ghost:hover{background:rgba(255,255,255,.09);}
-.save-input{padding:.58rem .9rem;background:rgba(255,255,255,.04);border:1px solid var(–border);border-radius:8px;color:var(–text);font-size:.8rem;outline:none;width:175px;font-family:‘DM Sans’,sans-serif;}
-.small-hint{font-size:.7rem;color:var(–dim);margin-left:auto;}
+/* BUTTONS */
+.btn{padding:.6rem 1.4rem;border:none;border-radius:var(–r8);color:#fff;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;touch-action:manipulation;display:inline-flex;align-items:center;gap:.4rem;box-shadow:var(–shadow);}
+.btn:hover{transform:translateY(-1px);box-shadow:var(–shadow-md);}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+.btn-c{background:var(–cyan);}.btn-p{background:var(–purple);}.btn-g{background:var(–green);}
+.btn-a{background:var(–amber);}.btn-pk{background:var(–pink);}.btn-r{background:var(–red);}
+.btn-ghost{background:var(–surface);border:1.5px solid var(–border);color:var(–text2);box-shadow:var(–shadow);}
+.btn-ghost:hover{background:var(–surface2);}
+.arow{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;align-items:center;}
+.arow .hint{font-size:.68rem;color:var(–dim);margin-left:auto;}
+.save-inp{padding:.5rem .85rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.78rem;outline:none;width:155px;font-family:‘Inter’,sans-serif;}
+.save-inp:focus{border-color:var(–cyan);}
 
 /* OUTPUT */
-.out-box{margin-top:1.4rem;background:rgba(255,255,255,.018);border:1px solid rgba(8,145,178,.2);border-radius:12px;padding:1.5rem;display:none;}
-.out-box.show{display:block;}
-.out-box.pink-bdr{border-color:rgba(232,121,249,.2);}
-.loading{color:var(–cyan);font-size:.85rem;display:flex;gap:8px;align-items:center;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.obox{margin-top:1.1rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r12);padding:1.4rem;display:none;box-shadow:var(–shadow);}
+.obox.on{display:block;}
+.obox.bc{border-color:var(–cyan);border-top:3px solid var(–cyan);}
+.obox.bp{border-color:var(–purple);border-top:3px solid var(–purple);}
+.obox.bg{border-color:var(–green);border-top:3px solid var(–green);}
+.obox.ba{border-color:var(–amber);border-top:3px solid var(–amber);}
+.obox.bpk{border-color:var(–pink);border-top:3px solid var(–pink);}
+.ldg{color:var(–cyan);font-size:.83rem;display:flex;gap:8px;align-items:center;font-weight:500;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 .spin{animation:pulse 1s infinite;}
 
 /* MARKDOWN */
-.md h2{color:#67e8f9;font-size:1.05rem;font-weight:700;margin:1.2rem 0 .4rem;font-family:‘DM Mono’,monospace;letter-spacing:.04em;}
-.md h3{color:#a5f3fc;font-size:.95rem;font-weight:600;margin:.8rem 0 .2rem;}
-.md blockquote{border-left:3px solid var(–cyan);padding:.4rem 1rem;margin:.6rem 0;color:#bae6fd;font-style:italic;background:rgba(8,145,178,.07);border-radius:0 6px 6px 0;}
-.md ul{padding-left:1.3rem;margin:.3rem 0;}
-.md li{color:#cbd5e1;margin:.15rem 0;line-height:1.6;}
-.md p{color:#cbd5e1;margin:.2rem 0;line-height:1.65;}
-.md hr{border:none;border-top:1px solid rgba(8,145,178,.2);margin:.8rem 0;}
-.md table{border-collapse:collapse;margin:.6rem 0;width:100%;}
-.md td,.md th{padding:.3rem .7rem;border:1px solid rgba(8,145,178,.25);color:#cbd5e1;font-size:.83rem;}
-.md th{color:#e0f2fe;font-weight:600;background:rgba(8,145,178,.1);}
-.md strong{color:#e0f2fe;}
-.md code{background:rgba(8,145,178,.18);padding:.1em .3em;border-radius:3px;font-family:monospace;color:#67e8f9;font-size:.9em;}
-.md .bline{color:#e0f2fe;font-weight:700;margin:.5rem 0 .1rem;}
+.md{line-height:1.75;color:var(–text2);}
+.md h2{font-size:.9rem;font-weight:700;margin:1.2rem 0 .45rem;padding:.4rem .85rem;border-radius:var(–r6);display:flex;align-items:center;gap:.4rem;font-family:‘Inter’,sans-serif;}
+.md h2.c{color:var(–cyan);background:var(–cyan-light);border-left:3px solid var(–cyan);}
+.md h2.p{color:var(–purple);background:var(–purple-light);border-left:3px solid var(–purple);}
+.md h2.g{color:var(–green);background:var(–green-light);border-left:3px solid var(–green);}
+.md h2.a{color:var(–amber);background:var(–amber-light);border-left:3px solid var(–amber);}
+.md h2.r{color:var(–red);background:var(–red-light);border-left:3px solid var(–red);}
+.md h2.pk{color:var(–pink);background:var(–pink-light);border-left:3px solid var(–pink);}
+.md h3{color:var(–text);font-size:.88rem;font-weight:600;margin:.8rem 0 .25rem;}
+.md p{color:var(–text2);margin:.25rem 0;line-height:1.7;}
+.md ul{padding-left:1.2rem;margin:.3rem 0;}
+.md li{color:var(–text2);margin:.18rem 0;line-height:1.6;}
+.md blockquote{border-left:3px solid var(–cyan);padding:.5rem 1rem;margin:.7rem 0;color:var(–cyan);background:var(–cyan-light);border-radius:0 var(–r8) var(–r8) 0;font-style:italic;}
+.md hr{border:none;border-top:1.5px solid var(–border);margin:.9rem 0;}
+.md table{border-collapse:collapse;margin:.7rem 0;width:100%;border-radius:var(–r8);overflow:hidden;box-shadow:var(–shadow);}
+.md th{padding:.45rem .8rem;background:var(–cyan-bg);color:var(–cyan);font-size:.78rem;font-weight:700;text-align:left;border:1px solid var(–cyan-light);}
+.md td{padding:.38rem .8rem;border:1px solid var(–border);color:var(–text2);font-size:.78rem;}
+.md td:first-child{color:var(–text);font-weight:600;background:var(–surface2);}
+.md strong{color:var(–text);font-weight:700;}
+.md code{background:var(–cyan-light);color:var(–cyan);padding:.1em .35em;border-radius:4px;font-family:‘DM Mono’,monospace;font-size:.88em;}
+.md .bline{color:var(–text);font-weight:700;margin:.5rem 0 .1rem;}
+.md .num{color:var(–amber);font-weight:700;font-family:‘DM Mono’,monospace;}
+.md .pearl{background:linear-gradient(135deg,var(–green-light),var(–cyan-light));border:1.5px solid var(–green-bg);border-radius:var(–r8);padding:.6rem 1rem;margin:.6rem 0;color:var(–green);font-weight:600;}
 
 /* QA */
-.qa-lbl{font-size:.72rem;color:var(–muted);font-family:‘DM Mono’,monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;display:block;}
-.toggle-row{display:flex;gap:.5rem;margin-bottom:.9rem;}
-.tgl{padding:.4rem 1rem;border-radius:16px;border:1.5px solid var(–border);background:rgba(255,255,255,.03);color:var(–muted);font-size:.78rem;cursor:pointer;font-family:‘DM Sans’,sans-serif;transition:all .18s;}
-.tgl.on{border-color:var(–purple);background:rgba(124,58,237,.18);color:#e0f2fe;font-weight:700;}
+.tglrow{display:flex;gap:.4rem;margin-bottom:.85rem;flex-wrap:wrap;}
+.tgl{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.75rem;cursor:pointer;font-family:‘Inter’,sans-serif;transition:all .15s;touch-action:manipulation;font-weight:500;}
+.tgl.on{border-color:var(–purple);background:var(–purple-bg);color:var(–purple);font-weight:700;}
+.qlbl{font-size:.68rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:block;}
+.img-row{margin-top:.55rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
+.img-lbl{padding:.4rem .9rem;background:var(–purple-bg);border:1.5px solid var(–purple-bg);border-radius:var(–r8);color:var(–purple);font-size:.75rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:500;}
+.img-nm{font-size:.7rem;color:var(–muted);}
+.img-clr{padding:.35rem .7rem;background:var(–red-light);border:1.5px solid var(–red-bg);border-radius:var(–r6);color:var(–red);font-size:.7rem;cursor:pointer;display:none;font-family:‘Inter’,sans-serif;}
+#qa-tw{margin-top:.4rem;display:none;}
+#qa-th{max-height:110px;border-radius:var(–r6);border:1.5px solid var(–border);object-fit:contain;background:var(–surface2);}
+
+/* REPORT */
+.rmbar{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;}
+.rmb{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;font-weight:500;touch-action:manipulation;}
+.rmb.on{border-color:var(–pink);background:var(–pink-bg);color:var(–pink);font-weight:700;}
+.rp{display:none;}.rp.on{display:block;}
+.sc{background:var(–pink-light);border:1.5px solid var(–pink-bg);border-left:3px solid var(–pink);border-radius:var(–r8);padding:.75rem 1rem;font-size:.83rem;color:var(–text);line-height:1.6;cursor:pointer;transition:background .12s;margin-bottom:.5rem;position:relative;}
+.sc:hover{background:var(–pink-bg);}
+.sc .ch{position:absolute;top:.4rem;right:.7rem;font-size:.62rem;color:var(–pink);opacity:0;}
+.sc:hover .ch{opacity:1;}
+.dcm-drop{border:2px dashed var(–pink-bg);border-radius:var(–r12);padding:2rem;text-align:center;cursor:pointer;background:var(–pink-light);margin-bottom:1rem;transition:all .18s;}
+.dcm-drop:hover,.dcm-drop.ov{border-color:var(–pink);background:var(–pink-bg);}
+.dcm-drop p{color:var(–muted);font-size:.8rem;margin:.2rem 0;}
+#dicomCanvas{width:100%;max-width:512px;display:block;margin:0 auto;border-radius:var(–r8);border:1.5px solid var(–border);background:#000;}
+.dmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.4rem;margin:.7rem 0;}
+.dmi{background:var(–surface2);border:1px solid var(–border);border-radius:var(–r6);padding:.45rem .7rem;}
+.dmil{font-size:.6rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.dmiv{font-size:.8rem;color:var(–text);margin-top:.1rem;font-weight:500;}
+.wlrow{display:flex;gap:.65rem;margin:.65rem 0;flex-wrap:wrap;align-items:center;}
+.wlg{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(–muted);}
+.wlg input[type=range]{width:90px;accent-color:var(–pink);}
 
 /* LIBRARY */
-.lib-top{display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
-.lib-search{flex:1;min-width:200px;padding:.65rem 1rem;background:rgba(255,255,255,.04);border:1px solid var(–border);border-radius:8px;color:var(–text);font-size:.85rem;outline:none;font-family:‘DM Sans’,sans-serif;}
-.frow{display:flex;gap:.4rem;flex-wrap:wrap;}
-.fbtn{padding:.35rem .75rem;border-radius:16px;border:1px solid var(–border);background:rgba(255,255,255,.03);color:var(–muted);font-size:.72rem;cursor:pointer;transition:all .15s;font-family:‘DM Sans’,sans-serif;}
-.fbtn.on{border-color:var(–cyan);background:rgba(8,145,178,.12);color:#e0f2fe;}
-.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.75rem;}
-.lcard{padding:1rem;background:var(–surface);border:1px solid var(–border);border-radius:8px;cursor:pointer;transition:background .15s;}
-.lcard:hover{background:rgba(255,255,255,.045);}
-.lcard-type{font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;font-family:‘DM Mono’,monospace;margin-bottom:.25rem;}
-.lcard-title{color:#e0f2fe;font-size:.85rem;font-weight:500;line-height:1.4;margin-bottom:.5rem;}
-.lcard-foot{display:flex;justify-content:space-between;align-items:center;}
-.lcard-date{font-size:.68rem;color:var(–dim);}
-.lcard-x{font-size:.68rem;color:var(–dim);background:none;border:none;cursor:pointer;padding:.2rem .4rem;}
-.lcard-x:hover{color:#f87171;}
-.lib-empty{text-align:center;padding:4rem 2rem;color:var(–dim);}
-.det-back{margin-bottom:1rem;padding:.45rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(–border);border-radius:6px;color:#94a3b8;font-size:.8rem;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
-.det-head{padding:.8rem 1.2rem;background:var(–surface);border:1px solid var(–border);border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:flex-start;}
-.det-body{padding:1.5rem;background:rgba(255,255,255,.018);border:1px solid var(–border);border-top:none;border-radius:0 0 10px 10px;}
-.btn-del{padding:.35rem .8rem;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);border-radius:6px;color:#f87171;font-size:.72rem;cursor:pointer;font-family:‘DM Sans’,sans-serif;}
+.lib-top{display:flex;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap;align-items:center;}
+.lib-search{flex:1;min-width:180px;padding:.6rem .9rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.85rem;outline:none;}
+.lib-search:focus{border-color:var(–cyan);}
+.frow{display:flex;gap:.35rem;flex-wrap:wrap;}
+.fb{padding:.3rem .7rem;border-radius:14px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.7rem;cursor:pointer;transition:all .12s;font-family:‘Inter’,sans-serif;font-weight:500;touch-action:manipulation;}
+.fb.on{border-color:var(–cyan);background:var(–cyan-bg);color:var(–cyan);}
+.sync-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;padding:.75rem 1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.65rem;}
+.lcard{padding:1rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r12);cursor:pointer;transition:all .12s;border-top:3px solid transparent;box-shadow:var(–shadow);}
+.lcard:hover{box-shadow:var(–shadow-md);transform:translateY(-1px);}
+.cat-papers{border-top-color:var(–cyan);}
+.cat-qa{border-top-color:var(–purple);}
+.cat-guidelines{border-top-color:var(–green);}
+.cat-doubt{border-top-color:var(–amber);}
+.cat-compose{border-top-color:var(–pink);}
+.lcard-tag{font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;margin-bottom:.3rem;}
+.lcard-title{color:var(–text);font-size:.83rem;font-weight:500;line-height:1.4;margin-bottom:.5rem;}
+.lcard-ft{display:flex;justify-content:space-between;align-items:center;}
+.lcard-date{font-size:.65rem;color:var(–dim);}
+.lcard-x{font-size:.68rem;color:var(–dim);background:none;border:none;cursor:pointer;padding:.2rem .4rem;touch-action:manipulation;}
+.lcard-x:hover{color:var(–red);}
+.lib-empty{text-align:center;padding:3.5rem 2rem;color:var(–muted);}
+.det-back{margin-bottom:.9rem;padding:.4rem .9rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r6);color:var(–text2);font-size:.78rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:500;}
+.det-hd{padding:.75rem 1.1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r12) var(–r12) 0 0;display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;}
+.det-bd{padding:1.4rem;background:var(–surface);border:1.5px solid var(–border);border-top:none;border-radius:0 0 var(–r12) var(–r12);}
+.btn-del{padding:.3rem .75rem;background:var(–red-light);border:1.5px solid var(–red-bg);border-radius:var(–r6);color:var(–red);font-size:.72rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:600;}
+.sec-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(–muted);padding:.35rem 0;border-bottom:1.5px solid var(–border);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;}
 
 /* DEV */
-.dev-card{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.15);border-left:3px solid var(–red);border-radius:8px;padding:.8rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:.6rem;}
-.dev-card-text{color:#fca5a5;font-size:.83rem;line-height:1.5;flex:1;}
-.dev-card-meta{font-size:.65rem;color:var(–dim);margin-top:.3rem;}
-.dev-banner{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:.6rem 1rem;margin-bottom:1rem;font-size:.75rem;color:#fca5a5;}
-
-/* REPORTING */
-.report-mode-bar{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap;}
-.rmb{padding:.45rem 1rem;border-radius:16px;border:1.5px solid var(–border);background:rgba(255,255,255,.03);color:var(–muted);font-size:.78rem;cursor:pointer;transition:all .18s;font-family:‘DM Sans’,sans-serif;}
-.rmb.on{border-color:var(–pink);background:rgba(232,121,249,.14);color:#f5d0fe;font-weight:700;}
-.rpanel{display:none;}.rpanel.active{display:block;}
-.fgroup{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.75rem;}
-.fgroup label{font-size:.68rem;color:var(–muted);font-family:‘DM Mono’,monospace;text-transform:uppercase;letter-spacing:.07em;}
-.fgroup select,.fgroup input[type=text],.fgroup input[type=number]{padding:.5rem .75rem;background:rgba(232,121,249,.04);border:1px solid rgba(232,121,249,.2);border-radius:8px;color:var(–text);font-size:.83rem;outline:none;font-family:‘DM Sans’,sans-serif;}
-.fgroup select:focus,.fgroup input:focus{border-color:rgba(232,121,249,.5);}
-.fgroup select option{background:#0f172a;}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:.75rem;margin-bottom:1rem;}
-.sentence-card{background:rgba(232,121,249,.05);border:1px solid rgba(232,121,249,.18);border-left:3px solid var(–pink);border-radius:8px;padding:.8rem 1rem;font-size:.85rem;color:#e2e8f0;line-height:1.6;cursor:pointer;transition:background .15s;margin-bottom:.6rem;position:relative;}
-.sentence-card:hover{background:rgba(232,121,249,.1);}
-.copy-hint{position:absolute;top:.4rem;right:.6rem;font-size:.62rem;color:#a855f7;opacity:0;pointer-events:none;}
-.sentence-card:hover .copy-hint{opacity:1;}
-.dicom-drop{border:2px dashed rgba(232,121,249,.3);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;background:rgba(232,121,249,.03);margin-bottom:1rem;transition:all .2s;}
-.dicom-drop:hover,.dicom-drop.over{border-color:rgba(232,121,249,.6);background:rgba(232,121,249,.07);}
-.dicom-drop p{color:var(–muted);font-size:.83rem;margin:.2rem 0;}
-#dicomCanvas{width:100%;max-width:512px;display:block;margin:0 auto;border-radius:8px;border:1px solid rgba(232,121,249,.2);background:#000;}
-.dmeta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.5rem;margin:.8rem 0;}
-.dmeta-item{background:rgba(255,255,255,.03);border:1px solid var(–border);border-radius:6px;padding:.5rem .75rem;}
-.dmeta-lbl{font-size:.62rem;color:var(–muted);font-family:‘DM Mono’,monospace;text-transform:uppercase;letter-spacing:.06em;}
-.dmeta-val{font-size:.83rem;color:#e0f2fe;margin-top:.15rem;}
-.wl-row{display:flex;gap:.75rem;margin:.75rem 0;flex-wrap:wrap;align-items:center;}
-.wl-grp{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(–muted);}
-.wl-grp input[type=range]{width:90px;accent-color:var(–pink);}
+.dcard{background:var(–red-light);border:1.5px solid var(–red-bg);border-left:3px solid var(–red);border-radius:var(–r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.65rem;margin-bottom:.55rem;}
+.dcard-txt{color:var(–red);font-size:.82rem;line-height:1.55;flex:1;}
+.dcard-meta{font-size:.62rem;color:var(–dim);margin-top:.25rem;}
+.dev-banner{background:var(–amber-light);border:1.5px solid var(–amber-bg);border-radius:var(–r8);padding:.55rem .9rem;margin-bottom:.9rem;font-size:.73rem;color:var(–amber);font-weight:500;}
 
 /* TOAST */
-#toast{position:fixed;bottom:1.8rem;right:1.8rem;z-index:9998;padding:.65rem 1.3rem;background:rgba(5,150,105,.92);border-radius:8px;color:#fff;font-size:.83rem;font-weight:500;box-shadow:0 8px 28px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(6px);}
-#toast.show{opacity:1;transform:translateY(0);}
-#toast.err{background:rgba(220,38,38,.92);}
-.bg-glow{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 90% 45% at 50% -5%,rgba(8,145,178,.12) 0%,transparent 65%);z-index:0;}
-header,nav,main{position:relative;z-index:1;}
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:.6rem 1.2rem;border-radius:var(–r8);color:#fff;font-size:.8rem;font-weight:600;box-shadow:var(–shadow-md);opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;transform:translateY(8px);}
+#toast.on{opacity:1;transform:translateY(0);}
+#toast.ok{background:#16a34a;}
+#toast.er{background:var(–red);}
 </style>
 
 </head>
 <body>
-<div class="bg-glow"></div>
 
-<!-- API OVERLAY -->
+<!-- API KEY MODAL -->
 
-<div id="apiOverlay">
-  <div class="api-box">
-    <div style="font-size:2rem;margin-bottom:.5rem">☢</div>
-    <h1>NM · DNB Assist</h1>
-    <p>Enter your Anthropic API key to get started.<br/>Stored locally in your browser only.</p>
-    <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off"/>
-    <button class="btn-primary" onclick="saveApiKey()">Start →</button>
+<div class="modal" id="api-modal">
+  <div class="modal-box">
+    <div class="modal-icon">☢️</div>
+    <h2>NM · DNB Assist</h2>
+    <p>Enter your Anthropic API key to get started. Stored only in your browser.</p>
+    <input type="password" id="api-inp" placeholder="sk-ant-api03-..." autocomplete="off"/>
+    <button class="btn btn-c" style="width:100%;justify-content:center;" onclick="saveKey()">Start</button>
+    <div class="note-sm">Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys</div>
   </div>
-  <p class="api-note">Get a free key at <strong>console.anthropic.com</strong> → API Keys</p>
+</div>
+
+<!-- SUPABASE SETUP MODAL -->
+
+<div class="modal off" id="sb-modal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-icon">☁️</div>
+    <h2>Set Up Cloud Sync</h2>
+    <p>Connect a free Supabase database so your library syncs across all devices automatically.</p>
+    <div class="steps">
+      <div><span class="step-num">1</span>Go to <strong>supabase.com</strong> → New Project (free)</div>
+      <div><span class="step-num">2</span>Click <strong>SQL Editor</strong> → paste and run this:</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.6rem .8rem;margin:.4rem 0;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text);line-height:1.7;word-break:break-all;">
+        create table nm_library (id bigint primary key, tab text, marker int, label text, input text, output text, saved_at text, created_at timestamptz default now());
+      </div>
+      <div><span class="step-num">3</span>Go to <strong>Settings → API</strong> → copy URL and anon key below</div>
+    </div>
+    <input type="text" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" style="margin-bottom:.6rem"/>
+    <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="margin-bottom:.6rem"/>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn btn-c" style="flex:1;justify-content:center;" onclick="saveSB()">Connect</button>
+      <button class="btn btn-ghost" onclick="skipSB()">Skip for now</button>
+    </div>
+    <div class="note-sm">Supabase free tier is permanent and has no expiry. Your data is private to your project.</div>
+  </div>
 </div>
 
 <div id="app">
   <header>
     <div class="logo">
-      <div class="logo-icon">☢</div>
+      <div class="logo-orb">☢</div>
       <div>
-        <div class="logo-title">NM · DNB ASSIST</div>
+        <div class="logo-text">NM · DNB Assist</div>
         <div class="logo-sub">Nuclear Medicine Research Assistant</div>
       </div>
     </div>
-    <div class="header-right">
-      <span class="lib-count" id="libCount">0 saved</span>
-      <button class="btn-key" onclick="resetKey()">⚙ API Key</button>
+    <div class="hdr-r">
+      <span id="sync-status" style="font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.25rem"><span class="sync-dot off" id="sync-dot"></span><span id="sync-txt">Local only</span></span>
+      <button class="hdr-btn" onclick="showSB()">☁ Sync</button>
+      <button class="hdr-btn" onclick="resetKey()">Key</button>
     </div>
   </header>
 
   <nav>
-    <button class="active" data-tab="paper"      onclick="switchTab('paper')">◈ Papers</button>
-    <button data-tab="qa"         onclick="switchTab('qa')">◉ Exam Q&A</button>
-    <button data-tab="guidelines" onclick="switchTab('guidelines')">◎ Guidelines</button>
-    <button data-tab="doubt"      onclick="switchTab('doubt')">? Doubts</button>
-    <button data-tab="report"     onclick="switchTab('report')">🔬 PET/CT Report</button>
-    <button data-tab="library"    onclick="switchTab('library')">▣ Library</button>
-    <button data-tab="dev"        onclick="switchTab('dev')">⚠ Dev Notes</button>
+    <button class="ntab on" data-t="papers"     onclick="tab('papers')">Papers</button>
+    <button class="ntab"    data-t="qa"         onclick="tab('qa')">Exam Q&A</button>
+    <button class="ntab"    data-t="guidelines" onclick="tab('guidelines')">Guidelines</button>
+    <button class="ntab"    data-t="doubt"      onclick="tab('doubt')">Doubts</button>
+    <button class="ntab"    data-t="report"     onclick="tab('report')">PET/CT Report</button>
+    <button class="ntab"    data-t="library"    onclick="tab('library')">Library</button>
+    <button class="ntab"    data-t="dev"        onclick="tab('dev')">Improve AI</button>
   </nav>
 
-  <main><div class="container">
+  <main><div class="wrap">
 
 ```
-<!-- PAPER -->
-<div class="tab-pane active" id="tab-paper">
-  <div class="hint-bar">Paste abstract or full paper → DNB-level summary, <strong>auto-saved to library</strong></div>
-  <div class="marker-bar">
-    <label>Length:</label>
-    <button class="mbtn on-cyan" data-grp="paper" onclick="setM('paper',10,this)"><span>10 Marker</span><span class="sub">500–800 w</span></button>
-    <button class="mbtn"         data-grp="paper" onclick="setM('paper',5,this)"><span>5 Marker</span><span class="sub">300–400 w</span></button>
-    <button class="mbtn"         data-grp="paper" onclick="setM('paper',3,this)"><span>3 Marker</span><span class="sub">100–200 w</span></button>
-    <span class="mdesc" id="paper-desc">Long answer — full detail, subheadings, tables</span>
+<!-- PAPERS -->
+<div class="pane on" id="pane-papers">
+  <div class="hbar">Paste abstract or full paper text — rich DNB-level summary with colour-coded sections, auto-saved to library</div>
+  <div class="mbar">
+    <span class="mbar-lbl">Length:</span>
+    <button class="mk c" data-g="papers" onclick="setMk('papers',10,this)">10 Marker<span class="sw">500-800 words</span></button>
+    <button class="mk"   data-g="papers" onclick="setMk('papers',5,this)">5 Marker<span class="sw">300-400 words</span></button>
+    <button class="mk"   data-g="papers" onclick="setMk('papers',3,this)">3 Marker<span class="sw">100-200 words</span></button>
+    <span class="mk-desc" id="papers-desc">Long answer — full detail, tables, clinical pearls</span>
   </div>
-  <textarea id="paperInput" placeholder="Paste abstract, title, or full paper text here...&#10;&#10;E.g.: Comparison of Ga-68 PSMA PET/CT vs mpMRI in biochemical recurrence..." onkeydown="ke(event,'paper')"></textarea>
-  <div class="action-row">
-    <button class="btn cyan" id="btn-paper" onclick="gen('paper')">⚡ Generate (Ctrl+Enter)</button>
-    <span class="small-hint">Auto-saved to Library</span>
+  <textarea id="papers-inp" placeholder="Paste abstract, title, or full paper text here...&#10;&#10;E.g.: Radiomic Profiling of Head and Neck Cancer: 18F-FDG PET Texture Analysis as Predictor of Patient Survival" onkeydown="ke(event,'papers')"></textarea>
+  <div class="arow">
+    <button class="btn btn-c" id="btn-papers" onclick="gen('papers')">Generate</button>
+    <span class="hint">Auto-saved · Ctrl+Enter</span>
   </div>
-  <div class="out-box" id="out-paper"><div class="loading" id="ld-paper"><span class="spin">◈</span> Summarizing...</div><div class="md" id="md-paper"></div></div>
+  <div class="obox bc" id="obox-papers"><div class="ldg" id="ld-papers"><span class="spin">●</span> Summarising paper...</div><div class="md" id="md-papers"></div></div>
 </div>
 
 <!-- QA -->
-<div class="tab-pane" id="tab-qa">
-  <div class="hint-bar purple"><strong>Model Answer</strong> — AI writes the answer &nbsp;|&nbsp; <strong>Answer Checker</strong> — you write, AI shows what's missing</div>
-  <div class="marker-bar">
-    <label>Length:</label>
-    <button class="mbtn on-purple" data-grp="qa" onclick="setM('qa',10,this)"><span>10 Marker</span><span class="sub">500–800 w</span></button>
-    <button class="mbtn"           data-grp="qa" onclick="setM('qa',5,this)"><span>5 Marker</span><span class="sub">300–400 w</span></button>
-    <button class="mbtn"           data-grp="qa" onclick="setM('qa',3,this)"><span>3 Marker</span><span class="sub">100–200 w</span></button>
-    <span class="mdesc" id="qa-desc">Long answer — full detail, subheadings, tables</span>
+<div class="pane" id="pane-qa">
+  <div class="hbar p">Model Answer — AI writes the full answer &nbsp;|&nbsp; Answer Checker — you write, AI shows what is missing and scores you</div>
+  <div class="mbar">
+    <span class="mbar-lbl">Length:</span>
+    <button class="mk p" data-g="qa" onclick="setMk('qa',10,this)">10 Marker<span class="sw">500-800 words</span></button>
+    <button class="mk"   data-g="qa" onclick="setMk('qa',5,this)">5 Marker<span class="sw">300-400 words</span></button>
+    <button class="mk"   data-g="qa" onclick="setMk('qa',3,this)">3 Marker<span class="sw">100-200 words</span></button>
+    <span class="mk-desc" id="qa-desc">Long answer — full detail, tables, clinical pearls</span>
   </div>
-  <div class="toggle-row">
-    <button class="tgl on" id="tgl-model" onclick="setQAMode('model')">📝 Model Answer</button>
-    <button class="tgl"    id="tgl-check" onclick="setQAMode('check')">✅ Answer Checker</button>
+  <div class="tglrow">
+    <button class="tgl on" id="tgl-model" onclick="setQM('model')">Model Answer</button>
+    <button class="tgl"    id="tgl-check" onclick="setQM('check')">Answer Checker</button>
   </div>
-  <span class="qa-lbl">Question — type, paste text, or upload an image of the question paper</span>
-  <textarea id="qaQ" class="b-purple" style="min-height:90px" placeholder="Type your DNB question, or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy.&#10;Or upload a photo of your question paper below 👇" onkeydown="ke(event,'qa')"></textarea>
-
-  <!-- IMAGE UPLOAD FOR QA -->
-  <div style="margin-top:.6rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
-    <label style="padding:.45rem 1rem;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:8px;color:#c4b5fd;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;touch-action:manipulation;">
-      📷 Upload Question Paper Image
-      <input type="file" id="qa-img-input" accept="image/*" style="display:none" onchange="handleQAImage(this)"/>
-    </label>
-    <span id="qa-img-name" style="font-size:.72rem;color:var(--muted)"></span>
-    <button id="qa-img-clear" onclick="clearQAImage()" style="display:none;padding:.4rem .7rem;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);border-radius:6px;color:#f87171;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Remove image</button>
+  <span class="qlbl">Question — type, paste, or upload a photo of your question paper</span>
+  <textarea id="qa-q" style="min-height:85px;border-color:var(--border)" placeholder="Type your DNB question or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy. What is the role of FNAC?&#10;&#10;Or upload a photo of the question paper below" onkeydown="ke(event,'qa')"></textarea>
+  <div class="img-row">
+    <label class="img-lbl">Upload Question Paper Photo<input type="file" id="qa-img" accept="image/*" style="display:none" onchange="loadQI(this)"/></label>
+    <span class="img-nm" id="qa-img-nm"></span>
+    <button class="img-clr" id="qa-img-clr" onclick="clearQI()">Remove</button>
   </div>
-  <div id="qa-img-preview" style="margin-top:.5rem;display:none;">
-    <img id="qa-img-thumb" style="max-height:120px;border-radius:6px;border:1px solid rgba(124,58,237,.3);object-fit:contain;background:#000;"/>
+  <div id="qa-tw"><img id="qa-th" src=""/></div>
+  <div id="qa-aw" style="display:none;margin-top:.75rem">
+    <span class="qlbl" style="margin-top:.3rem">Your Answer — write here and AI will check it</span>
+    <textarea id="qa-a" style="min-height:120px;background:#faf5ff;border-color:var(--purple)" placeholder="Write your answer here. AI will score it and tell you exactly what key points you missed."></textarea>
   </div>
-  <div id="qa-ans-wrap" style="display:none;margin-top:.75rem">
-    <span class="qa-lbl" style="margin-top:.5rem">Your Answer</span>
-    <textarea id="qaA" class="b-purple" style="min-height:120px;background:rgba(124,58,237,.04)" placeholder="Write your answer here. Then click Check My Answer to see what key points you missed."></textarea>
+  <div class="arow">
+    <button class="btn btn-p" id="btn-qa" onclick="gen('qa')">Generate Model Answer</button>
+    <input class="save-inp" id="qa-lbl" placeholder="Label (optional)" style="display:none"/>
+    <button class="btn btn-ghost" id="qa-sv" onclick="mSave('qa')" style="display:none">Save</button>
+    <span class="hint">Ctrl+Enter</span>
   </div>
-  <div class="action-row">
-    <button class="btn purple" id="btn-qa" onclick="gen('qa')">⚡ Generate (Ctrl+Enter)</button>
-    <input class="save-input" id="qa-label" placeholder="Label (optional)" style="display:none"/>
-    <button class="btn ghost" id="qa-save" onclick="manualSave('qa')" style="display:none">⊕ Save</button>
-    <span class="small-hint">Ctrl+Enter to generate</span>
-  </div>
-  <div class="out-box" id="out-qa"><div class="loading" id="ld-qa"><span class="spin">◉</span> <span id="ld-qa-txt">Generating model answer...</span></div><div class="md" id="md-qa"></div></div>
+  <div class="obox bp" id="obox-qa"><div class="ldg" id="ld-qa"><span class="spin">●</span> <span id="ld-qa-t">Generating model answer...</span></div><div class="md" id="md-qa"></div></div>
 </div>
 
 <!-- GUIDELINES -->
-<div class="tab-pane" id="tab-guidelines">
-  <div class="hint-bar green">Comprehensive SNMMI / EANM / AERB / ISNM guidelines (10-marker depth), <strong>auto-saved</strong></div>
-  <textarea id="guidelinesInput" class="b-green" placeholder="E.g.: SNMMI guidelines for thyroid cancer radioiodine ablation&#10;Or: AERB regulations for patient release after I-131 therapy" onkeydown="ke(event,'guidelines')"></textarea>
-  <div class="action-row">
-    <button class="btn green" id="btn-guidelines" onclick="gen('guidelines')">⚡ Generate (Ctrl+Enter)</button>
-    <span class="small-hint">Auto-saved to Library</span>
+<div class="pane" id="pane-guidelines">
+  <div class="hbar g">SNMMI · EANM · AERB · ISNM guidelines — comprehensive 10-marker depth, auto-saved to library</div>
+  <textarea id="gl-inp" style="border-color:var(--border)" placeholder="E.g.: SNMMI guidelines for thyroid cancer radioiodine ablation&#10;Or: AERB regulations for patient release after I-131 therapy&#10;Or: EANM guidelines for PSMA PET/CT in prostate cancer" onkeydown="ke(event,'guidelines')"></textarea>
+  <div class="arow">
+    <button class="btn btn-g" id="btn-guidelines" onclick="gen('guidelines')">Generate</button>
+    <span class="hint">Auto-saved · Ctrl+Enter</span>
   </div>
-  <div class="out-box" id="out-guidelines"><div class="loading" id="ld-guidelines"><span class="spin">◎</span> Fetching guidelines...</div><div class="md" id="md-guidelines"></div></div>
+  <div class="obox bg" id="obox-guidelines"><div class="ldg" id="ld-guidelines"><span class="spin">●</span> Fetching guidelines...</div><div class="md" id="md-guidelines"></div></div>
 </div>
 
-<!-- DOUBT -->
-<div class="tab-pane" id="tab-doubt">
-  <div class="hint-bar amber">Ask anything — concepts, mechanisms, doses, differentials, clinical scenarios</div>
-  <textarea id="doubtInput" class="b-amber" placeholder="E.g.: Why does Tc-99m MDP show uptake in soft tissue calcification?&#10;Or: Difference between SPECT and PET resolution&#10;Or: What is SUV cutoff for malignancy in FDG PET?" onkeydown="ke(event,'doubt')"></textarea>
-  <div class="action-row">
-    <button class="btn amber" id="btn-doubt" onclick="gen('doubt')">⚡ Ask (Ctrl+Enter)</button>
-    <input class="save-input" id="doubt-label" placeholder="Label (optional)" style="display:none"/>
-    <button class="btn ghost" id="doubt-save" onclick="manualSave('doubt')" style="display:none">⊕ Save</button>
-    <span class="small-hint">Ctrl+Enter to ask</span>
+<!-- DOUBTS -->
+<div class="pane" id="pane-doubt">
+  <div class="hbar a">Ask anything — concepts, mechanisms, doses, differentials, clinical scenarios</div>
+  <textarea id="db-inp" style="border-color:var(--border)" placeholder="E.g.: Why does Tc-99m MDP show uptake in soft tissue calcification?&#10;Or: Difference between SPECT and PET resolution in simple terms&#10;Or: What is SUV cutoff for malignancy in FDG PET?&#10;Or: How do I calculate injected dose from residual syringe activity?" onkeydown="ke(event,'doubt')"></textarea>
+  <div class="arow">
+    <button class="btn btn-a" id="btn-doubt" onclick="gen('doubt')">Ask</button>
+    <input class="save-inp" id="db-lbl" placeholder="Label (optional)" style="display:none"/>
+    <button class="btn btn-ghost" id="db-sv" onclick="mSave('doubt')" style="display:none">Save</button>
+    <span class="hint">Ctrl+Enter</span>
   </div>
-  <div class="out-box" id="out-doubt"><div class="loading" id="ld-doubt"><span class="spin">?</span> Thinking...</div><div class="md" id="md-doubt"></div></div>
+  <div class="obox ba" id="obox-doubt"><div class="ldg" id="ld-doubt"><span class="spin">●</span> Thinking...</div><div class="md" id="md-doubt"></div></div>
 </div>
 
 <!-- PET/CT REPORT -->
-<div class="tab-pane" id="tab-report">
-  <div class="hint-bar pink">🔬 PET/CT Reporting — Lesion sentence builder · Full report composer · DICOM viewer with AI analysis</div>
-  <div class="report-mode-bar">
-    <button class="rmb on" onclick="setRM('lesion',this)">🧩 Lesion Builder</button>
-    <button class="rmb"    onclick="setRM('compose',this)">📋 Report Composer</button>
-    <button class="rmb"    onclick="setRM('dicom',this)">🖼 DICOM Viewer</button>
+<div class="pane" id="pane-report">
+  <div class="hbar pk">PET/CT Reporting — Lesion sentence builder · Full report composer · DICOM viewer with AI analysis</div>
+  <div class="rmbar">
+    <button class="rmb on" onclick="setRM('lesion',this)">Lesion Builder</button>
+    <button class="rmb"    onclick="setRM('compose',this)">Report Composer</button>
+    <button class="rmb"    onclick="setRM('dicom',this)">DICOM Viewer</button>
   </div>
 
-  <!-- LESION BUILDER -->
-  <div class="rpanel active" id="rp-lesion">
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Fill lesion details → get professional reporting sentences. Click any sentence to copy.</div>
+  <div class="rp on" id="rp-lesion">
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Fill lesion details — get professional reporting sentences. Tap any sentence to copy.</p>
     <div class="fgrid">
-      <div class="fgroup"><label>Organ / Region</label>
-        <select id="l-organ">
-          <option value="">Select...</option>
-          <option>Liver</option><option>Lung – right upper lobe</option><option>Lung – right middle lobe</option><option>Lung – right lower lobe</option><option>Lung – left upper lobe</option><option>Lung – left lower lobe</option><option>Mediastinum</option><option>Cervical lymph node</option><option>Axillary LN – right</option><option>Axillary LN – left</option><option>Mediastinal LN</option><option>Para-aortic LN</option><option>Iliac LN</option><option>Inguinal LN</option><option>Prostate bed</option><option>Prostate</option><option>Spine – cervical</option><option>Spine – thoracic</option><option>Spine – lumbar</option><option>Pelvis (bone)</option><option>Rib</option><option>Sternum</option><option>Femur</option><option>Thyroid – right lobe</option><option>Thyroid – left lobe</option><option>Adrenal – right</option><option>Adrenal – left</option><option>Kidney – right</option><option>Kidney – left</option><option>Pancreas – head</option><option>Pancreas – body/tail</option><option>Spleen</option><option>Brain</option><option>Peritoneum</option><option>Soft tissue</option>
-        </select>
+      <div class="fgrp"><label>Organ / Region</label>
+        <select id="l-org"><option value="">Select...</option><option>Liver</option><option>Lung - right upper lobe</option><option>Lung - right middle lobe</option><option>Lung - right lower lobe</option><option>Lung - left upper lobe</option><option>Lung - left lower lobe</option><option>Mediastinum</option><option>Cervical lymph node</option><option>Axillary LN - right</option><option>Axillary LN - left</option><option>Mediastinal LN</option><option>Para-aortic LN</option><option>Iliac LN</option><option>Inguinal LN</option><option>Prostate bed</option><option>Prostate</option><option>Spine - cervical</option><option>Spine - thoracic</option><option>Spine - lumbar</option><option>Pelvis</option><option>Rib</option><option>Sternum</option><option>Femur</option><option>Thyroid - right lobe</option><option>Thyroid - left lobe</option><option>Adrenal - right</option><option>Adrenal - left</option><option>Kidney - right</option><option>Kidney - left</option><option>Pancreas - head</option><option>Pancreas - body/tail</option><option>Spleen</option><option>Brain</option><option>Peritoneum</option><option>Soft tissue</option></select>
       </div>
-      <div class="fgroup"><label>Custom Location (overrides above)</label><input type="text" id="l-custom" placeholder="e.g. right iliac crest"/></div>
-      <div class="fgroup"><label>Lesion Type</label>
-        <select id="l-type">
-          <option value="">Select...</option>
-          <option>Soft tissue lesion</option><option>Lymph node</option><option>Osseous lesion</option><option>Pulmonary nodule</option><option>Hepatic lesion</option><option>Mass</option><option>Nodule</option><option>Focus of uptake</option>
-        </select>
-      </div>
-      <div class="fgroup"><label>Size (cm)</label><input type="text" id="l-size" placeholder="e.g. 2.3 × 1.8"/></div>
-      <div class="fgroup"><label>SUVmax</label><input type="number" id="l-suvmax" step="0.1" placeholder="e.g. 8.4"/></div>
-      <div class="fgroup"><label>SUVmean</label><input type="number" id="l-suvmean" step="0.1" placeholder="e.g. 5.2"/></div>
-      <div class="fgroup"><label>Background SUV (liver)</label><input type="number" id="l-bg" step="0.1" placeholder="e.g. 2.8"/></div>
-      <div class="fgroup"><label>Tracer</label>
-        <select id="l-tracer">
-          <option>FDG (F-18)</option><option>PSMA (Ga-68)</option><option>DOTATATE (Ga-68)</option><option>Choline (F-18)</option><option>NaF (F-18)</option><option>FLT (F-18)</option><option>PSMA (F-18 DCFPyL)</option>
-        </select>
-      </div>
-      <div class="fgroup"><label>Uptake Pattern</label>
-        <select id="l-pattern">
-          <option value="">Select...</option>
-          <option>Intense focal uptake</option><option>Moderately increased uptake</option><option>Mildly increased uptake</option><option>Diffuse uptake</option><option>Heterogeneous uptake</option><option>Homogeneous uptake</option><option>Peripheral uptake with central photopenia</option><option>No significant uptake</option><option>Photopenic defect</option>
-        </select>
-      </div>
-      <div class="fgroup"><label>CT Morphology</label>
-        <select id="l-morpho">
-          <option value="">Select...</option>
-          <option>Hypodense</option><option>Hyperdense</option><option>Isodense</option><option>Lytic</option><option>Sclerotic</option><option>Mixed lytic-sclerotic</option><option>Spiculated</option><option>Lobulated</option><option>Well-defined</option><option>Ill-defined</option><option>With necrotic centre</option><option>Calcified</option>
-        </select>
-      </div>
-      <div class="fgroup"><label>Impression</label>
-        <select id="l-imp">
-          <option value="">Select...</option>
-          <option>Likely malignant – metabolically active</option><option>Highly suspicious for malignancy</option><option>Consistent with known malignancy</option><option>Suspicious for metastatic disease</option><option>Likely benign – physiological uptake</option><option>Indeterminate</option><option>Consistent with treated/responding disease</option><option>Progressive disease</option><option>New lesion compared to prior</option>
-        </select>
-      </div>
+      <div class="fgrp"><label>Custom Location</label><input class="ipt" id="l-cust" placeholder="e.g. right iliac crest"/></div>
+      <div class="fgrp"><label>Lesion Type</label><select id="l-type"><option value="">Select...</option><option>Soft tissue lesion</option><option>Lymph node</option><option>Osseous lesion</option><option>Pulmonary nodule</option><option>Hepatic lesion</option><option>Mass</option><option>Nodule</option><option>Focus of uptake</option></select></div>
+      <div class="fgrp"><label>Size (cm)</label><input class="ipt" id="l-size" placeholder="e.g. 2.3 x 1.8"/></div>
+      <div class="fgrp"><label>SUVmax</label><input class="ipt" type="number" id="l-smax" step="0.1" placeholder="e.g. 8.4"/></div>
+      <div class="fgrp"><label>SUVmean</label><input class="ipt" type="number" id="l-smean" step="0.1" placeholder="e.g. 5.2"/></div>
+      <div class="fgrp"><label>Background SUV (liver)</label><input class="ipt" type="number" id="l-bg" step="0.1" placeholder="e.g. 2.8"/></div>
+      <div class="fgrp"><label>Tracer</label><select id="l-tr"><option>FDG (F-18)</option><option>PSMA (Ga-68)</option><option>DOTATATE (Ga-68)</option><option>Choline (F-18)</option><option>NaF (F-18)</option><option>FLT (F-18)</option><option>PSMA (F-18 DCFPyL)</option></select></div>
+      <div class="fgrp"><label>Uptake Pattern</label><select id="l-pat"><option value="">Select...</option><option>Intense focal uptake</option><option>Moderately increased uptake</option><option>Mildly increased uptake</option><option>Diffuse uptake</option><option>Heterogeneous uptake</option><option>Homogeneous uptake</option><option>Peripheral uptake with central photopenia</option><option>No significant uptake</option><option>Photopenic defect</option></select></div>
+      <div class="fgrp"><label>CT Morphology</label><select id="l-morf"><option value="">Select...</option><option>Hypodense</option><option>Hyperdense</option><option>Isodense</option><option>Lytic</option><option>Sclerotic</option><option>Mixed lytic-sclerotic</option><option>Spiculated</option><option>Lobulated</option><option>Well-defined</option><option>Ill-defined</option><option>With necrotic centre</option><option>Calcified</option></select></div>
+      <div class="fgrp"><label>Impression</label><select id="l-imp"><option value="">Select...</option><option>Likely malignant - metabolically active</option><option>Highly suspicious for malignancy</option><option>Consistent with known malignancy</option><option>Suspicious for metastatic disease</option><option>Likely benign - physiological uptake</option><option>Indeterminate</option><option>Consistent with treated/responding disease</option><option>Progressive disease</option><option>New lesion compared to prior</option></select></div>
     </div>
-    <div class="action-row" style="margin-bottom:1rem">
-      <button class="btn pink" onclick="buildSentence()">🧩 Build Sentence</button>
-      <button class="btn purple" onclick="aiSentence()">✨ AI Enhance</button>
-      <button class="btn ghost" onclick="clearLesion()">Clear</button>
+    <div class="arow" style="margin-bottom:.9rem">
+      <button class="btn btn-pk" onclick="buildSC()">Build Sentence</button>
+      <button class="btn btn-p" onclick="aiSC()">AI Enhance</button>
+      <button class="btn btn-ghost" onclick="clearL()">Clear</button>
     </div>
-    <div id="lesion-cards"></div>
-    <div class="out-box pink-bdr" id="out-lsn"><div class="loading" id="ld-lsn"><span class="spin">✨</span> Generating AI sentence...</div><div class="md" id="md-lsn"></div></div>
+    <div id="sc-cards"></div>
+    <div class="obox bpk" id="obox-lsn"><div class="ldg" id="ld-lsn"><span class="spin">●</span> Generating...</div><div class="md" id="md-lsn"></div></div>
   </div>
 
-  <!-- REPORT COMPOSER -->
-  <div class="rpanel" id="rp-compose">
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Dump rough findings → AI builds a complete formal PET/CT report</div>
-    <div class="fgroup"><label>Indication / Clinical History</label><input type="text" id="rc-ind" placeholder="e.g. Known Ca prostate, post RP, rising PSA 3.2 ng/mL, for restaging"/></div>
-    <div class="fgroup"><label>Radiopharmaceutical & Technique</label><input type="text" id="rc-rp" placeholder="e.g. 185 MBq F-18 FDG IV, blood glucose 96 mg/dL, uptake 60 min"/></div>
-    <div class="fgroup"><label>Your Rough Findings</label>
-      <textarea id="rc-findings" class="b-pink" style="min-height:130px" placeholder="Just dump your findings here:&#10;- Liver seg 6 lesion, 2.3cm, SUVmax 9.2&#10;- Multiple mediastinal LN, largest 1.8cm, SUVmax 6.4&#10;- No brain mets&#10;- Bones clear&#10;- No uptake at prostate bed"></textarea>
+  <div class="rp" id="rp-compose">
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Dump rough bullet-point findings — AI builds a complete formal PET/CT report</p>
+    <div class="fgrp"><label>Indication / Clinical History</label><input class="ipt" id="rc-ind" placeholder="e.g. Known Ca prostate post RP, rising PSA 3.2 ng/mL, for restaging"/></div>
+    <div class="fgrp"><label>Radiopharmaceutical and Technique</label><input class="ipt" id="rc-rp" placeholder="e.g. 185 MBq F-18 FDG IV, blood glucose 96 mg/dL, uptake 60 min"/></div>
+    <div class="fgrp"><label>Your Rough Findings</label>
+      <textarea id="rc-find" style="min-height:130px;border-color:var(--border)" placeholder="- Liver seg 6 lesion, 2.3cm, SUVmax 9.2&#10;- Multiple mediastinal LN, largest 1.8cm, SUVmax 6.4&#10;- No brain mets&#10;- Bones clear&#10;- No uptake at prostate bed"></textarea>
     </div>
-    <div class="fgroup" style="max-width:280px"><label>Report Style</label>
-      <select id="rc-style"><option value="standard">Standard structured</option><option value="narrative">Narrative style</option><option value="concise">Concise / brief</option></select>
+    <div class="fgrp" style="max-width:250px"><label>Report Style</label><select id="rc-style"><option value="standard">Standard structured</option><option value="narrative">Narrative style</option><option value="concise">Concise / brief</option></select></div>
+    <div class="arow">
+      <button class="btn btn-pk" id="btn-compose" onclick="gen('compose')">Generate Report</button>
+      <input class="save-inp" id="cmp-lbl" placeholder="Label (optional)"/>
+      <button class="btn btn-ghost" onclick="mSave('compose')">Save</button>
     </div>
-    <div class="action-row">
-      <button class="btn pink" id="btn-compose" onclick="gen('compose')">✨ Generate Report (Ctrl+Enter)</button>
-      <input class="save-input" id="compose-label" placeholder="Label (optional)"/>
-      <button class="btn ghost" onclick="manualSave('compose')">⊕ Save</button>
-    </div>
-    <div class="out-box pink-bdr" id="out-compose"><div class="loading" id="ld-compose"><span class="spin">📋</span> Composing report...</div><div class="md" id="md-compose"></div></div>
+    <div class="obox bpk" id="obox-compose"><div class="ldg" id="ld-compose"><span class="spin">●</span> Composing...</div><div class="md" id="md-compose"></div></div>
   </div>
 
-  <!-- DICOM VIEWER -->
-  <div class="rpanel" id="rp-dicom">
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Upload a DICOM (.dcm) file — view it, adjust window/level, and run AI analysis</div>
-    <div class="dicom-drop" id="dicom-drop" onclick="document.getElementById('dcm-file').click()" ondragover="dcmOver(event)" ondragleave="dcmLeave()" ondrop="dcmDrop(event)">
-      <div style="font-size:2rem;margin-bottom:.5rem;opacity:.4">🖼</div>
-      <p><strong>Tap / click to upload</strong> or drag a .dcm file here</p>
+  <div class="rp" id="rp-dicom">
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Upload a .dcm file — view, adjust window/level, run AI analysis</p>
+    <div class="dcm-drop" id="dcm-drop" onclick="document.getElementById('dcm-f').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
+      <div style="font-size:1.8rem;opacity:.35;margin-bottom:.4rem">image</div>
+      <p><strong>Tap or click to upload</strong> or drag a .dcm file</p>
       <p>Single-slice viewer — no software needed</p>
-      <input type="file" id="dcm-file" accept=".dcm" style="display:none" onchange="loadDCM(this.files[0])"/>
+      <input type="file" id="dcm-f" accept=".dcm" style="display:none" onchange="loadDCM(this.files[0])"/>
     </div>
-    <div id="dcm-viewer" style="display:none">
-      <div class="dmeta-grid" id="dcm-meta"></div>
-      <div class="wl-row">
-        <div class="wl-grp">WC: <input type="range" id="wc" min="-1000" max="3000" value="40" oninput="applyWL()"/> <span id="wc-v">40</span></div>
-        <div class="wl-grp">WW: <input type="range" id="ww" min="1" max="4000" value="400" oninput="applyWL()"/> <span id="ww-v">400</span></div>
-        <button class="btn ghost" style="font-size:.72rem;padding:.4rem .8rem" onclick="preset('soft')">Soft Tissue</button>
-        <button class="btn ghost" style="font-size:.72rem;padding:.4rem .8rem" onclick="preset('lung')">Lung</button>
-        <button class="btn ghost" style="font-size:.72rem;padding:.4rem .8rem" onclick="preset('bone')">Bone</button>
-        <button class="btn ghost" style="font-size:.72rem;padding:.4rem .8rem" onclick="preset('pet')">PET</button>
+    <div id="dcm-view" style="display:none">
+      <div class="dmg" id="dcm-meta"></div>
+      <div class="wlrow">
+        <div class="wlg">WC:<input type="range" id="wc" min="-1000" max="3000" value="40" oninput="applyWL()"/><span id="wc-v">40</span></div>
+        <div class="wlg">WW:<input type="range" id="ww" min="1" max="4000" value="400" oninput="applyWL()"/><span id="ww-v">400</span></div>
+        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('soft')">Soft Tissue</button>
+        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('lung')">Lung</button>
+        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('bone')">Bone</button>
       </div>
       <canvas id="dicomCanvas" width="512" height="512"></canvas>
-      <div class="action-row" style="margin-top:1rem">
-        <button class="btn pink" id="btn-dcm-ai" onclick="dcmAI()">🤖 AI Analysis of Image</button>
-        <span style="font-size:.72rem;color:var(--dim)">Sends current view to Claude vision</span>
+      <div class="arow" style="margin-top:.9rem">
+        <button class="btn btn-pk" id="btn-dcm-ai" onclick="dcmAI()">AI Analysis of Image</button>
       </div>
-      <div class="out-box pink-bdr" id="out-dcm-ai"><div class="loading" id="ld-dcm-ai"><span class="spin">🖼</span> Analysing image...</div><div class="md" id="md-dcm-ai"></div></div>
+      <div class="obox bpk" id="obox-dcm"><div class="ldg" id="ld-dcm"><span class="spin">●</span> Analysing...</div><div class="md" id="md-dcm"></div></div>
     </div>
   </div>
 </div>
 
 <!-- LIBRARY -->
-<div class="tab-pane" id="tab-library">
+<div class="pane" id="pane-library">
   <div class="lib-top">
-    <input class="lib-search" id="lib-search" placeholder="Search library..." oninput="renderLib()"/>
+    <input class="lib-search" id="lib-q" placeholder="Search library..." oninput="renderLib()"/>
     <div class="frow">
-      <button class="fbtn on" data-f="all"        onclick="setF('all',this)">All</button>
-      <button class="fbtn"    data-f="paper"       onclick="setF('paper',this)">Papers</button>
-      <button class="fbtn"    data-f="qa"          onclick="setF('qa',this)">Q&A</button>
-      <button class="fbtn"    data-f="guidelines"  onclick="setF('guidelines',this)">Guidelines</button>
-      <button class="fbtn"    data-f="doubt"       onclick="setF('doubt',this)">Doubts</button>
-      <button class="fbtn"    data-f="compose"     onclick="setF('compose',this)">Reports</button>
+      <button class="fb on" data-f="all"        onclick="setF('all',this)">All</button>
+      <button class="fb"    data-f="papers"     onclick="setF('papers',this)">Papers</button>
+      <button class="fb"    data-f="qa"         onclick="setF('qa',this)">Q&A</button>
+      <button class="fb"    data-f="guidelines" onclick="setF('guidelines',this)">Guidelines</button>
+      <button class="fb"    data-f="doubt"      onclick="setF('doubt',this)">Doubts</button>
+      <button class="fb"    data-f="compose"    onclick="setF('compose',this)">Reports</button>
     </div>
+  </div>
+  <div class="sync-row">
+    <span id="lib-sync-status" style="font-size:.75rem;color:var(--muted);flex:1">Cloud sync: not connected</span>
+    <button class="btn btn-ghost" onclick="syncFromCloud()" style="font-size:.72rem;padding:.38rem .8rem">Pull from Cloud</button>
+    <button class="btn btn-ghost" onclick="exportLib()" style="font-size:.72rem;padding:.38rem .8rem">Export JSON</button>
+    <label class="btn btn-ghost" style="font-size:.72rem;padding:.38rem .8rem;cursor:pointer">Import JSON<input type="file" accept=".json" style="display:none" onchange="importLib(this)"/></label>
   </div>
   <div id="lib-content"></div>
 </div>
 
-<!-- DEV NOTES -->
-<div class="tab-pane" id="tab-dev">
-  <div class="hint-bar red">⚠ Log any AI mistake here — notes are prepended to every future prompt so the AI learns and never repeats it</div>
+<!-- IMPROVE AI -->
+<div class="pane" id="pane-dev">
+  <div class="hbar r">Improve AI — Log any mistake here. These corrections are automatically injected into every future AI prompt so it learns and never repeats the mistake.</div>
   <div id="dev-banner"></div>
-  <div style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem">
-    <span class="qa-lbl">Add a correction</span>
-    <textarea id="dev-input" class="b-red" style="min-height:80px" placeholder="E.g.: Always mention AERB 1110 MBq outpatient limit for I-131 in India&#10;Or: Adult FDG dose is 3-5 MBq/kg not a fixed dose&#10;Or: PSMA expression inversely correlates with Gleason for low-grade tumours"></textarea>
-    <div class="action-row">
-      <button class="btn red" onclick="addDev()">+ Add Correction</button>
-      <span style="font-size:.75rem;color:var(--dim);align-self:center">Active notes go into every AI prompt</span>
+  <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.4rem">
+    <span class="qlbl">Add a correction or instruction</span>
+    <textarea id="dev-inp" style="min-height:80px;border-color:var(--border)" placeholder="E.g.: Always mention AERB 1110 MBq outpatient limit for I-131 in India&#10;Or: Adult FDG dose is 3-5 MBq/kg not a fixed dose&#10;Or: PSMA expression inversely correlates with Gleason score for low-grade tumours"></textarea>
+    <div class="arow">
+      <button class="btn btn-r" onclick="addDev()">Add Correction</button>
+      <span style="font-size:.72rem;color:var(--dim);align-self:center">Injected into every AI prompt automatically</span>
     </div>
   </div>
   <div id="dev-list"></div>
@@ -467,730 +499,538 @@ header,nav,main{position:relative;z-index:1;}
 <div id="toast"></div>
 
 <script>
-// ════════════════════════════
 // STATE
-// ════════════════════════════
-var S = {
-  paperM: 10, qaM: 10, qaMode: 'model',
-  libFilter: 'all', libDetail: null,
-  outputs: {}
-};
-var DICOM = { pixels: null, rows: 0, cols: 0, slope: 1, intercept: 0 };
+var S={papersM:10,qaM:10,qaMode:'model',libF:'all',libDet:null,outs:{}};
+var QI={b64:null,mime:'image/jpeg'};
+var DCM={px:null,rows:0,cols:0,slope:1,int:0};
+var SB=null; // Supabase client
 
-var MDESCS = {
-  10: 'Long answer — full detail, subheadings, tables',
-  5:  'Medium answer — focused points',
-  3:  'Short answer — crisp, to the point'
+var CAT={
+  papers:{name:'Research Paper',color:'var(--cyan)',cls:'cat-papers'},
+  qa:{name:'Exam Q&A',color:'var(--purple)',cls:'cat-qa'},
+  guidelines:{name:'Guidelines',color:'var(--green)',cls:'cat-guidelines'},
+  doubt:{name:'Doubt',color:'var(--amber)',cls:'cat-doubt'},
+  compose:{name:'PET/CT Report',color:'var(--pink)',cls:'cat-compose'}
 };
-var TAB_COLORS = {
-  paper:'#0891b2', qa:'#7c3aed', guidelines:'#059669',
-  doubt:'#f59e0b', compose:'#e879f9', report:'#e879f9'
-};
-var TAB_NAMES = {
-  paper:'Paper', qa:'Exam Q&A', guidelines:'Guidelines',
-  doubt:'Doubt', compose:'PET/CT Report'
-};
+var MKDESC={10:'Long answer — full detail, tables, clinical pearls',5:'Medium answer — focused, key points',3:'Short answer — crisp and direct'};
 
-// ════════════════════════════
 // STORAGE
-// ════════════════════════════
-function getLib(){ try{ return JSON.parse(localStorage.getItem('nm_lib')||'[]'); }catch(e){ return []; } }
-function setLib(a){ localStorage.setItem('nm_lib',JSON.stringify(a)); updCount(); }
-function getDev(){ try{ return JSON.parse(localStorage.getItem('nm_dev')||'[]'); }catch(e){ return []; } }
-function setDev(a){ localStorage.setItem('nm_dev',JSON.stringify(a)); }
-function getKey(){ return localStorage.getItem('nm_key')||''; }
-function updCount(){ document.getElementById('libCount').textContent = getLib().length+' saved'; }
+function gl(){try{return JSON.parse(localStorage.getItem('nmlib')||'[]');}catch(e){return[];}}
+function sl(a){localStorage.setItem('nmlib',JSON.stringify(a));updCnt();}
+function gd(){try{return JSON.parse(localStorage.getItem('nmdev')||'[]');}catch(e){return[];}}
+function sd(a){localStorage.setItem('nmdev',JSON.stringify(a));}
+function gk(){return localStorage.getItem('nmkey')||'';}
+function updCnt(){var e=document.getElementById('hdr-count');if(e)e.textContent=gl().length+' saved';}
 
-// ════════════════════════════
-// API KEY
-// ════════════════════════════
-function saveApiKey(){
-  var k = document.getElementById('apiKeyInput').value.trim();
-  if(!k.startsWith('sk-')){ toast('Enter a valid API key (starts with sk-)','err'); return; }
-  localStorage.setItem('nm_key', k);
-  document.getElementById('apiOverlay').classList.add('hidden');
+// SUPABASE SETUP
+function initSB(){
+  var url=localStorage.getItem('sburl');
+  var key=localStorage.getItem('sbkey');
+  if(!url||!key){updSyncUI(false);return;}
+  try{
+    SB=supabase.createClient(url,key);
+    updSyncUI(true);
+    updLibSyncStatus('Connected — '+gl().length+' local items');
+  }catch(e){
+    SB=null;updSyncUI(false);
+  }
 }
-function resetKey(){
-  localStorage.removeItem('nm_key');
-  document.getElementById('apiKeyInput').value='';
-  document.getElementById('apiOverlay').classList.remove('hidden');
+function saveSB(){
+  var url=document.getElementById('sb-url').value.trim();
+  var key=document.getElementById('sb-key').value.trim();
+  if(!url||!key){toast('Enter both URL and key','er');return;}
+  localStorage.setItem('sburl',url);
+  localStorage.setItem('sbkey',key);
+  document.getElementById('sb-modal').classList.add('off');
+  initSB();
+  toast('Cloud sync connected!');
+  syncFromCloud();
 }
+function skipSB(){document.getElementById('sb-modal').classList.add('off');}
+function showSB(){document.getElementById('sb-modal').classList.remove('off');}
+function updSyncUI(on){
+  var dot=document.getElementById('sync-dot');
+  var txt=document.getElementById('sync-txt');
+  if(dot)dot.className='sync-dot'+(on?'':' off');
+  if(txt)txt.textContent=on?'Cloud synced':'Local only';
+}
+function updLibSyncStatus(msg){var e=document.getElementById('lib-sync-status');if(e)e.textContent='Cloud sync: '+msg;}
 
-// ════════════════════════════
-// TABS
-// ════════════════════════════
-function switchTab(t){
-  document.querySelectorAll('.tab-pane').forEach(function(el){ el.classList.remove('active'); });
-  document.querySelectorAll('nav button').forEach(function(el){ el.classList.remove('active'); });
-  document.getElementById('tab-'+t).classList.add('active');
-  document.querySelector('nav button[data-tab="'+t+'"]').classList.add('active');
-  if(t==='library') renderLib();
-  if(t==='dev'){ renderDev(); updDevBanner(); }
-  S.libDetail = null;
-}
-
-// ════════════════════════════
-// MARKERS
-// ════════════════════════════
-function setM(grp, val, btn){
-  S[grp+'M'] = val;
-  var cls = grp==='paper'?'on-cyan':grp==='qa'?'on-purple':'on-green';
-  document.querySelectorAll('.mbtn[data-grp="'+grp+'"]').forEach(function(b){
-    b.classList.remove('on-cyan','on-purple','on-green');
+// Sync: push to Supabase
+function pushToCloud(item){
+  if(!SB)return;
+  var dot=document.getElementById('sync-dot');
+  if(dot)dot.className='sync-dot spin';
+  SB.from('nm_library').upsert({
+    id:item.id,tab:item.tab,marker:item.marker||null,
+    label:item.label||'',input:(item.input||'').slice(0,5000),
+    output:(item.output||'').slice(0,10000),saved_at:item.savedAt||''
+  }).then(function(res){
+    if(dot)dot.className='sync-dot';
+    if(res.error){toast('Sync error: '+res.error.message,'er');}
   });
-  btn.classList.add(cls);
-  document.getElementById(grp+'-desc').textContent = MDESCS[val];
 }
 
-// ════════════════════════════
-// QA MODE
-// ════════════════════════════
-function setQAMode(m){
-  S.qaMode = m;
-  document.getElementById('tgl-model').classList.toggle('on', m==='model');
-  document.getElementById('tgl-check').classList.toggle('on', m==='check');
-  document.getElementById('qa-ans-wrap').style.display = m==='check'?'block':'none';
-  document.getElementById('btn-qa').textContent = m==='model'?'⚡ Generate Model Answer (Ctrl+Enter)':'✅ Check My Answer (Ctrl+Enter)';
-  document.getElementById('ld-qa-txt').textContent = m==='model'?'Generating model answer...':'Checking your answer...';
-}
-
-// ════════════════════════════
-// REPORT MODES
-// ════════════════════════════
-function setRM(m, btn){
-  document.querySelectorAll('.rmb').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  document.querySelectorAll('.rpanel').forEach(function(p){ p.classList.remove('active'); });
-  document.getElementById('rp-'+m).classList.add('active');
-}
-
-// ════════════════════════════
-// DEV CONTEXT
-// ════════════════════════════
-function devCtx(){
-  var notes = getDev();
-  if(!notes.length) return '';
-  return '\n\n⚠️ CORRECTIONS (strictly follow these, learned from previous sessions):\n' +
-    notes.map(function(n,i){ return (i+1)+'. '+n.text; }).join('\n') + '\n\n';
-}
-
-// ════════════════════════════
-// SYSTEM PROMPTS
-// ════════════════════════════
-function paperPrompt(m){
-  var d = devCtx();
-  if(m===10) return d+'You are an expert Nuclear Medicine physician for DNB examinations. Summarize the given research paper as a 500–800 word structured long answer (10-marker exam style).\n\nStructure with bold subheadings:\n**Introduction & Background**\n**Aims & Objectives**\n**Methodology** — study design, sample size, radiopharmaceutical, protocol\n**Results & Key Findings** — bold important numbers, sensitivity/specificity, p-values\n**Discussion & Clinical Significance**\n**Limitations**\n**Conclusion**\n**Clinical Pearl for DNB** ⭐\n\nUse tables for key metrics. Doses in MBq/mCi. Word count: strictly 500–800 words.';
-  if(m===5) return d+'You are a Nuclear Medicine DNB physician. Summarize the research paper in 300–400 words (5-marker style). Cover: brief background, study design, key findings with numbers bolded, clinical significance, conclusion. Concise paragraphs. Strictly 300–400 words.';
-  return d+'You are a Nuclear Medicine DNB examiner. Summarize this paper in 100–200 words (3-marker style). What was studied, main finding with key stat, clinical takeaway. Direct and crisp. Strictly 100–200 words.';
-}
-
-function qaPrompt(m){
-  var d = devCtx();
-  if(m===10) return d+'You are a senior Nuclear Medicine DNB examiner. Answer the given question(s) as 500–800 word long answers (10-marker style). Multiple questions answered separately with clear headings.\n\nStructure each:\n**Definition / Introduction**\n**Principle / Mechanism** (radiopharmaceutical, doses in MBq/mCi)\n**Indications**\n**Patient Preparation & Protocol**\n**Image Interpretation & Normal Values**\n**Clinical Applications** (sensitivity/specificity)\n**Advantages & Limitations**\n**Conclusion**\n\nTables where useful. AERB/SNMMI/EANM guidelines. Indian context. Each answer: strictly 500–800 words.';
-  if(m===5) return d+'You are a Nuclear Medicine DNB examiner. Answer questions in 300–400 words each (5-marker). Cover: definition, mechanism, main application, key numbers (doses, sensitivity/specificity), brief conclusion. Bold critical values. Multiple questions answered separately. Each: strictly 300–400 words.';
-  return d+'You are a Nuclear Medicine DNB examiner. Answer in 100–200 words per question (3-marker). Direct definition, core concept, one clinical use. Crisp. Strictly 100–200 words each.';
-}
-
-function checkPrompt(m){
-  var d = devCtx();
-  var w = m===10?'500–800':m===5?'300–400':'100–200';
-  return d+'You are a senior Nuclear Medicine DNB examiner evaluating a student answer.\n\n## ✅ What You Got Right\nList correct points covered (brief)\n\n## ❌ Missing / Incomplete Points\nFor each missing point, explain why it matters and what the complete answer should have said.\n\n## ⭐ Examiner\'s Key Points (Must-Know for '+m+'-marker)\nList 5-7 critical points expected in a '+w+'-word answer. Bold the most important.\n\n## Score Estimate\nApproximate score out of '+m+' with brief justification.\n\n## Improved Answer Outline\nBrief structured outline for a top-scoring answer.\n\nBe honest and specific.';
-}
-
-function guidelinesPrompt(){
-  var d = devCtx();
-  return d+'You are a Nuclear Medicine specialist. Provide a detailed 500–800 word response covering ALL relevant guidelines (10-marker depth).\n\n## Applicable Guidelines\nList SNMMI, EANM, IAEA, AERB, ISNM with year of latest version\n\n## SNMMI Recommendations\nKey recommendations with specific values\n\n## EANM Recommendations\nNote differences from SNMMI\n\n## AERB / Indian Regulations 🇮🇳\nDose limits, regulatory requirements, AERB Safety Code\n\n## ISNM / Regional Consensus\n\n## Quick Reference Table\n| Parameter | SNMMI | EANM | AERB India |\n|-----------|-------|------|------------|\n\n## What Changed in Latest Update\n\n## Clinical Pearls for DNB ⭐\n3-4 high-yield points\n\nFlag disagreements between guidelines. Include years. Total: 500–800 words.';
-}
-
-function doubtPrompt(){
-  var d = devCtx();
-  return d+'You are a senior Nuclear Medicine physician and DNB teacher. Answer the student\'s doubt clearly from first principles. Include: core explanation, relevant numbers/doses in MBq/mCi, clinical relevance, common exam pitfalls, one memory trick if applicable. Be as long as the concept needs — no padding, no unnecessary shortening.';
-}
-
-function composePrompt(){
-  var d = devCtx();
-  var style = gv('rc-style');
-  return d+'You are a senior Nuclear Medicine physician writing a formal PET/CT report. Convert the rough findings into a complete professional report.\n\nReport style: '+(style==='narrative'?'Narrative flowing paragraphs':style==='concise'?'Concise brief report':'Standard structured with clear sections')+'\n\nFormat:\n**CLINICAL HISTORY & INDICATION**\n**RADIOPHARMACEUTICAL & TECHNIQUE**\n**FINDINGS** (by region — only include relevant regions)\n**IMPRESSION** (numbered list)\n**CONCLUSION** (one-line overall, with PERCIST response if treatment context given)\n\nProfessional radiological language. SUV values where provided.';
-}
-
-// ════════════════════════════
-// GENERATE — handles ALL tabs
-// ════════════════════════════
-async function gen(tab){
-  var key = getKey();
-  if(!key){ toast('Enter your API key first','err'); resetKey(); return; }
-
-  var userContent = '', sysPrompt = '';
-
-  if(tab==='paper'){
-    userContent = gv('paperInput');
-    sysPrompt   = paperPrompt(S.paperM);
-  } else if(tab==='qa'){
-    var q = gv('qaQ'), a = gv('qaA');
-    if(!q && !qaImageB64){ toast('Enter a question or upload an image first','err'); return; }
-    if(S.qaMode==='check'){
-      if(!a){ toast('Write your answer first, then click Check','err'); return; }
-      userContent = 'Question: '+(q||'(see image)')+'\n\nStudent Answer:\n'+a;
-      sysPrompt   = checkPrompt(S.qaM);
-    } else {
-      if(qaImageB64){
-        // image-based question — will be sent as multimodal
-        userContent = q ? q : 'Answer all questions shown in this image as per DNB exam style ('+S.qaM+'-marker answers).';
-        sysPrompt   = qaPrompt(S.qaM);
-      } else {
-        userContent = q;
-        sysPrompt   = qaPrompt(S.qaM);
+// Sync: pull all from Supabase
+function syncFromCloud(){
+  if(!SB){toast('Connect cloud sync first','er');showSB();return;}
+  updLibSyncStatus('Syncing...');
+  var dot=document.getElementById('sync-dot');
+  if(dot)dot.className='sync-dot spin';
+  SB.from('nm_library').select('*').order('id',{ascending:false}).then(function(res){
+    if(dot)dot.className='sync-dot';
+    if(res.error){toast('Pull failed: '+res.error.message,'er');updLibSyncStatus('Sync error');return;}
+    var cloud=res.data||[];
+    var local=gl();
+    var ids={};
+    for(var i=0;i<local.length;i++)ids[local[i].id]=1;
+    var added=0;
+    for(var j=0;j<cloud.length;j++){
+      var ci=cloud[j];
+      if(!ids[ci.id]){
+        local.push({id:ci.id,tab:ci.tab,marker:ci.marker,label:ci.label,input:ci.input,output:ci.output,savedAt:ci.saved_at});
+        added++;
       }
     }
-  } else if(tab==='guidelines'){
-    userContent = gv('guidelinesInput');
-    sysPrompt   = guidelinesPrompt();
-  } else if(tab==='doubt'){
-    userContent = gv('doubtInput');
-    sysPrompt   = doubtPrompt();
-  } else if(tab==='compose'){
-    var findings = gv('rc-findings');
-    if(!findings){ toast('Enter your findings first','err'); return; }
-    userContent = 'Indication: '+(gv('rc-ind')||'Not specified')+'\nTechnique: '+(gv('rc-rp')||'Not specified')+'\n\nFindings:\n'+findings;
-    sysPrompt   = composePrompt();
-  }
+    if(added>0){local.sort(function(a,b){return b.id-a.id;});sl(local);}
+    renderLib();
+    updLibSyncStatus('Synced — '+local.length+' items ('+added+' new from cloud)');
+    toast('Synced '+added+' new items from cloud');
+  });
+}
 
-  if(!userContent){ toast('Enter something first','err'); return; }
+// API KEY
+function saveKey(){
+  var k=document.getElementById('api-inp').value.trim();
+  if(k.indexOf('sk-')!==0){toast('Enter a valid key starting with sk-','er');return;}
+  localStorage.setItem('nmkey',k);
+  document.getElementById('api-modal').classList.add('off');
+  if(!localStorage.getItem('sburl')) document.getElementById('sb-modal').classList.remove('off');
+}
+function resetKey(){localStorage.removeItem('nmkey');document.getElementById('api-inp').value='';document.getElementById('api-modal').classList.remove('off');}
 
-  var outId = tab==='compose'?'out-compose':'out-'+tab;
-  var ldId  = tab==='compose'?'ld-compose':'ld-'+tab;
-  var mdId  = tab==='compose'?'md-compose':'md-'+tab;
+// TABS
+function tab(t){
+  document.querySelectorAll('.pane').forEach(function(e){e.classList.remove('on');});
+  document.querySelectorAll('.ntab').forEach(function(e){e.classList.remove('on');});
+  document.getElementById('pane-'+t).classList.add('on');
+  document.querySelector('.ntab[data-t="'+t+'"]').classList.add('on');
+  S.libDet=null;
+  if(t==='library')renderLib();
+  if(t==='dev'){renderDev();updBanner();}
+}
 
-  var outEl = document.getElementById(outId);
-  var ldEl  = document.getElementById(ldId);
-  var mdEl  = document.getElementById(mdId);
-  var btnEl = document.getElementById('btn-'+(tab==='compose'?'compose':tab));
+// MARKERS
+function setMk(g,v,btn){
+  S[g+'M']=v;
+  var cls=g==='papers'?'c':g==='qa'?'p':'g';
+  document.querySelectorAll('.mk[data-g="'+g+'"]').forEach(function(b){b.classList.remove('c','p','g');});
+  btn.classList.add(cls);
+  var d=document.getElementById(g+'-desc');if(d)d.textContent=MKDESC[v];
+}
 
-  outEl.classList.add('show');
-  ldEl.style.display = 'flex';
-  mdEl.innerHTML = '';
-  if(btnEl){ btnEl.disabled = true; btnEl.textContent = '⟳ Generating...'; }
+// QA MODE
+function setQM(m){
+  S.qaMode=m;
+  document.getElementById('tgl-model').classList.toggle('on',m==='model');
+  document.getElementById('tgl-check').classList.toggle('on',m==='check');
+  document.getElementById('qa-aw').style.display=m==='check'?'block':'none';
+  document.getElementById('btn-qa').textContent=m==='model'?'Generate Model Answer':'Check My Answer';
+  var lt=document.getElementById('ld-qa-t');if(lt)lt.textContent=m==='model'?'Generating model answer...':'Checking your answer...';
+}
 
-  try {
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        system: sysPrompt,
-        messages: [{
-          role: 'user',
-          content: (tab==='qa' && qaImageB64) ? [
-            { type: 'image', source: { type: 'base64', media_type: qaImageMime, data: qaImageB64 } },
-            { type: 'text', text: userContent }
-          ] : userContent
-        }]
-      })
-    });
+// QA IMAGE
+function loadQI(inp){
+  var f=inp.files[0];if(!f)return;
+  QI.mime=f.type||'image/jpeg';
+  document.getElementById('qa-img-nm').textContent=f.name;
+  document.getElementById('qa-img-clr').style.display='inline-block';
+  var r=new FileReader();
+  r.onload=function(e){QI.b64=e.target.result.split(',')[1];document.getElementById('qa-th').src=e.target.result;document.getElementById('qa-tw').style.display='block';};
+  r.readAsDataURL(f);
+}
+function clearQI(){QI.b64=null;document.getElementById('qa-img-nm').textContent='';document.getElementById('qa-img-clr').style.display='none';document.getElementById('qa-tw').style.display='none';document.getElementById('qa-img').value='';}
 
-    if(res.status === 401){ toast('Invalid API key','err'); resetKey(); return; }
+// REPORT MODE
+function setRM(m,btn){
+  document.querySelectorAll('.rmb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');
+  document.querySelectorAll('.rp').forEach(function(p){p.classList.remove('on');});document.getElementById('rp-'+m).classList.add('on');
+}
 
-    var data = await res.json();
-    var full = (data.content||[]).map(function(b){ return b.text||''; }).join('') || 'Error getting response.';
+// DEV CONTEXT
+function devCtx(){
+  var n=gd();if(!n.length)return'';
+  var s='\n\nMANDATORY CORRECTIONS (strictly follow):\n';
+  for(var i=0;i<n.length;i++)s+=(i+1)+'. '+n[i].text+'\n';
+  return s+'\n';
+}
 
-    S.outputs[tab] = full;
-    ldEl.style.display = 'none';
+// PROMPTS
+function pPapers(m){
+  var d=devCtx(),w=m===10?'500-800':m===5?'300-400':'100-200';
+  var body=m===10?'Use these section headings with ## prefix:\n## Introduction and Background\n## Aims and Objectives\n## Methodology\n## Results and Key Findings\n## Discussion and Clinical Significance\n## Limitations\n## Conclusion\n## Clinical Pearl for DNB\n\nBold all numbers, p-values, sensitivity, specificity. Use a table for key metrics. Doses in MBq and mCi. Total: strictly '+w+' words.'
+    :m===5?'Sections: Brief background, Methodology, Key Findings with bolded numbers, Clinical Significance, Conclusion. Strictly '+w+' words.'
+    :'What was studied, main finding bolded, clinical takeaway. Strictly '+w+' words.';
+  return d+'You are an expert Nuclear Medicine physician for DNB examinations. Summarize the research paper in a rich structured answer.\n\n'+body;
+}
+function pQA(m){
+  var d=devCtx(),w=m===10?'500-800':m===5?'300-400':'100-200';
+  var body=m===10?'Structure for each answer:\n## Definition and Introduction\n## Principle and Mechanism\n## Indications\n## Patient Preparation and Protocol\n## Image Interpretation and Normal Values\n## Clinical Applications\n## Advantages and Limitations\n## Conclusion\n\nBold all doses in MBq/mCi, sensitivity/specificity, key numbers. Tables where useful. AERB/SNMMI/EANM guidelines where relevant. Each: strictly '+w+' words.'
+    :m===5?'Definition, mechanism, main application, key numbers bolded. Each: strictly '+w+' words.'
+    :'Direct definition, core concept, one clinical use. Each: strictly '+w+' words.';
+  return d+'You are a senior Nuclear Medicine DNB examiner. Answer the question(s) as exam answers. Multiple questions get separate numbered headings.\n\n'+body;
+}
+function pCheck(m){
+  var d=devCtx();
+  return d+'You are a senior Nuclear Medicine DNB examiner evaluating a student answer.\n\n## What You Got Right\nList correct points covered\n\n## Missing or Incomplete Points\nFor EACH missing point: what should have been said and why it matters\n\n## Examiner Must-Know Points for '+m+'-marker\nList 5-7 critical points. Bold the most important.\n\n## Score Estimate\nScore out of '+m+' with brief justification\n\n## Improved Answer Outline\nBrief structured outline for a top-scoring answer';
+}
+function pGL(){
+  var d=devCtx();
+  return d+'You are a Nuclear Medicine specialist. Provide a 500-800 word guideline summary using these section headings:\n## Applicable Guidelines\n## SNMMI Recommendations\n## EANM Recommendations\n## AERB and Indian Regulations\n## ISNM and Regional Consensus\n## Quick Reference Table\n| Parameter | SNMMI | EANM | AERB India |\n|-----------|-------|------|------------|\n## Latest Updates\n## Clinical Pearls for DNB\n\nBold all specific values and doses. Flag disagreements between guidelines. Strictly 500-800 words.';
+}
+function pDoubt(){
+  var d=devCtx();
+  return d+'You are a senior Nuclear Medicine physician and DNB teacher. Answer using:\n## Core Explanation\n## Key Numbers and Values\n(bold all doses in MBq/mCi, sensitivity/specificity)\n## Clinical Relevance\n## Common Exam Pitfalls\n## Memory Trick\n(if applicable)';
+}
+function pCompose(){
+  var d=devCtx(),st=gv('rc-style');
+  var style=st==='narrative'?'Narrative paragraphs':st==='concise'?'Concise brief':'Standard structured';
+  return d+'You are a senior Nuclear Medicine physician. Convert the rough findings into a formal PET/CT report.\nStyle: '+style+'\n\n## CLINICAL HISTORY AND INDICATION\n## RADIOPHARMACEUTICAL AND TECHNIQUE\n## FINDINGS\n(by region - only include relevant regions)\n## IMPRESSION\n(numbered list)\n## CONCLUSION\n(one-line overall assessment)\n\nProfessional radiological language. Include SUV values where provided.';
+}
 
-    // Streaming render
-    var i = 0;
-    function tick(){
-      if(i < full.length){ mdEl.innerHTML = renderMD(full.slice(0,i+15)); i+=15; setTimeout(tick,3); }
-      else { mdEl.innerHTML = renderMD(full); autoSave(tab, userContent, full); }
+// API CALL
+function callAPI(sys,msgContent){
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':gk(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:sys,messages:[{role:'user',content:msgContent}]})
+  }).then(function(res){
+    if(res.status===401){toast('Invalid API key','er');resetKey();throw new Error('Invalid key');}
+    return res.json();
+  }).then(function(data){
+    return (data.content||[]).map(function(b){return b.text||'';}).join('');
+  });
+}
+
+// GENERATE
+function gen(t){
+  var key=gk();if(!key){toast('Enter your API key first','er');resetKey();return;}
+  var sys='',msg='';
+  if(t==='papers'){msg=gv('papers-inp');if(!msg){toast('Paste a paper first','er');return;}sys=pPapers(S.papersM);}
+  else if(t==='qa'){
+    var q=gv('qa-q'),a=gv('qa-a');
+    if(!q&&!QI.b64){toast('Enter a question or upload an image','er');return;}
+    if(S.qaMode==='check'){
+      if(!a){toast('Write your answer first','er');return;}
+      msg='Question: '+(q||'see image')+'\n\nStudent Answer:\n'+a;sys=pCheck(S.qaM);
+    } else {
+      sys=pQA(S.qaM);
+      if(QI.b64){msg=[{type:'image',source:{type:'base64',media_type:QI.mime,data:QI.b64}},{type:'text',text:q||'Answer all questions in this image as per DNB exam style, '+S.qaM+'-marker answers.'}];}
+      else{msg=q;}
     }
-    tick();
-
-    // Show save controls for qa/doubt/compose
-    if(tab==='qa'){ document.getElementById('qa-label').style.display='inline-block'; document.getElementById('qa-save').style.display='inline-block'; }
-    if(tab==='doubt'){ document.getElementById('doubt-label').style.display='inline-block'; document.getElementById('doubt-save').style.display='inline-block'; }
-
-  } catch(e){
-    ldEl.style.display = 'none';
-    mdEl.innerHTML = '<p style="color:#f87171">⚠️ Error: '+e.message+'</p>';
+  }
+  else if(t==='guidelines'){msg=gv('gl-inp');if(!msg){toast('Enter a guideline topic','er');return;}sys=pGL();}
+  else if(t==='doubt'){msg=gv('db-inp');if(!msg){toast('Ask something first','er');return;}sys=pDoubt();}
+  else if(t==='compose'){
+    var f=gv('rc-find');if(!f){toast('Enter your findings first','er');return;}
+    msg='Indication: '+(gv('rc-ind')||'Not specified')+'\nTechnique: '+(gv('rc-rp')||'Not specified')+'\n\nFindings:\n'+f;
+    sys=pCompose();
   }
 
-  var origLabels = { paper:'⚡ Generate (Ctrl+Enter)', qa:'⚡ Generate (Ctrl+Enter)', guidelines:'⚡ Generate (Ctrl+Enter)', doubt:'⚡ Ask (Ctrl+Enter)', compose:'✨ Generate Report (Ctrl+Enter)' };
-  if(btnEl){ btnEl.disabled = false; btnEl.textContent = origLabels[tab]||'⚡ Generate'; }
-}
+  var oId=t==='compose'?'obox-compose':'obox-'+t;
+  var lId=t==='compose'?'ld-compose':'ld-'+t;
+  var mId=t==='compose'?'md-compose':'md-'+t;
+  var bId=t==='compose'?'btn-compose':'btn-'+t;
+  var oEl=document.getElementById(oId),lEl=document.getElementById(lId),mEl=document.getElementById(mId),bEl=document.getElementById(bId);
+  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
+  if(bEl){bEl.disabled=true;bEl.textContent='Generating...';}
 
-// ════════════════════════════
+  callAPI(sys,msg).then(function(full){
+    S.outs[t]=full;lEl.style.display='none';
+    var i=0;
+    function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+20),t);i+=20;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,t);autoSave(t,msg,full);}}
+    tick();
+    if(t==='qa'){sh('qa-lbl');sh('qa-sv');}
+    if(t==='doubt'){sh('db-lbl');sh('db-sv');}
+  }).catch(function(e){
+    lEl.style.display='none';mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
+  }).then(function(){
+    var lbls={papers:'Generate',qa:'Generate Model Answer',guidelines:'Generate',doubt:'Ask',compose:'Generate Report'};
+    if(bEl){bEl.disabled=false;bEl.textContent=lbls[t]||'Generate';}
+  });
+}
+function sh(id){var e=document.getElementById(id);if(e)e.style.display='inline-block';}
+
 // SAVE
-// ════════════════════════════
-function autoSave(tab, input, output){
-  if(tab!=='paper' && tab!=='guidelines') return;
-  addToLib({ tab: tab, marker: tab==='paper'?S.paperM:null, label: input.slice(0,70)+(input.length>70?'...':''), input: input, output: output });
-  toast('✓ Auto-saved to Library');
+function autoSave(t,inp,out){
+  if(t!=='papers'&&t!=='guidelines')return;
+  var lbl=typeof inp==='string'?inp.slice(0,70):'Image upload';
+  var item={tab:t,marker:t==='papers'?S.papersM:null,label:lbl,input:typeof inp==='string'?inp:'[Image]',output:out};
+  addLib(item,true);
+  toast('Auto-saved to Library');
+}
+function mSave(t){
+  var out=S.outs[t];if(!out){toast('Generate something first','er');return;}
+  var lblId=t==='qa'?'qa-lbl':t==='doubt'?'db-lbl':'cmp-lbl';
+  var lblEl=document.getElementById(lblId);
+  var rawId=t==='qa'?'qa-q':t==='doubt'?'db-inp':'rc-find';
+  var raw=gv(rawId);
+  var label=(lblEl&&lblEl.value.trim())||raw.slice(0,70)+(raw.length>70?'...':'');
+  addLib({tab:t,marker:t==='qa'?S.qaM:null,label:label,input:raw,output:out},true);
+  if(lblEl)lblEl.value='';
+  toast('Saved to Library');
+}
+function addLib(item,sync){
+  item.id=Date.now();
+  item.savedAt=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  var lib=gl();lib.unshift(item);sl(lib);
+  if(sync)pushToCloud(item);
 }
 
-function manualSave(tab){
-  var output = S.outputs[tab];
-  if(!output){ toast('Generate something first','err'); return; }
-  var labelEl = document.getElementById(tab+'-label');
-  var inputEl = document.getElementById(tab==='compose'?'rc-findings':tab==='qa'?'qaQ':tab+'Input');
-  var rawInput = inputEl ? inputEl.value.trim() : '';
-  addToLib({ tab: tab, marker: tab==='qa'?S.qaM:null, label: (labelEl&&labelEl.value.trim())||rawInput.slice(0,70)+(rawInput.length>70?'...':''), input: rawInput, output: output });
-  if(labelEl) labelEl.value = '';
-  toast('✓ Saved to Library');
-}
-
-function addToLib(item){
-  item.id = Date.now();
-  item.savedAt = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-  var lib = getLib();
-  lib.unshift(item);
-  setLib(lib);
-}
-
-// ════════════════════════════
 // LIBRARY
-// ════════════════════════════
-function setF(f, btn){
-  S.libFilter = f; S.libDetail = null;
-  document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  renderLib();
-}
+function setF(f,btn){S.libF=f;S.libDet=null;document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderLib();}
 
 function renderLib(){
-  var lib = getLib();
-  var q = (document.getElementById('lib-search')||{}).value||'';
-  q = q.toLowerCase();
-  var items = lib.filter(function(i){
-    var mf = S.libFilter==='all' || i.tab===S.libFilter;
-    var ms = !q || (i.label||'').toLowerCase().includes(q) || (i.input||'').toLowerCase().includes(q);
-    return mf && ms;
-  });
-  var el = document.getElementById('lib-content');
-  if(!el) return;
+  var lib=gl(),q='';
+  var si=document.getElementById('lib-q');if(si)q=si.value.toLowerCase();
+  var items=lib.filter(function(i){return(S.libF==='all'||i.tab===S.libF)&&(!q||(i.label||'').toLowerCase().indexOf(q)>=0||(i.input||'').toLowerCase().indexOf(q)>=0);});
+  var el=document.getElementById('lib-content');if(!el)return;
 
-  if(S.libDetail){
-    var it = S.libDetail;
-    var col = TAB_COLORS[it.tab]||'var(--cyan)';
-    var nm = (TAB_NAMES[it.tab]||it.tab)+(it.marker?' · '+it.marker+' Marker':'');
-    el.innerHTML = '<button class="det-back" onclick="S.libDetail=null;renderLib()">← Back to Library</button>'+
-      '<div class="det-head" style="border-left:3px solid '+col+'">'+
-        '<div>'+
-          '<div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;color:'+col+';font-family:\'DM Mono\',monospace">'+nm+'</div>'+
-          '<div style="color:#e0f2fe;font-weight:600;margin-top:.2rem">'+escH(it.label)+'</div>'+
-          '<div style="font-size:.68rem;color:var(--dim);margin-top:.15rem">'+it.savedAt+'</div>'+
-        '</div>'+
-        '<button class="btn-del" onclick="delLib('+it.id+')">Delete</button>'+
-      '</div>'+
-      '<div class="det-body"><div class="md">'+renderMD(it.output)+'</div></div>';
+  if(S.libDet){
+    var it=S.libDet,c=CAT[it.tab]||{name:it.tab,color:'var(--cyan)',cls:''};
+    var nm=c.name+(it.marker?' - '+it.marker+' Marker':'');
+    el.innerHTML='<button class="det-back" onclick="S.libDet=null;renderLib()">Back to Library</button>'+
+      '<div class="det-hd" style="border-top:3px solid '+c.color+'">'+
+        '<div><div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;color:'+c.color+';font-weight:700;">'+nm+'</div>'+
+        '<div style="color:var(--text);font-weight:600;margin-top:.25rem;font-size:.88rem;">'+escH(it.label)+'</div>'+
+        '<div style="font-size:.65rem;color:var(--dim);margin-top:.15rem">'+it.savedAt+'</div></div>'+
+        '<button class="btn-del" onclick="delLib('+it.id+')">Delete</button></div>'+
+      '<div class="det-bd"><div class="md">'+rMD(it.output,it.tab)+'</div></div>';
     return;
   }
 
-  if(!items.length){
-    el.innerHTML = '<div class="lib-empty"><div style="font-size:2.5rem;opacity:.2;margin-bottom:.8rem">▣</div>'+
-      (lib.length===0?'Library empty — generate & save items!':'No matches found.')+'</div>';
-    return;
-  }
+  if(!items.length){el.innerHTML='<div class="lib-empty">'+(lib.length===0?'Library empty — generate and save items!':'No matches found.')+'</div>';return;}
 
-  el.innerHTML = '<div class="lib-grid">'+items.map(function(item){
-    var col = TAB_COLORS[item.tab]||'var(--cyan)';
-    var nm = (TAB_NAMES[item.tab]||item.tab)+(item.marker?' · '+item.marker+' Marker':'');
-    return '<div class="lcard" onclick="openLib('+item.id+')">'+
-      '<div class="lcard-type" style="color:'+col+'">'+nm+'</div>'+
-      '<div class="lcard-title">'+escH(item.label)+'</div>'+
-      '<div class="lcard-foot">'+
-        '<span class="lcard-date">'+item.savedAt+'</span>'+
-        '<button class="lcard-x" onclick="event.stopPropagation();delLib('+item.id+')">✕</button>'+
-      '</div></div>';
-  }).join('')+'</div>';
-}
-
-function openLib(id){
-  var lib = getLib();
-  var item = lib.filter(function(i){ return i.id===id; })[0];
-  if(item){ S.libDetail = item; renderLib(); }
-}
-
-function delLib(id){
-  var lib = getLib().filter(function(i){ return i.id!==id; });
-  setLib(lib);
-  if(S.libDetail && S.libDetail.id===id) S.libDetail = null;
-  renderLib();
-  toast('Deleted');
-}
-
-// ════════════════════════════
-// DEV NOTES
-// ════════════════════════════
-function addDev(){
-  var t = gv('dev-input');
-  if(!t){ toast('Enter a correction first','err'); return; }
-  var notes = getDev();
-  notes.unshift({ id: Date.now(), text: t, addedAt: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) });
-  setDev(notes);
-  document.getElementById('dev-input').value = '';
-  renderDev(); updDevBanner();
-  toast('✓ Correction added — applies to all future prompts');
-}
-
-function delDev(id){
-  setDev(getDev().filter(function(n){ return n.id!==id; }));
-  renderDev(); updDevBanner(); toast('Removed');
-}
-
-function renderDev(){
-  var notes = getDev();
-  var el = document.getElementById('dev-list');
-  if(!el) return;
-  if(!notes.length){
-    el.innerHTML = '<div class="lib-empty"><div style="font-size:2rem;opacity:.2;margin-bottom:.6rem">⚠</div>No corrections yet. Add mistakes here and the AI won\'t repeat them.</div>';
-    return;
-  }
-  el.innerHTML = '<div style="font-size:.72rem;color:var(--muted);margin-bottom:.6rem;font-family:\'DM Mono\',monospace">'+notes.length+' active correction'+(notes.length!==1?'s':'')+' — injected into every prompt</div>'+
-    notes.map(function(n){
-      return '<div class="dev-card">'+
-        '<div><div class="dev-card-text">'+escH(n.text)+'</div><div class="dev-card-meta">Added '+n.addedAt+'</div></div>'+
-        '<button class="btn-del" onclick="delDev('+n.id+')">✕</button></div>';
-    }).join('');
-}
-
-function updDevBanner(){
-  var n = getDev().length;
-  var el = document.getElementById('dev-banner');
-  if(!el) return;
-  el.innerHTML = n ? '<div class="dev-banner">⚠ '+n+' active correction'+(n!==1?'s':'')+' from Dev Notes applied to all prompts</div>' : '';
-}
-
-// ════════════════════════════
-// QA IMAGE UPLOAD
-// ════════════════════════════
-var qaImageB64 = null;
-var qaImageMime = 'image/jpeg';
-
-function handleQAImage(input){
-  var file = input.files[0];
-  if(!file) return;
-  qaImageMime = file.type || 'image/jpeg';
-  document.getElementById('qa-img-name').textContent = file.name;
-  document.getElementById('qa-img-clear').style.display = 'inline-block';
-  var reader = new FileReader();
-  reader.onload = function(e){
-    qaImageB64 = e.target.result.split(',')[1];
-    document.getElementById('qa-img-thumb').src = e.target.result;
-    document.getElementById('qa-img-preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearQAImage(){
-  qaImageB64 = null;
-  document.getElementById('qa-img-name').textContent = '';
-  document.getElementById('qa-img-clear').style.display = 'none';
-  document.getElementById('qa-img-preview').style.display = 'none';
-  document.getElementById('qa-img-thumb').src = '';
-  document.getElementById('qa-img-input').value = '';
-}
-function gv(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
-
-function buildSentence(){
-  var organ   = gv('l-custom') || gv('l-organ');
-  var type    = gv('l-type');
-  var size    = gv('l-size');
-  var suvmax  = gv('l-suvmax');
-  var suvmean = gv('l-suvmean');
-  var bg      = gv('l-bg');
-  var tracer  = gv('l-tracer');
-  var pattern = gv('l-pattern');
-  var morpho  = gv('l-morpho');
-  var imp     = gv('l-imp');
-
-  if(!organ){ toast('Select an organ/region first','err'); return; }
-
-  var s = '';
-  if(size||morpho){
-    s += (morpho?morpho+' ':'') + (type||'lesion') + ' noted in the ' + organ;
-    if(size) s += ' measuring '+size+' cm';
-    s += '. ';
-  } else {
-    s += 'A '+(type||'focus')+' is noted in the '+organ+'. ';
-  }
-  if(pattern||suvmax){
-    s += tracer+' PET demonstrates '+(pattern||'uptake');
-    if(suvmax) s += ' with SUVmax of '+suvmax;
-    if(suvmean) s += ' (SUVmean: '+suvmean+')';
-    if(bg) s += ', exceeding liver background SUV of '+bg;
-    s += '. ';
-  }
-  if(imp) s += imp+'. ';
-
-  addSentenceCard(s);
-}
-
-async function aiSentence(){
-  var organ   = gv('l-custom') || gv('l-organ');
-  if(!organ){ toast('Select an organ/region first','err'); return; }
-
-  var prompt = 'Write exactly 2–3 professional PET/CT report sentences for this lesion:\n'+
-    'Organ: '+organ+'\nType: '+(gv('l-type')||'—')+'\nSize: '+(gv('l-size')||'—')+' cm\n'+
-    'CT morphology: '+(gv('l-morpho')||'—')+'\nTracer: '+gv('l-tracer')+'\n'+
-    'PET pattern: '+(gv('l-pattern')||'—')+'\nSUVmax: '+(gv('l-suvmax')||'—')+'\n'+
-    'SUVmean: '+(gv('l-suvmean')||'—')+'\nBackground SUV: '+(gv('l-bg')||'—')+'\n'+
-    'Impression: '+(gv('l-imp')||'—')+'\n\n'+
-    'Formal radiological language. CT first, then PET metabolic activity, then significance. No bullets.';
-
-  var key = getKey();
-  if(!key){ toast('Enter API key first','err'); resetKey(); return; }
-
-  var outEl = document.getElementById('out-lsn');
-  var ldEl  = document.getElementById('ld-lsn');
-  var mdEl  = document.getElementById('md-lsn');
-  outEl.classList.add('show'); ldEl.style.display='flex'; mdEl.innerHTML='';
-
-  try {
-    var res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:300,
-        system:'You are an expert Nuclear Medicine radiologist. Write precise formal PET/CT report sentences only.',
-        messages:[{role:'user',content:prompt}] })
-    });
-    var data = await res.json();
-    var full = (data.content||[]).map(function(b){ return b.text||''; }).join('');
-    ldEl.style.display = 'none';
-    mdEl.innerHTML = renderMD(full);
-    addSentenceCard('✨ '+full.replace(/\n/g,' '));
-  } catch(e){
-    ldEl.style.display='none';
-    mdEl.innerHTML='<p style="color:#f87171">⚠️ '+e.message+'</p>';
-  }
-}
-
-function addSentenceCard(text){
-  var c = document.createElement('div');
-  c.className = 'sentence-card';
-  c.innerHTML = escH(text)+'<span class="copy-hint">tap to copy</span>';
-  c.onclick = function(){ navigator.clipboard.writeText(text).then(function(){ toast('✓ Copied to clipboard'); }); };
-  var container = document.getElementById('lesion-cards');
-  container.insertBefore(c, container.firstChild);
-}
-
-function clearLesion(){
-  ['l-organ','l-type','l-tracer','l-pattern','l-morpho','l-imp'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  ['l-custom','l-size','l-suvmax','l-suvmean','l-bg'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('lesion-cards').innerHTML='';
-  document.getElementById('out-lsn').classList.remove('show');
-}
-
-// ════════════════════════════
-// DICOM VIEWER
-// ════════════════════════════
-function dcmOver(e){ e.preventDefault(); document.getElementById('dicom-drop').classList.add('over'); }
-function dcmLeave(){ document.getElementById('dicom-drop').classList.remove('over'); }
-function dcmDrop(e){ e.preventDefault(); dcmLeave(); var f=e.dataTransfer.files[0]; if(f) loadDCM(f); }
-
-function loadDCM(file){
-  if(!file) return;
-  toast('Loading DICOM...');
-  var reader = new FileReader();
-  reader.onload = function(e){ try{ parseDICOM(new DataView(e.target.result), e.target.result); }catch(err){ toast('DICOM parse error: '+err.message,'err'); } };
-  reader.readAsArrayBuffer(file);
-}
-
-function parseDICOM(view, buf){
-  var le = true, offset = 0;
-  try { if(getString(view,128,4)==='DICM') offset=132; } catch(e){ offset=0; }
-
-  var meta={}, rows=0, cols=0, bits=16, pixOff=-1, slope=1, intercept=0, pixRep=0;
-
-  while(offset+8 < view.byteLength){
-    var g, el2;
-    try { g=view.getUint16(offset,le); el2=view.getUint16(offset+2,le); } catch(e){ break; }
-    offset += 4;
-
-    var vr='', vlen=0;
-    var vr1=String.fromCharCode(view.getUint8(offset)), vr2=String.fromCharCode(view.getUint8(offset+1));
-    var vrStr=vr1+vr2;
-    var longVRs=['OB','OW','OF','SQ','UC','UN','UR','UT'];
-    if(/^[A-Z]{2}$/.test(vrStr)){
-      vr=vrStr; offset+=2;
-      if(longVRs.indexOf(vr)>=0){ offset+=2; vlen=view.getUint32(offset,le); offset+=4; }
-      else { vlen=view.getUint16(offset,le); offset+=2; }
-    } else {
-      vlen=view.getUint32(offset,le); offset+=4;
+  var html='';
+  if(S.libF==='all'){
+    var groups={},order=['papers','guidelines','qa','doubt','compose'];
+    for(var x=0;x<items.length;x++){var it2=items[x];if(!groups[it2.tab])groups[it2.tab]=[];groups[it2.tab].push(it2);}
+    for(var oi=0;oi<order.length;oi++){
+      var tt=order[oi];if(!groups[tt]||!groups[tt].length)continue;
+      var c2=CAT[tt]||{name:tt,color:'var(--cyan)'};
+      html+='<div class="sec-head"><span style="color:'+c2.color+'">'+c2.name+'s</span><span>'+groups[tt].length+'</span></div>';
+      html+='<div class="lgrid" style="margin-bottom:1.2rem">';
+      for(var ci=0;ci<groups[tt].length;ci++)html+=cardHTML(groups[tt][ci]);
+      html+='</div>';
     }
-
-    if(g===0x7FE0 && el2===0x0010){ pixOff=offset; break; }
-
-    try {
-      if(g===0x0028 && el2===0x0010) rows=view.getUint16(offset,le);
-      if(g===0x0028 && el2===0x0011) cols=view.getUint16(offset,le);
-      if(g===0x0028 && el2===0x0100) bits=view.getUint16(offset,le);
-      if(g===0x0028 && el2===0x0103) pixRep=view.getUint16(offset,le);
-      if(g===0x0028 && el2===0x1053 && vlen>0) slope=parseFloat(getString(view,offset,vlen))||1;
-      if(g===0x0028 && el2===0x1052 && vlen>0) intercept=parseFloat(getString(view,offset,vlen))||0;
-      if(g===0x0010 && el2===0x0010 && vlen>0) meta['Patient']=getString(view,offset,vlen).trim();
-      if(g===0x0008 && el2===0x0060 && vlen>0) meta['Modality']=getString(view,offset,vlen).trim();
-      if(g===0x0008 && el2===0x0020 && vlen>0) meta['Study Date']=fmtDate(getString(view,offset,vlen).trim());
-      if(g===0x0008 && el2===0x1030 && vlen>0) meta['Study Desc']=getString(view,offset,vlen).trim();
-      if(g===0x0008 && el2===0x103e && vlen>0) meta['Series Desc']=getString(view,offset,vlen).trim();
-      if(g===0x0020 && el2===0x0013 && vlen>0) meta['Instance']=getString(view,offset,vlen).trim();
-      if(g===0x0018 && el2===0x0050 && vlen>0) meta['Slice Thickness']=getString(view,offset,vlen).trim()+' mm';
-    } catch(e){}
-
-    if(vlen===0xFFFFFFFF || vlen<0) break;
-    offset += vlen;
+  } else {
+    html='<div class="lgrid">';
+    for(var ii=0;ii<items.length;ii++)html+=cardHTML(items[ii]);
+    html+='</div>';
   }
-
-  if(rows===0 || cols===0 || pixOff<0){
-    toast('Could not read pixel data from this DICOM','err');
-    if(Object.keys(meta).length) renderMeta(meta);
-    return;
-  }
-
-  DICOM.rows=rows; DICOM.cols=cols; DICOM.slope=slope; DICOM.intercept=intercept;
-  DICOM.pixels = (bits===16) ? (pixRep===1 ? new Int16Array(buf,pixOff,rows*cols) : new Uint16Array(buf,pixOff,rows*cols)) : new Uint8Array(buf,pixOff,rows*cols);
-
-  renderMeta(meta);
-  document.getElementById('dcm-viewer').style.display='block';
-
-  // Auto W/L from sample
-  var mn=Infinity, mx=-Infinity;
-  for(var i=0;i<Math.min(DICOM.pixels.length,5000);i++){
-    var v=DICOM.pixels[i]*slope+intercept;
-    if(v<mn)mn=v; if(v>mx)mx=v;
-  }
-  var wc=Math.round((mn+mx)/2), ww=Math.round(mx-mn);
-  document.getElementById('wc').value=Math.max(-1000,Math.min(3000,wc));
-  document.getElementById('ww').value=Math.max(1,Math.min(4000,ww));
-  applyWL();
-  toast('✓ DICOM loaded — '+rows+'×'+cols);
+  el.innerHTML=html;
+}
+function cardHTML(item){
+  var c=CAT[item.tab]||{name:item.tab,color:'var(--cyan)',cls:''};
+  var nm=c.name+(item.marker?' - '+item.marker+' Marker':'');
+  return '<div class="lcard '+c.cls+'" onclick="openLib('+item.id+')">'+
+    '<div class="lcard-tag" style="color:'+c.color+'">'+nm+'</div>'+
+    '<div class="lcard-title">'+escH(item.label)+'</div>'+
+    '<div class="lcard-ft"><span class="lcard-date">'+item.savedAt+'</span>'+
+    '<button class="lcard-x" onclick="event.stopPropagation();delLib('+item.id+')">X</button></div></div>';
+}
+function openLib(id){var lib=gl();for(var i=0;i<lib.length;i++){if(lib[i].id===id){S.libDet=lib[i];renderLib();return;}}}
+function delLib(id){sl(gl().filter(function(i){return i.id!==id;}));if(S.libDet&&S.libDet.id===id)S.libDet=null;renderLib();toast('Deleted');}
+function exportLib(){
+  var lib=gl();if(!lib.length){toast('Library is empty','er');return;}
+  var a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(lib,null,2));a.download='nm-dnb-library.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast('Library exported');
+}
+function importLib(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var data=JSON.parse(e.target.result);
+      if(!Array.isArray(data))throw new Error('Invalid format');
+      var existing=gl(),ids={};
+      for(var i=0;i<existing.length;i++)ids[existing[i].id]=1;
+      var added=0;
+      for(var j=0;j<data.length;j++){if(!ids[data[j].id]){existing.push(data[j]);added++;}}
+      sl(existing);renderLib();toast('Imported '+added+' new items');
+    }catch(err){toast('Import failed: '+err.message,'er');}
+  };
+  r.readAsText(f);inp.value='';
 }
 
-function getString(view, off, len){
+// DEV NOTES
+function addDev(){
+  var t=gv('dev-inp');if(!t){toast('Enter a correction first','er');return;}
+  var n=gd();n.unshift({id:Date.now(),text:t,addedAt:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})});
+  sd(n);document.getElementById('dev-inp').value='';renderDev();updBanner();toast('Correction added');
+}
+function delDev(id){sd(gd().filter(function(n){return n.id!==id;}));renderDev();updBanner();toast('Removed');}
+function renderDev(){
+  var n=gd(),el=document.getElementById('dev-list');if(!el)return;
+  if(!n.length){el.innerHTML='<div class="lib-empty">No corrections yet. Add mistakes here and AI will not repeat them.</div>';return;}
+  var html='<p style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem;font-weight:600;">'+n.length+' active correction'+(n.length!==1?'s':'')+' injected into every prompt</p>';
+  for(var i=0;i<n.length;i++){html+='<div class="dcard"><div><div class="dcard-txt">'+escH(n[i].text)+'</div><div class="dcard-meta">Added '+n[i].addedAt+'</div></div><button class="btn-del" onclick="delDev('+n[i].id+')">Remove</button></div>';}
+  el.innerHTML=html;
+}
+function updBanner(){
+  var n=gd().length,el=document.getElementById('dev-banner');if(!el)return;
+  el.innerHTML=n?'<div class="dev-banner">'+n+' active correction'+(n!==1?'s':'')+' applied to all AI prompts</div>':'';
+}
+
+// LESION BUILDER
+function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+function buildSC(){
+  var org=gv('l-cust')||gv('l-org'),tp=gv('l-type'),sz=gv('l-size'),sm=gv('l-smax'),smn=gv('l-smean'),bg=gv('l-bg'),tr=gv('l-tr'),pat=gv('l-pat'),mrf=gv('l-morf'),imp=gv('l-imp');
+  if(!org){toast('Select an organ first','er');return;}
   var s='';
-  for(var i=0;i<len && off+i<view.byteLength;i++) s+=String.fromCharCode(view.getUint8(off+i));
-  return s;
+  if(sz||mrf){s+=(mrf?mrf+' ':'')+(tp||'lesion')+' noted in the '+org+(sz?' measuring '+sz+' cm':'')+'. ';}
+  else{s+='A '+(tp||'focus')+' is noted in the '+org+'. ';}
+  if(pat||sm){s+=tr+' PET demonstrates '+(pat||'uptake')+(sm?' with SUVmax of '+sm:'')+(smn?' (SUVmean: '+smn+')':'')+(bg?', exceeding liver background SUV of '+bg:'')+'. ';}
+  if(imp)s+=imp+'. ';
+  addSC(s);
 }
-function fmtDate(d){ return (d&&d.length===8) ? d.slice(6)+'/'+d.slice(4,6)+'/'+d.slice(0,4) : d||''; }
-
-function renderMeta(meta){
-  var el=document.getElementById('dcm-meta');
-  el.innerHTML=Object.entries(meta).map(function(kv){
-    return '<div class="dmeta-item"><div class="dmeta-lbl">'+kv[0]+'</div><div class="dmeta-val">'+(kv[1]||'—')+'</div></div>';
-  }).join('');
+function aiSC(){
+  var org=gv('l-cust')||gv('l-org');if(!org){toast('Select an organ first','er');return;}
+  var pr='Write exactly 2-3 professional PET/CT report sentences for:\nOrgan: '+org+'\nType: '+(gv('l-type')||'-')+'\nSize: '+(gv('l-size')||'-')+' cm\nCT morphology: '+(gv('l-morf')||'-')+'\nTracer: '+gv('l-tr')+'\nPET pattern: '+(gv('l-pat')||'-')+'\nSUVmax: '+(gv('l-smax')||'-')+'\nBackground SUV: '+(gv('l-bg')||'-')+'\nImpression: '+(gv('l-imp')||'-')+'\n\nFormal radiological language only. No bullets.';
+  var oEl=document.getElementById('obox-lsn'),lEl=document.getElementById('ld-lsn'),mEl=document.getElementById('md-lsn');
+  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
+  callAPI('You are an expert Nuclear Medicine radiologist writing formal PET/CT report sentences.',pr)
+  .then(function(full){lEl.style.display='none';mEl.innerHTML=rMD(full,'compose');addSC(full.replace(/\n/g,' '));})
+  .catch(function(e){lEl.style.display='none';mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';});
+}
+function addSC(text){
+  var c=document.createElement('div');c.className='sc';c.tabIndex=0;
+  c.innerHTML=escH(text)+'<span class="ch">tap to copy</span>';
+  c.onclick=function(){try{navigator.clipboard.writeText(text).then(function(){toast('Copied');});}catch(e){toast('Long press to copy','er');}};
+  var con=document.getElementById('sc-cards');con.insertBefore(c,con.firstChild);
+}
+function clearL(){
+  ['l-org','l-type','l-tr','l-pat','l-morf','l-imp'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['l-cust','l-size','l-smax','l-smean','l-bg'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('sc-cards').innerHTML='';document.getElementById('obox-lsn').classList.remove('on');
 }
 
-function applyWL(){
-  var wc=parseInt(document.getElementById('wc').value);
-  var ww=parseInt(document.getElementById('ww').value);
-  document.getElementById('wc-v').textContent=wc;
-  document.getElementById('ww-v').textContent=ww;
-  if(!DICOM.pixels) return;
-  var canvas=document.getElementById('dicomCanvas');
-  canvas.width=DICOM.cols; canvas.height=DICOM.rows;
-  var ctx=canvas.getContext('2d');
-  var img=ctx.createImageData(DICOM.cols,DICOM.rows);
-  var lo=wc-ww/2, hi=wc+ww/2;
-  for(var i=0;i<DICOM.rows*DICOM.cols;i++){
-    var hu=DICOM.pixels[i]*DICOM.slope+DICOM.intercept;
-    var v=Math.round(255*(hu-lo)/(hi-lo));
-    v=Math.max(0,Math.min(255,v));
-    img.data[i*4]=v; img.data[i*4+1]=v; img.data[i*4+2]=v; img.data[i*4+3]=255;
+// DICOM
+function dOver(e){e.preventDefault();document.getElementById('dcm-drop').classList.add('ov');}
+function dLeave(){document.getElementById('dcm-drop').classList.remove('ov');}
+function dDrop(e){e.preventDefault();dLeave();var f=e.dataTransfer.files[0];if(f)loadDCM(f);}
+function loadDCM(f){toast('Loading DICOM...');var r=new FileReader();r.onload=function(e){try{parseDCM(new DataView(e.target.result),e.target.result);}catch(err){toast('DICOM error: '+err.message,'er');}};r.readAsArrayBuffer(f);}
+function gStr(v,o,l){var s='';for(var i=0;i<l&&o+i<v.byteLength;i++)s+=String.fromCharCode(v.getUint8(o+i));return s;}
+function fmtD(d){return d&&d.length===8?d.slice(6)+'/'+d.slice(4,6)+'/'+d.slice(0,4):d||'';}
+function parseDCM(v,buf){
+  var le=true,off=0,meta={},rows=0,cols=0,bits=16,pOff=-1,sl2=1,intv=0,pr=0;
+  try{if(gStr(v,128,4)==='DICM')off=132;}catch(e){off=0;}
+  var longVR=['OB','OW','OF','SQ','UC','UN','UR','UT'];
+  while(off+8<v.byteLength){
+    var g,el2;try{g=v.getUint16(off,le);el2=v.getUint16(off+2,le);}catch(e){break;}off+=4;
+    var vr='',vl=0,vr1=String.fromCharCode(v.getUint8(off)),vr2c=String.fromCharCode(v.getUint8(off+1)),vs=vr1+vr2c;
+    if(/^[A-Z]{2}$/.test(vs)){vr=vs;off+=2;if(longVR.indexOf(vr)>=0){off+=2;vl=v.getUint32(off,le);off+=4;}else{vl=v.getUint16(off,le);off+=2;}}
+    else{vl=v.getUint32(off,le);off+=4;}
+    if(g===0x7FE0&&el2===0x0010){pOff=off;break;}
+    try{
+      if(g===0x0028&&el2===0x0010)rows=v.getUint16(off,le);
+      if(g===0x0028&&el2===0x0011)cols=v.getUint16(off,le);
+      if(g===0x0028&&el2===0x0100)bits=v.getUint16(off,le);
+      if(g===0x0028&&el2===0x0103)pr=v.getUint16(off,le);
+      if(g===0x0028&&el2===0x1053&&vl>0)sl2=parseFloat(gStr(v,off,vl))||1;
+      if(g===0x0028&&el2===0x1052&&vl>0)intv=parseFloat(gStr(v,off,vl))||0;
+      if(g===0x0010&&el2===0x0010&&vl>0)meta['Patient']=gStr(v,off,vl).trim();
+      if(g===0x0008&&el2===0x0060&&vl>0)meta['Modality']=gStr(v,off,vl).trim();
+      if(g===0x0008&&el2===0x0020&&vl>0)meta['Study Date']=fmtD(gStr(v,off,vl).trim());
+      if(g===0x0008&&el2===0x103e&&vl>0)meta['Series']=gStr(v,off,vl).trim();
+      if(g===0x0018&&el2===0x0050&&vl>0)meta['Slice Thickness']=gStr(v,off,vl).trim()+' mm';
+    }catch(e){}
+    if(vl===0xFFFFFFFF||vl<0)break;off+=vl;
   }
+  if(!rows||!cols||pOff<0){toast('Cannot read pixel data','er');if(Object.keys(meta).length)rMeta(meta);return;}
+  DCM.rows=rows;DCM.cols=cols;DCM.slope=sl2;DCM.int=intv;
+  DCM.px=bits===16?(pr===1?new Int16Array(buf,pOff,rows*cols):new Uint16Array(buf,pOff,rows*cols)):new Uint8Array(buf,pOff,rows*cols);
+  rMeta(meta);document.getElementById('dcm-view').style.display='block';
+  var mn=Infinity,mx=-Infinity;
+  for(var i=0;i<Math.min(DCM.px.length,5000);i++){var hv=DCM.px[i]*sl2+intv;if(hv<mn)mn=hv;if(hv>mx)mx=hv;}
+  document.getElementById('wc').value=Math.max(-1000,Math.min(3000,Math.round((mn+mx)/2)));
+  document.getElementById('ww').value=Math.max(1,Math.min(4000,Math.round(mx-mn)));
+  applyWL();toast('DICOM loaded - '+rows+'x'+cols);
+}
+function rMeta(m){var el=document.getElementById('dcm-meta');var h='';for(var k in m){h+='<div class="dmi"><div class="dmil">'+k+'</div><div class="dmiv">'+(m[k]||'-')+'</div></div>';}el.innerHTML=h;}
+function applyWL(){
+  var wc=parseInt(document.getElementById('wc').value),ww=parseInt(document.getElementById('ww').value);
+  document.getElementById('wc-v').textContent=wc;document.getElementById('ww-v').textContent=ww;
+  if(!DCM.px)return;
+  var cv=document.getElementById('dicomCanvas');cv.width=DCM.cols;cv.height=DCM.rows;
+  var ctx=cv.getContext('2d'),img=ctx.createImageData(DCM.cols,DCM.rows),lo=wc-ww/2,hi=wc+ww/2;
+  for(var i=0;i<DCM.rows*DCM.cols;i++){var hu=DCM.px[i]*DCM.slope+DCM.int,val=Math.max(0,Math.min(255,Math.round(255*(hu-lo)/(hi-lo))));img.data[i*4]=val;img.data[i*4+1]=val;img.data[i*4+2]=val;img.data[i*4+3]=255;}
   ctx.putImageData(img,0,0);
 }
-
-function preset(p){
-  var ps={soft:{wc:40,ww:400},lung:{wc:-600,ww:1500},bone:{wc:400,ww:1800},pet:{wc:5000,ww:10000}};
-  document.getElementById('wc').value=ps[p].wc;
-  document.getElementById('ww').value=ps[p].ww;
-  applyWL();
+function pset(p){var ps={soft:{wc:40,ww:400},lung:{wc:-600,ww:1500},bone:{wc:400,ww:1800}};document.getElementById('wc').value=ps[p].wc;document.getElementById('ww').value=ps[p].ww;applyWL();}
+function dcmAI(){
+  if(!DCM.px){toast('Load a DICOM file first','er');return;}
+  var b64=document.getElementById('dicomCanvas').toDataURL('image/png').split(',')[1];
+  var oEl=document.getElementById('obox-dcm'),lEl=document.getElementById('ld-dcm'),mEl=document.getElementById('md-dcm'),btn=document.getElementById('btn-dcm-ai');
+  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';btn.disabled=true;
+  callAPI('You are an expert Nuclear Medicine radiologist. Analyse this DICOM slice:\n## Image Description\n## Key Findings\n## Anatomical Structures\n## Observations\nNote: single 2D slice only.',
+    [{type:'image',source:{type:'base64',media_type:'image/png',data:b64}},{type:'text',text:'Analyse this DICOM image slice.'}])
+  .then(function(full){lEl.style.display='none';mEl.innerHTML=rMD(full,'report');})
+  .catch(function(e){lEl.style.display='none';mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';})
+  .then(function(){btn.disabled=false;});
 }
 
-async function dcmAI(){
-  var key=getKey();
-  if(!key){ toast('Enter API key first','err'); resetKey(); return; }
-  if(!DICOM.pixels){ toast('Load a DICOM file first','err'); return; }
-
-  var canvas=document.getElementById('dicomCanvas');
-  var b64=canvas.toDataURL('image/png').split(',')[1];
-
-  var outEl=document.getElementById('out-dcm-ai');
-  var ldEl=document.getElementById('ld-dcm-ai');
-  var mdEl=document.getElementById('md-dcm-ai');
-  var btn=document.getElementById('btn-dcm-ai');
-  outEl.classList.add('show'); ldEl.style.display='flex'; mdEl.innerHTML=''; btn.disabled=true;
-
-  try {
-    var res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800,
-        system:'You are an expert Nuclear Medicine physician and radiologist. Analyse the provided medical image (rendered from a DICOM file). Provide structured description:\n## Image Description\nModality, body region, image quality\n## Key Findings\nAbnormal areas, masses, significant structures\n## Anatomical Structures\nVisible structures\n## Observations\nNotable features for documentation\n\nNote: single 2D slice — full clinical interpretation needs complete series review by qualified physician.',
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:'image/png',data:b64}},
-          {type:'text',text:'Analyse this DICOM slice and describe what you observe.'}
-        ]}] })
-    });
-    var data=await res.json();
-    var full=(data.content||[]).map(function(b){ return b.text||''; }).join('');
-    ldEl.style.display='none';
-    mdEl.innerHTML=renderMD(full);
-  } catch(e){
-    ldEl.style.display='none';
-    mdEl.innerHTML='<p style="color:#f87171">⚠️ '+e.message+'</p>';
+// MARKDOWN
+var H2CLS={papers:'c',guidelines:'g',qa:'p',doubt:'a',report:'pk',compose:'pk'};
+function rMD(text,tabType){
+  if(!text)return'';
+  var lines=text.split('\n'),html='',inList=false,inTable=false,tRows=[],hcls=H2CLS[tabType]||'c',tableHdr=true;
+  function bold(t){
+    return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\`(.+?)\`/g,'<code>$1</code>')
+      .replace(/(\d+\.?\d*\s*%)/g,'<span class="num">$1</span>')
+      .replace(/(\d+\.?\d*\s*MBq)/g,'<span class="num">$1</span>')
+      .replace(/(\d+\.?\d*\s*mCi)/g,'<span class="num">$1</span>');
   }
-  btn.disabled=false;
-}
-
-// ════════════════════════════
-// MARKDOWN RENDERER
-// ════════════════════════════
-function renderMD(text){
-  if(!text) return '';
-  var lines=text.split('\n'), html='', inList=false, inTable=false, tableRows=[];
-
-  function bold(t){ return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>'); }
-  function flushL(){ if(inList){ html+='</ul>'; inList=false; } }
-  function flushT(){ if(inTable){ html+='<table><tbody>'+tableRows.join('')+'</tbody></table>'; inTable=false; tableRows=[]; } }
-
-  lines.forEach(function(line){
-    if(/^\|[-: |]+\|$/.test(line)) return;
-    if(/^\|.+\|$/.test(line)){ flushL(); inTable=true; tableRows.push('<tr>'+line.split('|').filter(function(c){ return c.trim(); }).map(function(c){ return '<td>'+bold(c.trim())+'</td>'; }).join('')+'</tr>'); return; }
-    flushT();
-    if(line.startsWith('## ')){ flushL(); html+='<h2>'+bold(line.slice(3))+'</h2>'; return; }
-    if(line.startsWith('### ')){ flushL(); html+='<h3>'+bold(line.slice(4))+'</h3>'; return; }
-    if(line.startsWith('> ')){ flushL(); html+='<blockquote>'+bold(line.slice(2))+'</blockquote>'; return; }
-    if(line.trim()==='---'){ flushL(); html+='<hr>'; return; }
-    if(line.startsWith('- ')||line.startsWith('• ')){ if(!inList){ html+='<ul>'; inList=true; } html+='<li>'+bold(line.slice(2))+'</li>'; return; }
-    flushL();
-    if(!line.trim()){ html+='<div style="height:.35rem"></div>'; return; }
-    if(line.startsWith('**')&&line.endsWith('**')&&!line.slice(2,-2).includes('**')){ html+='<p class="bline">'+line.slice(2,-2)+'</p>'; return; }
+  function flL(){if(inList){html+='</ul>';inList=false;}}
+  function flT(){if(inTable){html+='<table><tbody>'+tRows.join('')+'</tbody></table>';inTable=false;tRows=[];tableHdr=true;}}
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i];
+    if(/^\|[-: |]+\|$/.test(line)){tableHdr=false;continue;}
+    if(/^\|.+\|$/.test(line)){
+      flL();inTable=true;
+      var cells=line.split('|').filter(function(c){return c.trim();});
+      if(tableHdr){tRows.push('<tr>'+cells.map(function(c){return'<th>'+bold(c.trim())+'</th>';}).join('')+'</tr>');tableHdr=false;}
+      else{tRows.push('<tr>'+cells.map(function(c){return'<td>'+bold(c.trim())+'</td>';}).join('')+'</tr>');}
+      continue;
+    }
+    if(!inTable)tableHdr=true;
+    flT();
+    if(line.indexOf('## ')===0){flL();html+='<h2 class="'+hcls+'">'+bold(line.slice(3))+'</h2>';continue;}
+    if(line.indexOf('### ')===0){flL();html+='<h3>'+bold(line.slice(4))+'</h3>';continue;}
+    if(line.indexOf('> ')===0){flL();html+='<blockquote>'+bold(line.slice(2))+'</blockquote>';continue;}
+    if(line.trim()==='---'){flL();html+='<hr>';continue;}
+    if(line.indexOf('- ')===0||line.indexOf('• ')===0){if(!inList){html+='<ul>';inList=true;}html+='<li>'+bold(line.slice(2))+'</li>';continue;}
+    flL();
+    if(!line.trim()){html+='<div style="height:.3rem"></div>';continue;}
+    if(line.indexOf('**')===0&&line.lastIndexOf('**')===line.length-2&&line.length>4){html+='<p class="bline">'+line.slice(2,-2)+'</p>';continue;}
     html+='<p>'+bold(line)+'</p>';
-  });
-  flushL(); flushT();
-  return html;
+  }
+  flL();flT();return html;
 }
 
-function escH(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escH(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function ke(e,t){if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();gen(t);}}
 
-// ════════════════════════════
-// UTILS
-// ════════════════════════════
-function ke(e,tab){ if(e.ctrlKey&&e.key==='Enter'){ e.preventDefault(); gen(tab); } }
+// TOAST
+var _tt;
+function toast(msg,type){var el=document.getElementById('toast');el.textContent=msg;el.className='on '+(type==='er'?'er':'ok');clearTimeout(_tt);_tt=setTimeout(function(){el.className='';},2500);}
 
-var _toastTimer;
-function toast(msg, type){
-  var el=document.getElementById('toast');
-  el.textContent=msg; el.className='show'+(type==='err'?' err':'');
-  clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(function(){ el.className=''; }, 2500);
-}
-
-// ════════════════════════════
 // INIT
-// ════════════════════════════
-window.addEventListener('load', function(){
-  if(getKey()) document.getElementById('apiOverlay').classList.add('hidden');
-  updCount(); renderDev(); renderLib(); updDevBanner();
-});
+window.onload=function(){
+  if(gk())document.getElementById('api-modal').classList.add('off');
+  initSB();renderDev();renderLib();updBanner();
+};
 </script>
 
 </body>
