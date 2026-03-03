@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 
 <html lang="en">
 <head>
@@ -352,7 +352,7 @@ select option{background:var(–surface);color:var(–text);}
     <button class="btn btn-ghost" id="qa-sv" onclick="mSave('qa')" style="display:none">Save</button>
     <span class="hint">Ctrl+Enter</span>
   </div>
-  <div class="obox bp" id="obox-qa"><div class="ldg" id="ld-qa"><span class="spin">●</span> <span id="ld-qa-t">Generating model answer...</span></div><div class="md" id="md-qa"></div></div>
+  <div class="obox bp" id="obox-qa"><div class="ldg" id="ld-qa"><span class="spin">●</span> <span id="ld-qa-t">Searching latest papers and generating answer...</span></div><div class="md" id="md-qa"></div></div>
 </div>
 
 <!-- GUIDELINES -->
@@ -636,7 +636,7 @@ function setQM(m){
   document.getElementById('tgl-check').classList.toggle('on',m==='check');
   document.getElementById('qa-aw').style.display=m==='check'?'block':'none';
   document.getElementById('btn-qa').textContent=m==='model'?'Generate Model Answer':'Check My Answer';
-  var lt=document.getElementById('ld-qa-t');if(lt)lt.textContent=m==='model'?'Generating model answer...':'Checking your answer...';
+  var lt=document.getElementById('ld-qa-t');if(lt)lt.textContent=m==='model'?'Searching latest papers and generating answer...':'Searching guidelines and checking your answer...';
 }
 
 // QA IMAGE
@@ -665,6 +665,131 @@ function devCtx(){
   return s+'\n';
 }
 
+// MASTER KNOWLEDGE BASE injected into every QA prompt
+function nmKB(){
+return '\n\n=== STANDARD NUCLEAR MEDICINE TEXTBOOK REFERENCE ===\n'+
+'Draw answers from these authoritative sources:\n'+
+'TEXTBOOKS: (1) Nuclear Medicine: The Requisites - Ziessman, OMalley, Thrall (4th ed) (2) Clinical Nuclear Medicine - Mettler & Guiberteau (5th ed) (3) Diagnostic Nuclear Medicine - Sandler, Coleman, Patton (4th ed) (4) Fundamentals of Nuclear Pharmacy - Saha (7th ed) (5) Physics in Nuclear Medicine - Cherry, Sorenson, Phelps (4th ed) (6) Nuclear Medicine and PET/CT Technology - Christian & Waterstram-Rich (7th ed) (7) Essentials of Nuclear Medicine Imaging - Mettler & Guiberteau (8) PET/CT in Clinical Practice - Beyer & Antoch\n\n'+
+'CURRENT GUIDELINES TO REFERENCE:\n'+
+'- ATA Guidelines 2015 (thyroid cancer management, RAI indications, dosimetry)\n'+
+'- ATA Hypothyroidism Guidelines 2014\n'+
+'- SNMMI Procedure Standards 2020-2024 (specific to each procedure)\n'+
+'- EANM Guidelines 2020-2024\n'+
+'- EANM/SNMMI Joint Statements\n'+
+'- AERB Safety Code No. AERB/SC/MED-2 (Radiation Safety in Nuclear Medicine)\n'+
+'- AERB/NRF/SG/MED-2 (Medical use of radiation)\n'+
+'- IAEA Human Health Series No. 6, 9, 19, 26\n'+
+'- RECIST 1.1 and PERCIST 1.0 criteria\n'+
+'- EARL accreditation standards for FDG PET\n'+
+'- PSMA guidelines: SNMMI 2022, EAU-EANM 2022\n'+
+'- DOTATATE guidelines: SNMMI 2017, EANM 2023\n'+
+'- NETTER-1 trial results for PRRT\n'+
+'- VISION trial results for Lu-177 PSMA\n\n'+
+'=== COMPREHENSIVE RADIOTRACER ENCYCLOPAEDIA ===\n'+
+'You MUST mention ALL relevant radiotracers for every question. Here is the master list:\n\n'+
+'TECHNETIUM-99m TRACERS (Tc-99m, T1/2=6hr, gamma=140keV):\n'+
+'- Tc-99m MDP/HDP: bone scan, dose 740-1110 MBq (20-30 mCi), mechanism: chemisorption to hydroxyapatite, sensitivity 94-95% metastases\n'+
+'- Tc-99m HMPAO (Ceretec): cerebral perfusion SPECT, dose 555-1110 MBq, crosses BBB by lipophilicity, Alzheimer vs FTD pattern\n'+
+'- Tc-99m ECD (Neurolite): cerebral perfusion SPECT, dose 555-740 MBq, more stable than HMPAO\n'+
+'- Tc-99m DTPA: GFR measurement, renal scan, aerosol lung ventilation, dose 185-370 MBq; GFR normal >90 mL/min\n'+
+'- Tc-99m MAA: lung perfusion scan, dose 74-185 MBq, 200,000-700,000 particles, contraindicated in severe PHT and R-L shunt\n'+
+'- Tc-99m MAG3: renal scan (tubular secretion), preferred in poor function, dose 185-370 MBq\n'+
+'- Tc-99m DMSA: cortical renal scan, dose 74-185 MBq, binds proximal tubules, best for scarring and ectopia\n'+
+'- Tc-99m Pertechnetate: thyroid scan, Meckels, salivary glands, dose 185-370 MBq\n'+
+'- Tc-99m Sestamibi (MIBI): parathyroid (dual phase), myocardial perfusion, breast, dose 740-1110 MBq\n'+
+'- Tc-99m Tetrofosmin: myocardial perfusion, dose 740-1110 MBq, more rapid liver clearance than MIBI\n'+
+'- Tc-99m RBC (in-vivo/in-vitro): GI bleed, cardiac gated pool, hemangioma, dose 555-925 MBq\n'+
+'- Tc-99m Sulfur Colloid: liver/spleen, gastric emptying (half-dose for liquids), dose 185-370 MBq\n'+
+'- Tc-99m Nanocolloid: sentinel node, bone marrow, dose 74-185 MBq\n'+
+'- Tc-99m Mebrofenin/HIDA: hepatobiliary, dose 185-370 MBq, CCK-HIDA for chronic cholecystitis, normal EF >35%\n'+
+'- Tc-99m WBC (HMPAO-labeled): infection/inflammation, dose 555-740 MBq, cells labeled ex-vivo\n'+
+'- Tc-99m Glucoheptonate: renal cortex + GFR, brain tumor (BBB breakdown)\n'+
+'- Tc-99m Arcitumomab: CEA-scan for colorectal recurrence\n'+
+'- Tc-99m Exametazime: WBC labeling for infection\n'+
+'- Tc-99m Pyrophosphate: cardiac amyloidosis (Perugini grade 0-3), hot-spot MI, dose 555-740 MBq\n'+
+'- Tc-99m Tilmanocept: sentinel node mapping, CD206 receptor targeting\n\n'+
+'GALLIUM AND INDIUM:\n'+
+'- Ga-67 Citrate: infection, lymphoma, dose 185-370 MBq (5-10 mCi), T1/2=78hr, images at 24/48/72hr, Lactoferrin mechanism\n'+
+'- In-111 WBC (Oxine): acute osteomyelitis, prosthetic joint, IBD, dose 18.5 MBq (0.5 mCi), T1/2=67hr\n'+
+'- In-111 Octreotide (Octreoscan): NETs, dose 222 MBq (6 mCi), somatostatin receptor scintigraphy, sensitivity 80-90%\n'+
+'- In-111 Capromab: prostate cancer imaging\n'+
+'- In-111 DTPA: CSF flow studies, cisternography, normal absorption 24hr\n\n'+
+'IODINE TRACERS:\n'+
+'- I-131 NaI: thyroid cancer ablation: 3.7 GBq (100 mCi) low risk, 5.5 GBq (150 mCi) intermediate, 7.4 GBq (200 mCi) high risk - per ATA 2015\n'+
+'- I-131 NaI: diagnostic WBS: 185-370 MBq (5-10 mCi)\n'+
+'- I-123 NaI: thyroid scan and uptake: 7.4-14.8 MBq (0.2-0.4 mCi), RAIU normal 15-35% at 24hr\n'+
+'- I-123 MIBG: pheochromocytoma, neuroblastoma, carcinoid, dose 370 MBq (10 mCi), blocks thyroid with KI\n'+
+'- I-131 MIBG therapy: neuroblastoma 100-200 mCi, pheo 200 mCi\n'+
+'- I-123 Ioflupane (DaTscan): dopamine transporter, Parkinsons vs essential tremor, dose 111-185 MBq\n'+
+'- I-131 Tositumomab: radioimmunotherapy lymphoma\n\n'+
+'PET TRACERS (F-18, T1/2=110min unless stated):\n'+
+'- F-18 FDG: glucose analogue, dose 3.7-5.5 MBq/kg (0.1-0.15 mCi/kg), max 370-555 MBq, fasting 4-6hr, BGL <11 mmol/L (<200 mg/dL)\n'+
+'  Oncology: SUVmax >2.5 suspicious, sensitivity 84%, specificity 88% for malignancy overall\n'+
+'  Infection/inflammation: 5 MBq/kg dose same\n'+
+'  Brain: normal gray>white uptake, hypometabolism in dementia\n'+
+'- F-18 NaF: bone PET, dose 185-370 MBq, superior to Tc-99m MDP (sensitivity 97% vs 94%)\n'+
+'- F-18 PSMA-1007: prostate cancer, dose 4 MBq/kg, advantage: no urinary excretion (better pelvic assessment)\n'+
+'- F-18 DCFPyL (Pylarify): PSMA PET, dose 9 mCi (333 MBq), FDA approved 2021\n'+
+'- F-18 Fluciclovine (Axumin): amino acid, prostate recurrence, dose 370 MBq, FDA 2016\n'+
+'- F-18 Florbetapir (Amyvid): amyloid PET, dose 370 MBq, FDA 2012\n'+
+'- F-18 Florbetaben (NeuraCeq): amyloid PET, dose 300 MBq, FDA 2014\n'+
+'- F-18 Flutemetamol (Vizamyl): amyloid PET, dose 185 MBq, FDA 2013\n'+
+'- F-18 Flortaucipir (Tauvid): tau PET, FDA 2020, Alzheimer staging\n'+
+'- F-18 FLT (Fluorothymidine): proliferation marker, thymidine kinase\n'+
+'- F-18 FDOPA: dopaminergic system, movement disorders, NETs\n'+
+'- F-18 FMISO: hypoxia imaging, radiotherapy planning\n'+
+'- F-18 FES (Fluoroestradiol): ER+ breast cancer, dose 6 mCi, FDA 2020\n'+
+'- F-18 Flotufoside (AlphaFolate): folate receptor, lung/brain mets\n'+
+'- F-18 Piflufolastat (Posluma): PSMA, FDA 2023\n\n'+
+'GALLIUM-68 (Ga-68, T1/2=68min, generator or cyclotron):\n'+
+'- Ga-68 DOTATATE (Lutathera): NETs, dose 100-200 MBq (2-5 mCi), SSTR2 affinity highest\n'+
+'  Sensitivity 93%, specificity 96% vs In-111 Octreoscan sens 52% (Geijer et al)\n'+
+'  Krenning score 0-4 for response prediction\n'+
+'- Ga-68 DOTATOC: NETs, dose 100-200 MBq, SSTR2+5\n'+
+'- Ga-68 DOTANOC: NETs, SSTR2+3+5\n'+
+'- Ga-68 PSMA-11 (Illuccix): prostate cancer, dose 1.8-2.2 MBq/kg (150-250 MBq), FDA 2022\n'+
+'  OSPREY trial: sensitivity 80%, specificity 97% pelvic nodes\n'+
+'  VISION trial: 617 pts, OS benefit Lu-177 PSMA (15.3 vs 11.3 months)\n'+
+'- Ga-68 FAPI (FAP inhibitor): cancer-associated fibroblasts, dose 100-200 MBq\n'+
+'  Advantages: low background, no fasting needed\n'+
+'  Applications: pancreatic, gastric, cholangiocarcinoma staging\n'+
+'- Ga-68 Pentixafor: CXCR4, multiple myeloma, lymphoma\n'+
+'- Ga-68 RM2: GRPR (bombesin), prostate cancer\n'+
+'- Ga-68 Tilmanocept: sentinel node, inflammation\n\n'+
+'THERAPEUTIC RADIONUCLIDES:\n'+
+'- I-131: thyroid cancer (ATA 2015 guidelines), Graves (400-600 MBq), toxic MNG (300-500 MBq)\n'+
+'- Lu-177 DOTATATE (Lutathera): NETs, 7.4 GBq x4 cycles 8-weekly (NETTER-1: PFS 40 vs 8.4 months)\n'+
+'- Lu-177 PSMA-617 (Pluvicto): mCRPC, 7.4 GBq x6 cycles 6-weekly (VISION trial, FDA 2022)\n'+
+'- Ra-223 (Xofigo): bone mets, 55 kBq/kg x6 doses (ALSYMPCA trial, OS +3.6 months)\n'+
+'- Y-90 microspheres (TARE/SIRT): hepatocellular, mets, dose 80-150 Gy by partition method\n'+
+'- I-131 MIBG therapy: pheo/paraganglioma 200 mCi, neuroblastoma 100-200 mCi\n'+
+'- Ac-225 PSMA: alpha therapy, 100 kBq/kg, emerging data\n'+
+'- Sm-153 EDTMP: bone pain palliation, 37 MBq/kg\n'+
+'- Sr-89 Chloride: bone pain, 150 MBq flat dose\n\n'+
+'RUBIDIUM/NITROGEN/OXYGEN PET:\n'+
+'- Rb-82: myocardial perfusion PET, generator-produced, T1/2=75s, dose 1110-1480 MBq\n'+
+'- N-13 Ammonia: myocardial perfusion PET, cyclotron, T1/2=10min, dose 555-740 MBq\n'+
+'- O-15 Water: myocardial perfusion/blood flow, T1/2=2min\n'+
+'- C-11 Choline: prostate, T1/2=20min, requires on-site cyclotron\n'+
+'- C-11 Methionine (MET): brain tumor (superior to FDG for glioma grading)\n'+
+'- C-11 PIB: amyloid, reference standard but short T1/2 limits use\n\n'+
+'SPECIAL/EMERGING TRACERS:\n'+
+'- Tc-99m TRODAT: dopamine transporter SPECT (where DaTscan unavailable)\n'+
+'- I-123 Beta-CIT: dopamine transporter\n'+
+'- Tc-99m HYNIC-TOC: somatostatin receptor SPECT (low cost alternative)\n'+
+'- Zr-89 Trastuzumab: HER2 immunoPET, T1/2=78hr\n'+
+'- Cu-64 DOTATATE: NET imaging, T1/2=12.7hr\n'+
+'- F-18 FAPI: newer, fibroblast activation protein\n'+
+'- Tb-161 PSMA: theranostic, beta+Auger, under trial\n\n'+
+'=== CRITICAL EXAM RULES ===\n'+
+'1. ALWAYS list ALL relevant radiotracers for any question - this is where marks are allocated\n'+
+'2. For each tracer: name (generic + brand), dose in MBq AND mCi, mechanism, indication, sensitivity/specificity\n'+
+'3. Compare tracers to each other (e.g. Ga-68 DOTATATE vs In-111 Octreoscan vs Tc-99m HYNIC-TOC)\n'+
+'4. Include theranostic pairs: Ga-68 DOTATATE diagnostic / Lu-177 DOTATATE therapy; Ga-68 PSMA / Lu-177 PSMA\n'+
+'5. New tracers 2020-2025: FAPI, F-18 PSMA, Lu-177 PSMA, Ac-225, F-18 FES, F-18 Flortaucipir, Tb-161\n'+
+'6. Indian context: which tracers are AERB approved, cost issues, availability in India\n';
+}
+
 // PROMPTS
 function pPapers(m){
   var d=devCtx(),w=m===10?'500-800':m===5?'300-400':'100-200';
@@ -673,43 +798,194 @@ function pPapers(m){
     :'What was studied, main finding bolded, clinical takeaway. Strictly '+w+' words.';
   return d+'You are an expert Nuclear Medicine physician for DNB examinations. Summarize the research paper in a rich structured answer.\n\n'+body;
 }
+
 function pQA(m){
-  var d=devCtx(),w=m===10?'500-800':m===5?'300-400':'100-200';
-  var body=m===10?'Structure for each answer:\n## Definition and Introduction\n## Principle and Mechanism\n## Indications\n## Patient Preparation and Protocol\n## Image Interpretation and Normal Values\n## Clinical Applications\n## Advantages and Limitations\n## Conclusion\n\nBold all doses in MBq/mCi, sensitivity/specificity, key numbers. Tables where useful. AERB/SNMMI/EANM guidelines where relevant. Each: strictly '+w+' words.'
-    :m===5?'Definition, mechanism, main application, key numbers bolded. Each: strictly '+w+' words.'
-    :'Direct definition, core concept, one clinical use. Each: strictly '+w+' words.';
-  return d+'You are a senior Nuclear Medicine DNB examiner. Answer the question(s) as exam answers. Multiple questions get separate numbered headings.\n\n'+body;
+  var d=devCtx();
+  var kb=nmKB();
+  var target=m===10?'5 full A4 pages (minimum 1800 words per question)':'3 full A4 pages (minimum 1000 words per question)';
+  var wmin=m===10?1800:1000;
+
+  var structure10=
+'MANDATORY STRUCTURE for EACH 10-marker question (do not skip any section):\n\n'+
+'## Definition and Introduction\n'+
+'(2-3 paragraphs: complete definition, historical development, who introduced it, year, why it matters for DNB)\n\n'+
+'## Radiotracers Used - COMPREHENSIVE LIST\n'+
+'(THIS IS THE MOST IMPORTANT SECTION - list EVERY relevant tracer with:\n'+
+'- Full name, abbreviation, brand name\n'+
+'- Exact dose in MBq AND mCi\n'+
+'- Physical T1/2 and effective T1/2\n'+
+'- Mechanism of uptake (receptor, enzyme, physiological process)\n'+
+'- Production method (cyclotron/generator/reactor)\n'+
+'- Which guideline recommends it and year\n'+
+'- Sensitivity and specificity from named studies\n'+
+'- Comparison to competing tracers with table)\n\n'+
+'## Radiopharmaceutical Preparation and QC\n'+
+'(radiolabeling method, kit preparation, quality control tests, shelf life, radiochemical purity requirements per Saha Fundamentals)\n\n'+
+'## Patient Preparation and Protocol\n'+
+'(EXACT step-by-step as per SNMMI/EANM guidelines with year:\n'+
+'- Fasting duration\n'+
+'- Medications to hold and for how long\n'+
+'- Contraindications\n'+
+'- Pregnancy/lactation\n'+
+'- Injection to imaging time\n'+
+'- Scan parameters: collimator, matrix, time/view, reconstruction)\n\n'+
+'## Normal Biodistribution and Variants\n'+
+'(organ by organ, normal uptake levels, common pitfalls, normal variants per Ziessman Requisites)\n\n'+
+'## Image Interpretation\n'+
+'(systematic reporting approach, SUV cutoffs if applicable, Krenning/Perugini/PSMA scoring systems, PERCIST 1.0 response criteria)\n\n'+
+'## Clinical Applications - EACH WITH SENSITIVITY/SPECIFICITY\n'+
+'(separate subsection for each indication:\n'+
+'- Sensitivity and specificity from NAMED studies (author, journal, year)\n'+
+'- Compared to CT/MRI/other NM modalities in a table\n'+
+'- Impact on patient management)\n\n'+
+'## Theranostic Applications\n'+
+'(diagnostic-therapeutic pairs: e.g. Ga-68/Lu-177 DOTATATE, Ga-68/Lu-177 PSMA, I-123/I-131)\n'+
+'(clinical trial data: NETTER-1, VISION, ALSYMPCA, etc.)\n\n'+
+'## AERB Regulations - India (MANDATORY)\n'+
+'(AERB Safety Code AERB/SC/MED-2:\n'+
+'- Dose limits for outpatient release\n'+
+'- Radiation safety measures\n'+
+'- Waste disposal\n'+
+'- Which tracers are approved in India\n'+
+'- Cost and availability in India)\n\n'+
+'## Recent Advances 2020-2025\n'+
+'(search for and include: new FDA approvals, clinical trial results, guideline updates, AI applications)\n\n'+
+'## Advantages and Limitations\n'+
+'(formatted as a table)\n\n'+
+'## Conclusion\n'+
+'(2 paragraphs, include one DNB exam pearl)\n\n'+
+'BOLD all: doses, percentages, sensitivity/specificity values, SUV numbers, guideline years, trial names.\n'+
+'MINIMUM '+wmin+' words. Use at least 3 tables.';
+
+  var structure5=
+'MANDATORY STRUCTURE for EACH 5-marker question:\n\n'+
+'## Definition\n(2 paragraphs minimum)\n\n'+
+'## Radiotracers Used - ALL RELEVANT TRACERS\n'+
+'(for each: name, dose MBq/mCi, mechanism, sensitivity/specificity, comparison table)\n\n'+
+'## Patient Preparation and Protocol\n'+
+'(step by step, doses, key contraindications per SNMMI/EANM guidelines)\n\n'+
+'## Clinical Applications with Evidence\n'+
+'(each indication with sensitivity/specificity, named study if possible)\n\n'+
+'## AERB India note\n(dose limits, approvals)\n\n'+
+'## Recent Advances 2020-2025\n(new tracers, trials, guidelines)\n\n'+
+'## Conclusion\n\n'+
+'BOLD all numbers. Minimum '+wmin+' words. Use 2 tables minimum.';
+
+  return d+kb+
+'\n\nYou are a senior Nuclear Medicine DNB examiner writing EXHAUSTIVE model answers. '+
+'SEARCH for the SPECIFIC latest guidelines and trials for each question before answering. '+
+'Search queries should target: "[topic] SNMMI guidelines 2024", "[topic] EANM guidelines 2023", "[tracer name] sensitivity specificity 2022 2023", "ATA thyroid 2015 guidelines radioiodine". '+
+'CRITICAL: The radiotracer section is where DNB examiners allocate the most marks. Every answer MUST have a comprehensive radiotracer table.\n\n'+
+(m===10?structure10:structure5);
 }
+
 function pCheck(m){
   var d=devCtx();
-  return d+'You are a senior Nuclear Medicine DNB examiner evaluating a student answer.\n\n## What You Got Right\nList correct points covered\n\n## Missing or Incomplete Points\nFor EACH missing point: what should have been said and why it matters\n\n## Examiner Must-Know Points for '+m+'-marker\nList 5-7 critical points. Bold the most important.\n\n## Score Estimate\nScore out of '+m+' with brief justification\n\n## Improved Answer Outline\nBrief structured outline for a top-scoring answer';
+  var kb=nmKB();
+  return d+kb+
+'\nYou are a senior Nuclear Medicine DNB examiner checking a student answer. SEARCH for latest guidelines to verify all facts.\n\n'+
+'## What You Got Right\n(list each correct point with why it earns marks)\n\n'+
+'## Missing Points - CRITICAL (mark-losers)\n'+
+'For EACH missing point:\n'+
+'- What should have been written\n'+
+'- Exact value/fact from standard textbook or guideline (with source)\n'+
+'- Approximate marks lost\n\n'+
+'## Missing Radiotracers (COMMON MAJOR MARK-LOSER)\n'+
+'List all radiotracers the student did not mention that were expected, with:\n'+
+'- Tracer name and dose\n'+
+'- Why it matters for this question\n'+
+'- Which textbook/guideline mentions it\n\n'+
+'## Factual Errors\n(wrong values corrected with source)\n\n'+
+'## Outdated Information\n(contradicts 2020-2025 guidelines - specify what has changed)\n\n'+
+'## Score /'+m+'\n(breakdown by section)\n\n'+
+'## Complete Answer Blueprint\n(everything a full-marks answer must contain)';
 }
+
 function pGL(){
   var d=devCtx();
-  return d+'You are a Nuclear Medicine specialist. Provide a 500-800 word guideline summary using these section headings:\n## Applicable Guidelines\n## SNMMI Recommendations\n## EANM Recommendations\n## AERB and Indian Regulations\n## ISNM and Regional Consensus\n## Quick Reference Table\n| Parameter | SNMMI | EANM | AERB India |\n|-----------|-------|------|------------|\n## Latest Updates\n## Clinical Pearls for DNB\n\nBold all specific values and doses. Flag disagreements between guidelines. Strictly 500-800 words.';
+  var kb=nmKB();
+  return d+kb+
+'\nYou are a Nuclear Medicine specialist. SEARCH for the specific guidelines requested before answering. Provide a comprehensive summary:\n'+
+'## Applicable Guidelines (with years)\n'+
+'## SNMMI Recommendations\n'+
+'## EANM Recommendations\n'+
+'## ATA Recommendations (if thyroid-related)\n'+
+'## AERB and Indian Regulations (AERB/SC/MED-2)\n'+
+'## IAEA Recommendations\n'+
+'## Key Radiotracers Mentioned in Guidelines\n'+
+'## Quick Reference Table\n'+
+'| Parameter | SNMMI | EANM | AERB India |\n'+
+'|-----------|-------|------|------------|\n'+
+'## What Changed in Latest Update vs Previous Version\n'+
+'## Clinical Pearls for DNB\n'+
+'Bold all values. Strictly compare guidelines and flag disagreements.';
 }
+
 function pDoubt(){
   var d=devCtx();
-  return d+'You are a senior Nuclear Medicine physician and DNB teacher. Answer using:\n## Core Explanation\n## Key Numbers and Values\n(bold all doses in MBq/mCi, sensitivity/specificity)\n## Clinical Relevance\n## Common Exam Pitfalls\n## Memory Trick\n(if applicable)';
+  var kb=nmKB();
+  return d+kb+
+'\nYou are a senior Nuclear Medicine physician and DNB teacher. Answer clearly and comprehensively:\n'+
+'## Core Explanation\n'+
+'## Relevant Radiotracers\n(ALL applicable tracers with doses and mechanisms)\n'+
+'## Key Numbers and Values\n(bold all: doses MBq/mCi, sensitivity/specificity, normal values)\n'+
+'## Standard Textbook Reference\n(cite Ziessman/Mettler/Saha chapter if relevant)\n'+
+'## Clinical Relevance\n'+
+'## Common Exam Pitfalls\n'+
+'## Memory Trick\n(if applicable)';
 }
+
 function pCompose(){
   var d=devCtx(),st=gv('rc-style');
   var style=st==='narrative'?'Narrative paragraphs':st==='concise'?'Concise brief':'Standard structured';
   return d+'You are a senior Nuclear Medicine physician. Convert the rough findings into a formal PET/CT report.\nStyle: '+style+'\n\n## CLINICAL HISTORY AND INDICATION\n## RADIOPHARMACEUTICAL AND TECHNIQUE\n## FINDINGS\n(by region - only include relevant regions)\n## IMPRESSION\n(numbered list)\n## CONCLUSION\n(one-line overall assessment)\n\nProfessional radiological language. Include SUV values where provided.';
 }
 
-// API CALL
+// API CALL - basic
 function callAPI(sys,msgContent){
   return fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':gk(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:sys,messages:[{role:'user',content:msgContent}]})
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2500,system:sys,messages:[{role:'user',content:msgContent}]})
   }).then(function(res){
     if(res.status===401){toast('Invalid API key','er');resetKey();throw new Error('Invalid key');}
     return res.json();
   }).then(function(data){
     return (data.content||[]).map(function(b){return b.text||'';}).join('');
   });
+}
+
+// API CALL WITH WEB SEARCH - for QA (searches latest papers, agentic loop)
+function callAPISearch(sys,msgContent,onStatus){
+  var HDRS={'Content-Type':'application/json','x-api-key':gk(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+  var messages=[{role:'user',content:msgContent}];
+  var TOOLS=[{type:'web_search_20250305',name:'web_search'}];
+  var turns=0;
+  function doTurn(){
+    turns++;
+    if(turns>6)return Promise.resolve('[Max search turns reached]');
+    return fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:HDRS,
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,system:sys,tools:TOOLS,messages:messages})
+    }).then(function(res){
+      if(res.status===401){toast('Invalid API key','er');resetKey();throw new Error('Invalid key');}
+      return res.json();
+    }).then(function(data){
+      var content=data.content||[];
+      var toolUses=content.filter(function(b){return b.type==='tool_use';});
+      if(toolUses.length>0&&data.stop_reason==='tool_use'){
+        messages.push({role:'assistant',content:content});
+        var results=toolUses.map(function(tu){
+          if(onStatus)onStatus('Searching: '+((tu.input&&tu.input.query)||'...'));
+          return {type:'tool_result',tool_use_id:tu.id,content:'Search results retrieved and incorporated.'};
+        });
+        messages.push({role:'user',content:results});
+        return doTurn();
+      }
+      return content.map(function(b){return b.text||'';}).join('');
+    });
+  }
+  return doTurn();
 }
 
 // GENERATE
@@ -728,6 +1004,7 @@ function gen(t){
       if(QI.b64){msg=[{type:'image',source:{type:'base64',media_type:QI.mime,data:QI.b64}},{type:'text',text:q||'Answer all questions in this image as per DNB exam style, '+S.qaM+'-marker answers.'}];}
       else{msg=q;}
     }
+    useSearch=true;
   }
   else if(t==='guidelines'){msg=gv('gl-inp');if(!msg){toast('Enter a guideline topic','er');return;}sys=pGL();}
   else if(t==='doubt'){msg=gv('db-inp');if(!msg){toast('Ask something first','er');return;}sys=pDoubt();}
@@ -737,6 +1014,7 @@ function gen(t){
     sys=pCompose();
   }
 
+  var useSearch=false;
   var oId=t==='compose'?'obox-compose':'obox-'+t;
   var lId=t==='compose'?'ld-compose':'ld-'+t;
   var mId=t==='compose'?'md-compose':'md-'+t;
@@ -745,7 +1023,8 @@ function gen(t){
   oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
   if(bEl){bEl.disabled=true;bEl.textContent='Generating...';}
 
-  callAPI(sys,msg).then(function(full){
+  var apiFn=useSearch?callAPISearch:callAPI;
+  apiFn(sys,msg,function(status){lEl.querySelector('span:last-child').textContent=status;}).then(function(full){
     S.outs[t]=full;lEl.style.display='none';
     var i=0;
     function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+20),t);i+=20;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,t);autoSave(t,msg,full);}}
