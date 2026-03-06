@@ -25,9 +25,23 @@
 }
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
 ::-webkit-scrollbar{width:5px;}
-.sev-btn{padding:.32rem .8rem;border-radius:16px;border:1.5px solid;font-size:.73rem;font-weight:600;cursor:pointer;font-family:"Inter",sans-serif;transition:all .12s;touch-action:manipulation;}
+.seg-btn{width:100%;text-align:left;padding:.4rem .65rem;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r6);font-size:.75rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;touch-action:manipulation;line-height:1.3;}
+.seg-btn:hover{background:var(--surface2);}
+.seg-btn.active{border-color:#0369a1;background:#e0f2fe;color:#0369a1;font-weight:700;}
+.seg-btn.has-data{border-color:var(--amber);background:var(--amber-light);color:var(--amber);font-weight:700;}
+.seg-btn.absent-p{border-color:#dc2626 !important;background:#fee2e2 !important;color:#dc2626 !important;}
+.seg-btn.severe-p{border-color:#c2410c !important;background:#fff7ed !important;color:#c2410c !important;}
+.seg-btn.moderate-p{border-color:#b45309 !important;background:#fffbeb !important;color:#b45309 !important;}
+.seg-btn.mild-p{border-color:#059669 !important;background:#f0fdf4 !important;color:#059669 !important;}
+.sev-row-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.35rem;}
+.sev-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.1rem;}
+.sev-opt{padding:.32rem .8rem;border-radius:16px;border:1.5px solid;font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .13s;touch-action:manipulation;background:var(--surface);color:var(--muted);border-color:var(--border2);}
+.sev-opt:hover{filter:brightness(.93);}
+.sev-opt.chosen{outline:3px solid #0369a1;outline-offset:2px;}
+
+.sev-btn{padding:.32rem .8rem;border-radius:16px;border:1.5px solid;font-size:.73rem;font-weight:600;cursor:pointer;font-family:“Inter”,sans-serif;transition:all .12s;touch-action:manipulation;}
 .sev-btn:hover{filter:brightness(.92);transform:scale(1.02);}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+::-webkit-scrollbar-thumb{background:var(–border2);border-radius:4px;}
 
 /* OVERLAYS */
 .modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1.5rem;}
@@ -491,39 +505,32 @@ select option{background:var(–surface);color:var(–text);}
 <!-- GAMMA / MPI REPORT -->
 <div class="pane" id="pane-mpi">
   <div class="hbar" style="border-left-color:#0369a1;background:#e0f2fe;color:#0369a1;">
-    Gamma Camera MPI Report — select study type, click segments, pick severity. AI writes the formal report in your exact department style.
+    Gamma Camera MPI Report — tap segments in each territory column, assign severity, enter EF and generate report.
   </div>
 
-  <!-- STUDY TYPE -->
-  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem" id="mpi-type-row">
-    <button class="tgl on" onclick="setMT('adenosine',this)">Adenosine Stress MPI</button>
-    <button class="tgl"    onclick="setMT('bruce',this)">Exercise (Bruce) MPI</button>
-    <button class="tgl"    onclick="setMT('rest',this)">Rest MPI Only</button>
-    <button class="tgl"    onclick="setMT('viability',this)">Rest MPI + FDG Viability</button>
+  <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem" id="mpi-type-row">
+    <button class="tgl on" onclick="setMT('adenosine',this)">Adenosine Stress</button>
+    <button class="tgl"    onclick="setMT('bruce',this)">Exercise (Bruce)</button>
+    <button class="tgl"    onclick="setMT('rest',this)">Rest Only</button>
+    <button class="tgl"    onclick="setMT('viability',this)">Rest + FDG Viability</button>
   </div>
 
-  <!-- DOSES -->
   <div class="fgrid" style="margin-bottom:.75rem">
-    <div class="fgrp"><label>Patient Name (optional)</label><input class="ipt" id="m-name" placeholder="Name"/></div>
-    <div class="fgrp"><label>MRN (optional)</label><input class="ipt" id="m-mrn" placeholder="MRN"/></div>
-    <div class="fgrp" id="m-sd-wrap"><label>Stress Dose (mCi Tc-99m MIBI)</label><input class="ipt" id="m-sd" type="number" step="0.1" placeholder="e.g. 4.5"/></div>
-    <div class="fgrp"><label>Rest Dose (mCi Tc-99m MIBI)</label><input class="ipt" id="m-rd" type="number" step="0.1" placeholder="e.g. 13.5"/></div>
-    <div class="fgrp" id="m-fd-wrap" style="display:none"><label>FDG Dose (mCi F-18 FDG)</label><input class="ipt" id="m-fd" type="number" step="0.1" value="2"/></div>
+    <div class="fgrp"><label>Patient Name</label><input class="ipt" id="m-name" placeholder="optional"/></div>
+    <div class="fgrp"><label>MRN</label><input class="ipt" id="m-mrn" placeholder="optional"/></div>
+    <div class="fgrp" id="m-sd-wrap"><label>Stress Dose (mCi MIBI)</label><input class="ipt" id="m-sd" type="number" step="0.1" placeholder="e.g. 4.5"/></div>
+    <div class="fgrp"><label>Rest Dose (mCi MIBI)</label><input class="ipt" id="m-rd" type="number" step="0.1" placeholder="e.g. 13.5"/></div>
+    <div class="fgrp" id="m-fd-wrap" style="display:none"><label>FDG Dose (mCi F-18)</label><input class="ipt" id="m-fd" type="number" step="0.1" value="2"/></div>
   </div>
 
-  <!-- STRESS PARAMETERS -->
   <div id="m-sparams" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
     <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Stress Parameters</div>
     <div id="m-aden-p">
       <div class="fgrid">
         <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr" type="number" placeholder="76"/></div>
         <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp" placeholder="120/66"/></div>
-        <div class="fgrp"><label>ECG Changes</label>
-          <select id="m-ecg"><option value="Nil.">Nil</option><option value="1 mm ST depression noted in inferior leads.">ST depression - inferior</option><option value="1 mm ST depression noted in lateral leads.">ST depression - lateral</option><option value="1 mm ST depression noted in anterior leads.">ST depression - anterior</option><option value="LBBB pattern noted.">LBBB</option></select>
-        </div>
-        <div class="fgrp"><label>Complaints</label>
-          <select id="m-comp"><option value="Nil.">Nil</option><option value="C/O Fatigue.">Fatigue</option><option value="C/O Chest pain.">Chest pain</option><option value="C/O Burning type of chest pain.">Burning chest pain</option><option value="C/O Dyspnea.">Dyspnea</option></select>
-        </div>
+        <div class="fgrp"><label>ECG Changes</label><select id="m-ecg"><option value="Nil.">Nil</option><option value="1 mm ST depression noted in inferior leads.">ST depression inferior</option><option value="1 mm ST depression noted in lateral leads.">ST depression lateral</option><option value="1 mm ST depression noted in anterior leads.">ST depression anterior</option><option value="LBBB pattern noted.">LBBB</option></select></div>
+        <div class="fgrp"><label>Complaints</label><select id="m-comp"><option value="Nil.">Nil</option><option value="C/O Fatigue.">Fatigue</option><option value="C/O Chest pain.">Chest pain</option><option value="C/O Burning type of chest pain.">Burning chest pain</option><option value="C/O Dyspnea.">Dyspnea</option></select></div>
       </div>
     </div>
     <div id="m-bruce-p" style="display:none">
@@ -532,95 +539,107 @@ select option{background:var(–surface);color:var(–text);}
         <div class="fgrp"><label>METs</label><input class="ipt" id="m-mets" type="number" step="0.1" placeholder="10.1"/></div>
         <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr2" type="number" placeholder="110"/></div>
         <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp2" placeholder="124/80"/></div>
-        <div class="fgrp"><label>Max HR (/min)</label><input class="ipt" id="m-mhr" type="number" placeholder="144"/></div>
-        <div class="fgrp"><label>Patient Age</label><input class="ipt" id="m-age" type="number" placeholder="55" oninput="calcDP()"/></div>
+        <div class="fgrp"><label>Max HR (/min)</label><input class="ipt" id="m-mhr" type="number" placeholder="144" oninput="calcDP()"/></div>
+        <div class="fgrp"><label>Patient Age</label><input class="ipt" id="m-age" type="number" placeholder="55"/></div>
         <div class="fgrp"><label>Max BP (mmHg)</label><input class="ipt" id="m-mbp" placeholder="140/80" oninput="calcDP()"/></div>
-        <div class="fgrp"><label>Double Product</label><input class="ipt" id="m-dp" placeholder="auto-calc"/></div>
+        <div class="fgrp"><label>Double Product</label><input class="ipt" id="m-dp" placeholder="auto-calc" readonly style="background:var(--surface2)"/></div>
         <div class="fgrp"><label>ECG Changes</label><select id="m-ecg2"><option value="Nil.">Nil</option><option value="1 mm ST depression in inferior leads.">ST depression inferior</option><option value="1 mm ST depression in lateral leads.">ST depression lateral</option><option value="LBBB pattern noted.">LBBB</option></select></div>
         <div class="fgrp"><label>Complaints</label><select id="m-comp2"><option value="Fatigue.">Fatigue</option><option value="Chest pain.">Chest pain</option><option value="Nil.">Nil</option></select></div>
-        <div class="fgrp"><label>Cause for Termination</label><select id="m-term"><option value="Target heart rate achieved, fatigue.">Target HR achieved, fatigue</option><option value="Target heart rate achieved.">Target HR achieved</option><option value="Fatigue.">Fatigue only</option><option value="Chest pain.">Chest pain</option></select></div>
+        <div class="fgrp"><label>Cause for Termination</label><select id="m-term"><option value="Target heart rate achieved, fatigue.">Target HR + fatigue</option><option value="Target heart rate achieved.">Target HR achieved</option><option value="Fatigue.">Fatigue only</option><option value="Chest pain.">Chest pain</option></select></div>
       </div>
     </div>
   </div>
 
-  <!-- OVERALL -->
   <div class="fgrid" style="margin-bottom:.75rem">
     <div class="fgrp"><label>LV Cavity Dilatation</label>
-      <select id="m-lv">
-        <option value="none">No LV cavity dilatation</option>
-        <option value="both">LV dilatation at stress and rest</option>
-        <option value="stress">LV dilatation at stress only (TID)</option>
-        <option value="rest-only">LV dilatation at rest only</option>
-      </select>
+      <select id="m-lv"><option value="none">No LV cavity dilatation</option><option value="both">Dilatation at stress and rest</option><option value="stress">Dilatation at stress only (TID)</option><option value="rest-only">Dilatation at rest only</option></select>
     </div>
     <div class="fgrp"><label>Right Ventricular Uptake</label>
-      <select id="m-rv">
-        <option value="none">No increased RV uptake</option>
-        <option value="both">Increased RV uptake at stress and rest</option>
-        <option value="stress">Increased RV uptake at stress only</option>
-      </select>
+      <select id="m-rv"><option value="none">No increased RV uptake</option><option value="both">Increased RV uptake at stress and rest</option><option value="stress">Increased RV uptake at stress only</option></select>
     </div>
   </div>
 
-  <!-- SEGMENT SELECTOR -->
+  <!-- 3 COLUMN SEGMENT SELECTOR -->
   <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
-    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.6rem">
-      Select Perfusion Defect Segments — Click a segment then choose severity
-    </div>
-    <div style="font-size:.72rem;color:var(--muted);margin-bottom:.85rem">
-      Unselected = normal perfusion. Each segment shows its current state once selected.
+    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.85rem">Tap a segment to select it, then assign severity below</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.9rem">
+
+      <div>
+        <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#1d4ed8;background:#dbeafe;border-radius:6px;padding:.3rem;text-align:center;margin-bottom:.4rem">LAD</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="seg-btn" id="sb-apex"          onclick="pickSeg(this,'apex','Apex')">Apex</button>
+          <button class="seg-btn" id="sb-apicoanterior" onclick="pickSeg(this,'apicoanterior','Apicoanterior')">Apicoanterior</button>
+          <button class="seg-btn" id="sb-apicoseptal"   onclick="pickSeg(this,'apicoseptal','Apicoseptal')">Apicoseptal</button>
+          <button class="seg-btn" id="sb-midanterior"   onclick="pickSeg(this,'midanterior','Mid Anterior')">Mid Anterior</button>
+          <button class="seg-btn" id="sb-midanterosep"  onclick="pickSeg(this,'midanterosep','Mid Anteroseptal')">Mid Anteroseptal</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#15803d;background:#dcfce7;border-radius:6px;padding:.3rem;text-align:center;margin-bottom:.4rem">LCx</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="seg-btn" id="sb-apicolateral"  onclick="pickSeg(this,'apicolateral','Apicolateral')">Apicolateral</button>
+          <button class="seg-btn" id="sb-midanterolat"  onclick="pickSeg(this,'midanterolat','Mid Anterolateral')">Mid Anterolateral</button>
+          <button class="seg-btn" id="sb-midbsinflat"   onclick="pickSeg(this,'midbsinflat','Mid-Basal Inferolateral')">Mid-Basal Inferolateral</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c2410c;background:#ffedd5;border-radius:6px;padding:.3rem;text-align:center;margin-bottom:.4rem">RCA</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="seg-btn" id="sb-apicoinferior" onclick="pickSeg(this,'apicoinferior','Apicoinferior')">Apicoinferior</button>
+          <button class="seg-btn" id="sb-midbasinf"     onclick="pickSeg(this,'midbasinf','Mid-Basal Inferior')">Mid-Basal Inferior</button>
+          <button class="seg-btn" id="sb-midbasinfsep"  onclick="pickSeg(this,'midbasinfsep','Mid-Basal Inferoseptal')">Mid-Basal Inferoseptal</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Segment grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.4rem;margin-bottom:1rem" id="seg-grid">
-      <!-- segments injected by JS -->
-    </div>
+    <!-- SEVERITY PICKER -->
+    <div id="sev-picker" style="display:none;border:2px solid #0369a1;border-radius:var(--r8);padding:.85rem;background:var(--surface)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0369a1">Segment: <span id="sev-seg-name" style="color:var(--text)"></span></span>
+        <button onclick="clearSeg()" style="font-size:.68rem;background:var(--red-light);border:1.5px solid var(--red-bg);color:var(--red);padding:.2rem .6rem;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:600">Clear segment</button>
+      </div>
 
-    <!-- Severity picker (shown when a segment is active) -->
-    <div id="sev-picker" style="display:none;background:var(--surface);border:1.5px solid #0369a1;border-radius:var(--r8);padding:.8rem 1rem;margin-top:.5rem">
-      <div style="font-size:.72rem;font-weight:700;color:#0369a1;margin-bottom:.5rem" id="sev-label">Set severity for: <strong id="sev-seg-name"></strong></div>
-      <div style="margin-bottom:.75rem">
-        <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.35rem">Perfusion</div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <button class="sev-btn" onclick="setSev('absent')"     style="background:#fee2e2;color:#dc2626;border-color:#dc2626">Absent</button>
-          <button class="sev-btn" onclick="setSev('severe')"     style="background:#fed7aa;color:#c2410c;border-color:#c2410c">Severely Reduced</button>
-          <button class="sev-btn" onclick="setSev('moderate')"   style="background:#fef3c7;color:#b45309;border-color:#b45309">Moderately Reduced</button>
-          <button class="sev-btn" onclick="setSev('mild')"       style="background:#d1fae5;color:#059669;border-color:#059669">Mildly Reduced</button>
-          <button class="sev-btn" onclick="setSev('normal')"     style="background:#f1f5f9;color:#64748b;border-color:#cbd5e1">Normal / Clear</button>
+      <div style="margin-bottom:.6rem">
+        <div class="sev-row-lbl">Perfusion at Stress</div>
+        <div class="sev-row">
+          <button class="sev-opt" id="so-absent"   onclick="setSev('absent')"   data-c="#dc2626" data-bg="#fee2e2">Absent</button>
+          <button class="sev-opt" id="so-severe"   onclick="setSev('severe')"   data-c="#c2410c" data-bg="#fed7aa">Severely Reduced</button>
+          <button class="sev-opt" id="so-moderate" onclick="setSev('moderate')" data-c="#b45309" data-bg="#fef3c7">Moderately Reduced</button>
+          <button class="sev-opt" id="so-mild"     onclick="setSev('mild')"     data-c="#059669" data-bg="#d1fae5">Mildly Reduced</button>
         </div>
       </div>
-      <div id="wm-wrap">
-        <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.35rem">Wall Motion</div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <button class="sev-btn" onclick="setWM('akinetic')"        style="background:#fee2e2;color:#dc2626;border-color:#dc2626">Akinetic</button>
-          <button class="sev-btn" onclick="setWM('severe-hypo')"     style="background:#fed7aa;color:#c2410c;border-color:#c2410c">Severely Hypokinetic</button>
-          <button class="sev-btn" onclick="setWM('moderate-hypo')"   style="background:#fef3c7;color:#b45309;border-color:#b45309">Moderately Hypokinetic</button>
-          <button class="sev-btn" onclick="setWM('mild-hypo')"       style="background:#d1fae5;color:#059669;border-color:#059669">Mildly Hypokinetic</button>
-          <button class="sev-btn" onclick="setWM('normal-wm')"       style="background:#f1f5f9;color:#64748b;border-color:#cbd5e1">Normal WM / Clear</button>
-        </div>
-      </div>
-      <div id="rest-wrap" style="display:none;margin-top:.6rem">
-        <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.35rem">Rest — What Changed?</div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <button class="sev-btn" onclick="setRest('no-imp')"      style="background:#fee2e2;color:#dc2626;border-color:#dc2626">No Improvement (Infarct)</button>
-          <button class="sev-btn" onclick="setRest('complete')"    style="background:#d1fae5;color:#059669;border-color:#059669">Complete Improvement (Ischemia)</button>
-          <button class="sev-btn" onclick="setRest('partial')"     style="background:#fef3c7;color:#b45309;border-color:#b45309">Partial Improvement (Mixed)</button>
-        </div>
-      </div>
-      <div id="fdg-wrap" style="display:none;margin-top:.6rem">
-        <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.35rem">FDG Viability</div>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <button class="sev-btn" onclick="setFDG('no-met')"       style="background:#fee2e2;color:#dc2626;border-color:#dc2626">No Metabolism (Non-Viable)</button>
-          <button class="sev-btn" onclick="setFDG('partial')"      style="background:#fef3c7;color:#b45309;border-color:#b45309">Partial Metabolism (Non-Transmural Scar)</button>
-          <button class="sev-btn" onclick="setFDG('preserved')"    style="background:#d1fae5;color:#059669;border-color:#059669">Preserved Metabolism (Viable)</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Summary chips -->
-    <div id="seg-summary" style="margin-top:.85rem;display:none">
-      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem">Selected Segments</div>
-      <div id="seg-chips" style="display:flex;flex-wrap:wrap;gap:.35rem"></div>
+      <div style="margin-bottom:.6rem">
+        <div class="sev-row-lbl">Wall Motion</div>
+        <div class="sev-row">
+          <button class="sev-opt" id="so-akinetic"      onclick="setWM('akinetic')"       data-c="#dc2626" data-bg="#fee2e2">Akinetic</button>
+          <button class="sev-opt" id="so-severe-hypo"   onclick="setWM('severe-hypo')"    data-c="#c2410c" data-bg="#fed7aa">Severely Hypokinetic</button>
+          <button class="sev-opt" id="so-moderate-hypo" onclick="setWM('moderate-hypo')"  data-c="#b45309" data-bg="#fef3c7">Moderately Hypokinetic</button>
+          <button class="sev-opt" id="so-mild-hypo"     onclick="setWM('mild-hypo')"      data-c="#059669" data-bg="#d1fae5">Mildly Hypokinetic</button>
+        </div>
+      </div>
+
+      <div id="rest-row" style="display:none;margin-bottom:.6rem">
+        <div class="sev-row-lbl">Rest Perfusion</div>
+        <div class="sev-row">
+          <button class="sev-opt" id="so-no-imp"   onclick="setRest('no-imp')"   data-c="#dc2626" data-bg="#fee2e2">No Improvement</button>
+          <button class="sev-opt" id="so-complete" onclick="setRest('complete')" data-c="#059669" data-bg="#d1fae5">Complete Improvement</button>
+          <button class="sev-opt" id="so-partial"  onclick="setRest('partial')"  data-c="#b45309" data-bg="#fef3c7">Partial Improvement</button>
+        </div>
+      </div>
+
+      <div id="fdg-row" style="display:none">
+        <div class="sev-row-lbl">FDG Viability</div>
+        <div class="sev-row">
+          <button class="sev-opt" id="so-no-met"      onclick="setFDG('no-met')"      data-c="#dc2626" data-bg="#fee2e2">No Metabolism (Non-Viable)</button>
+          <button class="sev-opt" id="so-fdg-partial" onclick="setFDG('fdg-partial')" data-c="#b45309" data-bg="#fef3c7">Partial (Scar)</button>
+          <button class="sev-opt" id="so-preserved"   onclick="setFDG('preserved')"   data-c="#059669" data-bg="#d1fae5">Preserved (Viable)</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -628,27 +647,24 @@ select option{background:var(–surface);color:var(–text);}
   <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
     <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Gated SPECT</div>
     <div class="fgrid">
-      <div class="fgrp" id="m-ef-s-wrap"><label>LVEF at Stress (%)</label><input class="ipt" id="m-efs" type="number" min="5" max="80" placeholder="e.g. 34"/></div>
+      <div class="fgrp" id="m-efs-wrap"><label>LVEF at Stress (%)</label><input class="ipt" id="m-efs" type="number" min="5" max="80" placeholder="e.g. 34"/></div>
       <div class="fgrp"><label>LVEF at Rest (%)</label><input class="ipt" id="m-efr" type="number" min="5" max="80" placeholder="e.g. 36"/></div>
       <div class="fgrp"><label>Global Wall Motion</label>
-        <select id="m-gwm">
-          <option value="global-hypo">Global hypokinesia</option>
-          <option value="normal">Normal global wall motion</option>
-          <option value="regional">Regional wall motion abnormality only</option>
-        </select>
+        <select id="m-gwm"><option value="global-hypo">Global hypokinesia</option><option value="normal">Normal global wall motion</option><option value="regional">Regional wall motion abnormality</option></select>
       </div>
     </div>
-    <div class="fgrp"><label>Additional WM notes (optional)</label>
-      <textarea id="m-wmx" style="min-height:50px;border-color:var(--border)" placeholder="Any other wall motion detail..."></textarea>
+    <div class="fgrp"><label>Additional WM note (optional)</label>
+      <textarea id="m-wmx" style="min-height:45px;border-color:var(--border)" placeholder="Any extra wall motion detail..."></textarea>
     </div>
   </div>
 
-  <div class="fgrp" style="margin-bottom:.75rem"><label>Clinical Context (optional)</label>
-    <textarea id="m-ctx" style="min-height:50px;border-color:var(--border)" placeholder="e.g. Known CAD, post CABG, diabetic patient..."></textarea>
+  <div class="fgrp" style="margin-bottom:.75rem">
+    <label>Clinical Context (optional)</label>
+    <textarea id="m-ctx" style="min-height:45px;border-color:var(--border)" placeholder="e.g. Known CAD, post CABG, diabetic..."></textarea>
   </div>
 
   <div class="arow">
-    <button class="btn" style="background:#0369a1" id="btn-mpi" onclick="genMPI()">Generate Report</button>
+    <button class="btn" style="background:#0369a1;box-shadow:0 0 14px rgba(3,105,161,.2)" id="btn-mpi" onclick="genMPI()">Generate Report</button>
     <button class="btn btn-ghost" onclick="resetMPI()">Reset All</button>
   </div>
 
@@ -1493,424 +1509,277 @@ window.onload=function(){
 
 
 // ═══════════════════════════════════════
+// ─────────────────────────────────────────
 // GAMMA / MPI REPORT
-// ═══════════════════════════════════════
-
 var MT = 'adenosine';
+var SEG = {};
+var ASEG = null;
 
-// All 11 segments with their coronary territory
-var SEGS = [
-  {id:'apex',          label:'Apex',                   terr:'LAD'},
-  {id:'apicoanterior', label:'Apicoanterior',           terr:'LAD'},
-  {id:'apicoseptal',   label:'Apicoseptal',             terr:'LAD'},
-  {id:'apicolateral',  label:'Apicolateral',            terr:'LCx'},
-  {id:'apicoinferior', label:'Apicoinferior',            terr:'RCA'},
-  {id:'midanterior',   label:'Mid Anterior',            terr:'LAD'},
-  {id:'midanterosep',  label:'Mid Anteroseptal',        terr:'LAD'},
-  {id:'midanterolat',  label:'Mid Anterolateral',       terr:'LCx'},
-  {id:'midbasinf',     label:'Mid to Basal Inferior',   terr:'RCA'},
-  {id:'midbasinfsep',  label:'Mid to Basal Inferoseptal',terr:'RCA'},
-  {id:'midbsinflat',   label:'Mid to Basal Inferolateral',terr:'LCx'}
-];
+var SEG_TERR = {apex:'LAD',apicoanterior:'LAD',apicoseptal:'LAD',midanterior:'LAD',midanterosep:'LAD',apicolateral:'LCx',midanterolat:'LCx',midbsinflat:'LCx',apicoinferior:'RCA',midbasinf:'RCA',midbasinfsep:'RCA'};
+var PERF_LBL = {absent:'Absent perfusion',severe:'Severely reduced perfusion',moderate:'Moderately reduced perfusion',mild:'Mildly reduced perfusion'};
+var PERF_CLS = {absent:'absent-p',severe:'severe-p',moderate:'moderate-p',mild:'mild-p'};
+var WM_LBL   = {akinetic:'akinetic','severe-hypo':'severely hypokinetic','moderate-hypo':'moderately hypokinetic','mild-hypo':'mildly hypokinetic'};
 
-// Per-segment state
-var SEG_STATE = {};
-
-// Labels for display
-var PERF_LBL = {
-  'absent':   'Absent',
-  'severe':   'Severely Reduced',
-  'moderate': 'Moderately Reduced',
-  'mild':     'Mildly Reduced'
-};
-var PERF_COLOR = {
-  'absent':   '#dc2626',
-  'severe':   '#c2410c',
-  'moderate': '#b45309',
-  'mild':     '#059669'
-};
-var WM_LBL = {
-  'akinetic':      'Akinetic',
-  'severe-hypo':   'Severely Hypokinetic',
-  'moderate-hypo': 'Moderately Hypokinetic',
-  'mild-hypo':     'Mildly Hypokinetic'
-};
-var REST_LBL = {
-  'no-imp':   'No improvement',
-  'complete': 'Complete improvement',
-  'partial':  'Partial improvement'
-};
-var FDG_LBL = {
-  'no-met':   'No glucose metabolism',
-  'partial':  'Partial glucose metabolism',
-  'preserved':'Preserved glucose metabolism'
-};
-
-var ACTIVE_SEG = null;
-
-function buildSegGrid() {
-  var grid = document.getElementById('seg-grid');
-  if (!grid) return;
-  var html = '';
-  SEGS.forEach(function(s) {
-    var tclr = s.terr==='LAD'?'#1d4ed8':s.terr==='LCx'?'#15803d':'#c2410c';
-    var tbg  = s.terr==='LAD'?'#dbeafe':s.terr==='LCx'?'#dcfce7':'#ffedd5';
-    html += '<button id="sb-'+s.id+'" onclick="activateSeg(\''+s.id+'\')" style="'+
-      'text-align:left;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--r8);'+
-      'padding:.45rem .7rem;cursor:pointer;transition:all .15s;font-family:\'Inter\',sans-serif;touch-action:manipulation">' +
-      '<div style="font-size:.62rem;font-weight:700;color:'+tclr+';background:'+tbg+';display:inline-block;padding:.1rem .4rem;border-radius:8px;margin-bottom:.2rem">'+s.terr+'</div>' +
-      '<div id="sb-lbl-'+s.id+'" style="font-size:.76rem;font-weight:600;color:var(--text)">'+s.label+'</div>' +
-      '<div id="sb-state-'+s.id+'" style="font-size:.65rem;margin-top:.1rem;color:var(--dim)">Normal</div>' +
-      '</button>';
-  });
-  grid.innerHTML = html;
+function setMT(type,btn){
+  MT=type;
+  document.querySelectorAll('#mpi-type-row .tgl').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var isS=(type==='adenosine'||type==='bruce'),isV=(type==='viability');
+  document.getElementById('m-sparams').style.display  = isS?'block':'none';
+  document.getElementById('m-aden-p').style.display   = (isS&&type!=='bruce')?'block':'none';
+  document.getElementById('m-bruce-p').style.display  = (type==='bruce')?'block':'none';
+  document.getElementById('m-sd-wrap').style.display  = isS?'':'none';
+  document.getElementById('m-fd-wrap').style.display  = isV?'':'none';
+  document.getElementById('m-efs-wrap').style.display = isS?'':'none';
+  if(document.getElementById('rest-row')){
+    document.getElementById('rest-row').style.display = isS?'block':'none';
+    document.getElementById('fdg-row').style.display  = isV?'block':'none';
+  }
 }
 
-function activateSeg(id) {
-  ACTIVE_SEG = id;
-  // Highlight active
-  SEGS.forEach(function(s) {
-    var btn = document.getElementById('sb-'+s.id);
-    if (btn) btn.style.borderColor = s.id===id ? '#0369a1' : 'var(--border2)';
-  });
-  var seg = SEGS.find(function(s){return s.id===id;}) || {};
-  var picker = document.getElementById('sev-picker');
-  picker.style.display = 'block';
-  document.getElementById('sev-seg-name').textContent = seg.label||id;
-  // Show/hide rest + fdg rows depending on study type
-  document.getElementById('rest-wrap').style.display = (MT==='adenosine'||MT==='bruce') ? 'flex' : 'none';
-  document.getElementById('rest-wrap').style.flexWrap = 'wrap';
-  document.getElementById('rest-wrap').style.display  = (MT==='adenosine'||MT==='bruce') ? 'block' : 'none';
-  document.getElementById('fdg-wrap').style.display   = (MT==='viability') ? 'block' : 'none';
+function pickSeg(btnEl,id,label){
+  ASEG=id;
+  if(!SEG[id]) SEG[id]={label:label};
+  document.querySelectorAll('.seg-btn').forEach(function(b){b.classList.remove('active');});
+  btnEl.classList.add('active');
+  var picker=document.getElementById('sev-picker');
+  picker.style.display='block';
+  document.getElementById('sev-seg-name').textContent=label;
+  var isS=(MT==='adenosine'||MT==='bruce'),isV=(MT==='viability');
+  document.getElementById('rest-row').style.display=isS?'block':'none';
+  document.getElementById('fdg-row').style.display=isV?'block':'none';
+  refreshPicker();
   picker.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function setSev(val) {
-  if (!ACTIVE_SEG) return;
-  if (!SEG_STATE[ACTIVE_SEG]) SEG_STATE[ACTIVE_SEG] = {};
-  if (val === 'normal') {
-    delete SEG_STATE[ACTIVE_SEG].perf;
-  } else {
-    SEG_STATE[ACTIVE_SEG].perf = val;
-  }
-  updateSegUI(ACTIVE_SEG);
-  updateSummary();
-}
-function setWM(val) {
-  if (!ACTIVE_SEG) return;
-  if (!SEG_STATE[ACTIVE_SEG]) SEG_STATE[ACTIVE_SEG] = {};
-  if (val === 'normal-wm') {
-    delete SEG_STATE[ACTIVE_SEG].wm;
-  } else {
-    SEG_STATE[ACTIVE_SEG].wm = val;
-  }
-  updateSegUI(ACTIVE_SEG);
-  updateSummary();
-}
-function setRest(val) {
-  if (!ACTIVE_SEG) return;
-  if (!SEG_STATE[ACTIVE_SEG]) SEG_STATE[ACTIVE_SEG] = {};
-  SEG_STATE[ACTIVE_SEG].rest = val;
-  updateSegUI(ACTIVE_SEG);
-  updateSummary();
-}
-function setFDG(val) {
-  if (!ACTIVE_SEG) return;
-  if (!SEG_STATE[ACTIVE_SEG]) SEG_STATE[ACTIVE_SEG] = {};
-  SEG_STATE[ACTIVE_SEG].fdg = val;
-  updateSegUI(ACTIVE_SEG);
-  updateSummary();
+function refreshPicker(){
+  if(!ASEG) return;
+  var st=SEG[ASEG]||{};
+  document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
+  var maps={
+    perf:{absent:'so-absent',severe:'so-severe',moderate:'so-moderate',mild:'so-mild'},
+    wm:{akinetic:'so-akinetic','severe-hypo':'so-severe-hypo','moderate-hypo':'so-moderate-hypo','mild-hypo':'so-mild-hypo'},
+    rest:{'no-imp':'so-no-imp',complete:'so-complete',partial:'so-partial'},
+    fdg:{'no-met':'so-no-met','fdg-partial':'so-fdg-partial',preserved:'so-preserved'}
+  };
+  ['perf','wm','rest','fdg'].forEach(function(k){
+    var v=st[k]; if(v&&maps[k][v]){var e=document.getElementById(maps[k][v]);if(e)e.classList.add('chosen');}
+  });
 }
 
-function updateSegUI(id) {
-  var st   = SEG_STATE[id] || {};
-  var btn  = document.getElementById('sb-'+id);
-  var slbl = document.getElementById('sb-state-'+id);
-  if (!btn || !slbl) return;
-  var perf = st.perf;
-  if (perf) {
-    btn.style.borderColor = PERF_COLOR[perf];
-    btn.style.background  = perf==='absent'?'#fee2e2':perf==='severe'?'#fff7ed':perf==='moderate'?'#fffbeb':'#f0fdf4';
-    var parts = [PERF_LBL[perf]];
-    if (st.rest)  parts.push(REST_LBL[st.rest]);
-    if (st.wm)    parts.push(WM_LBL[st.wm]);
-    if (st.fdg)   parts.push(FDG_LBL[st.fdg]);
-    slbl.textContent = parts.join(' | ');
-    slbl.style.color = PERF_COLOR[perf];
-  } else {
-    btn.style.borderColor = 'var(--border2)';
-    btn.style.background  = 'var(--surface)';
-    slbl.textContent = 'Normal';
-    slbl.style.color = 'var(--dim)';
-  }
+function setSev(val){if(!ASEG)return;if(!SEG[ASEG])SEG[ASEG]={};SEG[ASEG].perf=val;updateSegBtn(ASEG);refreshPicker();}
+function setWM(val){if(!ASEG)return;if(!SEG[ASEG])SEG[ASEG]={};SEG[ASEG].wm=val;refreshPicker();}
+function setRest(val){if(!ASEG)return;if(!SEG[ASEG])SEG[ASEG]={};SEG[ASEG].rest=val;refreshPicker();}
+function setFDG(val){if(!ASEG)return;if(!SEG[ASEG])SEG[ASEG]={};SEG[ASEG].fdg=val;refreshPicker();}
+
+function clearSeg(){
+  if(!ASEG) return;
+  delete SEG[ASEG];
+  var btn=document.getElementById('sb-'+ASEG);
+  if(btn) btn.className='seg-btn';
+  document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
 }
 
-function updateSummary() {
-  var chips = document.getElementById('seg-chips');
-  var summ  = document.getElementById('seg-summary');
-  var selected = SEGS.filter(function(s){ return SEG_STATE[s.id] && SEG_STATE[s.id].perf; });
-  if (!selected.length) { summ.style.display='none'; chips.innerHTML=''; return; }
-  summ.style.display = 'block';
-  chips.innerHTML = selected.map(function(s){
-    var st = SEG_STATE[s.id];
-    return '<span style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:.22rem .65rem;font-size:.67rem;color:var(--text2)">'+
-      '<strong>'+s.label+'</strong>: '+PERF_LBL[st.perf]+'</span>';
-  }).join('');
+function updateSegBtn(id){
+  var btn=document.getElementById('sb-'+id);
+  if(!btn) return;
+  var st=SEG[id]||{};
+  btn.className='seg-btn'+(st.perf?' '+PERF_CLS[st.perf]:'');
 }
 
-function resetMPI() {
-  SEG_STATE = {};
-  ACTIVE_SEG = null;
-  SEGS.forEach(function(s){ updateSegUI(s.id); });
-  updateSummary();
-  document.getElementById('sev-picker').style.display = 'none';
+function resetMPI(){
+  SEG={};ASEG=null;
+  document.querySelectorAll('.seg-btn').forEach(function(b){b.className='seg-btn';});
+  document.getElementById('sev-picker').style.display='none';
   document.getElementById('mpi-out').classList.remove('on');
-  document.getElementById('mpi-md').innerHTML = '';
+  document.getElementById('mpi-md').innerHTML='';
   toast('Reset');
 }
 
-// Build the narrative for each territory
-function buildTerritoryText(terrSegs, stressOrRest) {
-  // terrSegs: array of {seg, state}
-  // Returns object: {stress:str, rest:str, wm:str}
-  var grouped = {};
-  terrSegs.forEach(function(item) {
-    var p = item.state.perf;
-    if (!p) return;
-    if (!grouped[p]) grouped[p] = [];
-    grouped[p].push(item.seg.label.toLowerCase());
-  });
-  var parts = [];
-  ['absent','severe','moderate','mild'].forEach(function(p) {
-    if (!grouped[p]) return;
-    var segs = grouped[p];
-    var prefix = p==='absent'?'Absent perfusion is noted in':
-                 p==='severe'?'Severely reduced perfusion is noted in':
-                 p==='moderate'?'Moderately reduced perfusion is noted in':
-                 'Mildly reduced perfusion is noted in';
-    parts.push(prefix+' '+segs.join(', ')+' segment'+(segs.length>1?'s':''));
-  });
-  return parts.join('. ');
+function calcDP(){
+  var mhr=parseInt(document.getElementById('m-mhr').value)||0;
+  var mbp=(document.getElementById('m-mbp').value||'').split('/')[0];
+  if(mhr&&mbp) document.getElementById('m-dp').value=mhr*parseInt(mbp);
 }
 
-function mpiSys() {
-  return 'You are a senior Nuclear Medicine physician generating formal Myocardial Perfusion Imaging reports for a department in India.\n\n'+
-'Use EXACTLY this format based on department archive samples:\n\n'+
-'=== TITLE FORMAT ===\n'+
-'Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT\n'+
-'Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT (or STRESS-REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION SCINTIGRAPHY when combined with viability)\n'+
-'Rest: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING\n'+
-'Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY\n\n'+
-'=== PROTOCOL PARAGRAPH (word for word) ===\n'+
-'Adenosine: "Intravenous injection of [X] mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of [Y] mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."\n'+
-'Bruce: "Intravenous injection of [X] mCi of 99mTc Sestamibi was given at the peak of exercise performed on a Tread Mill using Bruce Protocol. Post stress images were acquired 30 min later. Resting images were acquired after i.v. injection of [Y] mCi of the radiotracer. Imaging was performed under a dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."\n'+
-'Rest only: "Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared."\n\n'+
-'=== STRESS PARAMETERS FORMAT ===\n'+
-'Adenosine:\nSTRESS PARAMETERS:\nDuration of infusion : 06:00 min\nBaseline Heart Rate and BP : [X]/min, [Y] mmHg\nECG Changes : [val]\nComplaints : [val]\nCause for termination : Maximum dose infused.\n\n'+
-'Bruce:\nSTRESS PARAMETERS:\nDuration of Exercise : [mm:ss] minutes ([METs] METS)\nBaseline Heart Rate and BP : [HR]/min, [BP] mmHg\nMaximum Heart Rate Achieved : [HR]/min ([%]% of MPHR)\nMaximum Blood Pressure : [BP] mm of Hg\nDouble Product : [val]\nECG Changes : [val]\nComplaints : [val]\nCause for termination : [val]\n\n'+
-'=== FINDINGS FORMAT ===\n'+
-'FINDINGS:\n- [LV dilatation sentence]\n- [RV uptake sentence]\n\n'+
-'STRESS IMAGES:\n- [One sentence per territory with perfusion findings]\n- End with: "Rest of the LV myocardium shows adequate perfusion at stress." (or "normal" for viability/rest)\n\n'+
-'REST IMAGES:\n- [No improvement / complete improvement / partial improvement per territory]\n- End with: "Rest of the LV myocardium shows adequate perfusion at rest."\n\n'+
-'GATED SPECT FINDINGS:\n- "LVEF at stress is [X]% and LVEF at rest is [Y]%." (or just rest for rest-only/viability)\n- "Note is made of [global/regional] hypokinesia."\n- [Segment by segment wall motion: "Apex, apicoanterior... segments appear akinetic at stress and at rest."]\n\n'+
-'For viability add:\n18F-FDG PET-CT IMAGES:\n- [One statement per territory about glucose metabolism]\n- "(nontransmural scar pattern)" / "(Perfusion metabolism mismatch pattern)" / "(perfusion metabolism match pattern)"\n\n'+
-'=== IMPRESSION FORMAT ===\n'+
-'Numbered list.\n'+
-'Transmural infarct: "[Territory] territory shows [large/medium] area of transmural infarct."\n'+
-'Nontransmural infarct: "[Territory] territory shows [large/medium] area of nontransmural infarct."\n'+
-'Ischemia: "[Territory] territory shows [large/medium] area of [moderate/severe] intensity ischemia."\n'+
-'Mixed: "[Territory] territory shows [area] of nontransmural infarct with [partial/moderate] ischemia."\n'+
-'For viability:\n"[Territory] territory shows perfusion defect with no glucose metabolism suggestive of NON VIABLE myocardium."\n'+
-'"[Territory] territory shows perfusion defect with partial glucose metabolism suggestive of NONTRANSMURAL SCAR."\n'+
-'"[Territory] territory shows perfusion defect with preserved glucose metabolism suggestive of VIABLE myocardium."\n\n'+
-'Rules:\n'+
-'- No improvement at rest = INFARCT. Akinetic = transmural. Severely/moderately hypokinetic with no improvement = nontransmural.\n'+
-'- Complete improvement = ISCHEMIA. Size by number of segments: 1=small, 2-3=medium, 4+=large.\n'+
-'- Always end impressions with: "Rest of the LV myocardium shows [adequate/normal] perfusion." and for stress studies "No evidence of inducible ischemia in the LV myocardium." if applicable.\n'+
-'- For Bruce: Add "Adequate exercise." and "Good effort tolerance." at start of impression if METs>7.\n\n'+
-'=== SIGN-OFF (always last) ===\n'+
-'Dr. Sunil H V        Dr. Bushra Sadeed\nConsultant           Jr. Consultant';
-}
-
-function mpiMsg() {
-  var t  = MT;
-  var sd = document.getElementById('m-sd').value||'4.5';
-  var rd = document.getElementById('m-rd').value||'13.5';
-  var fd = document.getElementById('m-fd').value||'2';
-  var nm = document.getElementById('m-name').value;
-  var mr = document.getElementById('m-mrn').value;
-
-  var msg = 'Generate a formal MPI report.\n';
-  if (nm) msg += 'Patient: '+nm+'\n';
-  if (mr) msg += 'MRN: '+mr+'\n';
-
-  if (t==='adenosine') {
-    msg += 'Study: Adenosine Stress MPI\n';
-    msg += 'Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi\n\n';
-    msg += 'STRESS PARAMETERS:\nDuration: 06:00 min adenosine infusion\n';
-    msg += 'Baseline HR: '+document.getElementById('m-bhr').value+'/min\n';
-    msg += 'Baseline BP: '+document.getElementById('m-bbp').value+' mmHg\n';
-    msg += 'ECG Changes: '+document.getElementById('m-ecg').value+'\n';
-    msg += 'Complaints: '+document.getElementById('m-comp').value+'\n\n';
-  } else if (t==='bruce') {
-    var mhr  = parseInt(document.getElementById('m-mhr').value)||0;
-    var age  = parseInt(document.getElementById('m-age').value)||0;
-    var mphr = age ? (220-age) : 0;
-    var pct  = (mhr&&mphr) ? Math.round(100*mhr/mphr) : 0;
-    var sbp  = (document.getElementById('m-mbp').value||'').split('/')[0];
-    var dp   = document.getElementById('m-dp').value || (mhr&&sbp ? mhr*parseInt(sbp) : '');
-    msg += 'Study: Bruce Protocol Exercise Stress MPI\n';
-    msg += 'Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi\n\n';
-    msg += 'STRESS PARAMETERS:\n';
-    msg += 'Duration: '+document.getElementById('m-dur').value+' min ('+document.getElementById('m-mets').value+' METS)\n';
-    msg += 'Baseline HR/BP: '+document.getElementById('m-bhr2').value+'/min, '+document.getElementById('m-bbp2').value+' mmHg\n';
-    msg += 'Max HR: '+mhr+'/min ('+(pct?pct+'%':'?')+'of MPHR)\n';
-    msg += 'Max BP: '+document.getElementById('m-mbp').value+' mmHg\n';
-    msg += 'Double Product: '+dp+'\n';
-    msg += 'ECG: '+document.getElementById('m-ecg2').value+'\n';
-    msg += 'Complaints: '+document.getElementById('m-comp2').value+'\n';
-    msg += 'Termination: '+document.getElementById('m-term').value+'\n\n';
-  } else if (t==='rest') {
-    msg += 'Study: Rest MPI only\nRest dose: '+rd+' mCi\n\n';
-  } else {
-    msg += 'Study: Rest MPI + FDG PET CT Viability\nRest dose: '+rd+' mCi | FDG dose: '+fd+' mCi\n\n';
-  }
-
-  // Overall
-  var lv = document.getElementById('m-lv').value;
-  var rv = document.getElementById('m-rv').value;
-  msg += 'OVERALL FINDINGS:\n';
-  msg += 'LV cavity: '+(lv==='none'?'No LV cavity dilatation':lv==='both'?'LV cavity dilatation present at stress and rest':lv==='stress'?'LV cavity dilatation at stress only (transient ischaemic dilation)':'LV cavity dilatation at rest')+'\n';
-  msg += 'RV uptake: '+(rv==='none'?'No increased RV tracer uptake':rv==='both'?'Increased tracer uptake in right ventricle at stress and rest':'Increased RV uptake at stress only')+'\n\n';
-
-  // Segment findings by territory
-  var terrs = {LAD:[],LCx:[],RCA:[]};
-  SEGS.forEach(function(s) {
-    var st = SEG_STATE[s.id];
-    if (st && st.perf) terrs[s.terr].push({seg:s, state:st});
+function terrFindings(){
+  var terrs={LAD:[],LCx:[],RCA:[]};
+  Object.keys(SEG).forEach(function(id){
+    var st=SEG[id];if(!st||!st.perf) return;
+    var t=SEG_TERR[id]||'LAD';
+    terrs[t].push({id:id,label:st.label||id,st:st});
   });
-
-  msg += 'PERFUSION DEFECTS:\n';
-  ['LAD','LCx','RCA'].forEach(function(terr) {
-    var segs = terrs[terr];
-    if (!segs.length) { msg += terr+': Normal perfusion throughout\n'; return; }
-
-    // Stress perfusion
-    var stressSegs = segs.map(function(x){ return x; });
-    var stressTxt = buildTerritoryText(stressSegs);
-    msg += terr+' stress: '+stressTxt+'\n';
-
-    // Rest
-    var restGroups = {};
-    segs.forEach(function(x) {
-      var r = x.state.rest||'no-imp';
-      if (!restGroups[r]) restGroups[r] = [];
-      restGroups[r].push(x.seg.label.toLowerCase());
+  var lines=[];
+  ['LAD','LCx','RCA'].forEach(function(terr){
+    var segs=terrs[terr];
+    if(!segs.length){lines.push(terr+': Normal perfusion throughout.');return;}
+    var byPerf={};
+    segs.forEach(function(x){if(!byPerf[x.st.perf])byPerf[x.st.perf]=[];byPerf[x.st.perf].push(x.label.toLowerCase());});
+    var sp=[];
+    ['absent','severe','moderate','mild'].forEach(function(p){
+      if(!byPerf[p]) return;
+      var pre=p==='absent'?'Absent perfusion is noted in':p==='severe'?'Severely reduced perfusion is noted in':p==='moderate'?'Moderately reduced perfusion is noted in':'Mildly reduced perfusion is noted in';
+      sp.push(pre+' '+byPerf[p].join(', ')+' segment'+(byPerf[p].length>1?'s':''));
     });
-    var restParts = [];
-    if (restGroups['no-imp'])   restParts.push('No improvement in '+restGroups['no-imp'].join(', ')+' (infarct)');
-    if (restGroups['complete']) restParts.push('Complete improvement in '+restGroups['complete'].join(', ')+' (ischemia)');
-    if (restGroups['partial'])  restParts.push('Partial improvement in '+restGroups['partial'].join(', ')+' (mixed)');
-    if (restParts.length && (t==='adenosine'||t==='bruce')) msg += terr+' rest: '+restParts.join('. ')+'\n';
-
-    // Wall motion
-    var wmGroups = {};
-    segs.forEach(function(x) {
-      var w = x.state.wm;
-      if (w) { if (!wmGroups[w]) wmGroups[w]=[]; wmGroups[w].push(x.seg.label.toLowerCase()); }
+    lines.push(terr+' stress: '+sp.join('. ')+'.');
+    if(MT==='adenosine'||MT==='bruce'){
+      var byR={};
+      segs.forEach(function(x){var r=x.st.rest||'no-imp';if(!byR[r])byR[r]=[];byR[r].push(x.label.toLowerCase());});
+      var rp=[];
+      if(byR['no-imp'])  rp.push('No improvement in '+byR['no-imp'].join(', '));
+      if(byR['complete'])rp.push('Complete improvement in '+byR['complete'].join(', '));
+      if(byR['partial']) rp.push('Partial improvement in '+byR['partial'].join(', '));
+      if(rp.length) lines.push(terr+' rest: '+rp.join('. ')+'.');
+    }
+    var byW={};
+    segs.forEach(function(x){if(x.st.wm){if(!byW[x.st.wm])byW[x.st.wm]=[];byW[x.st.wm].push(x.label.toLowerCase());}});
+    var wp=[];
+    ['akinetic','severe-hypo','moderate-hypo','mild-hypo'].forEach(function(k){
+      if(byW[k]) wp.push(byW[k].join(', ')+' appear '+WM_LBL[k]);
     });
-    var wmParts = [];
-    ['akinetic','severe-hypo','moderate-hypo','mild-hypo'].forEach(function(k) {
-      if (wmGroups[k]) wmParts.push(wmGroups[k].join(', ')+' — '+WM_LBL[k].toLowerCase());
-    });
-    if (wmParts.length) msg += terr+' wall motion: '+wmParts.join('; ')+'\n';
-
-    // FDG
-    if (t==='viability') {
-      var fdgGroups = {};
-      segs.forEach(function(x) {
-        var f = x.state.fdg;
-        if (f) { if (!fdgGroups[f]) fdgGroups[f]=[]; fdgGroups[f].push(x.seg.label.toLowerCase()); }
-      });
-      var fdgParts = [];
-      if (fdgGroups['no-met'])    fdgParts.push('No glucose metabolism in '+fdgGroups['no-met'].join(', ')+' (non-viable/match)');
-      if (fdgGroups['partial'])   fdgParts.push('Partial glucose metabolism in '+fdgGroups['partial'].join(', ')+' (nontransmural scar)');
-      if (fdgGroups['preserved']) fdgParts.push('Preserved glucose metabolism in '+fdgGroups['preserved'].join(', ')+' (viable/mismatch)');
-      if (fdgParts.length) msg += terr+' FDG: '+fdgParts.join('. ')+'\n';
+    if(wp.length) lines.push(terr+' wall motion: '+wp.join('; ')+'.');
+    if(MT==='viability'){
+      var byF={};
+      segs.forEach(function(x){if(x.st.fdg){if(!byF[x.st.fdg])byF[x.st.fdg]=[];byF[x.st.fdg].push(x.label.toLowerCase());}});
+      var fp=[];
+      if(byF['no-met'])     fp.push('No glucose metabolism in '+byF['no-met'].join(', ')+' (non-viable, match pattern)');
+      if(byF['fdg-partial'])fp.push('Partial glucose metabolism in '+byF['fdg-partial'].join(', ')+' (nontransmural scar pattern)');
+      if(byF['preserved'])  fp.push('Preserved glucose metabolism in '+byF['preserved'].join(', ')+' (viable, mismatch pattern)');
+      if(fp.length) lines.push(terr+' FDG: '+fp.join('. ')+'.');
     }
   });
-  msg += '\n';
-
-  // Gated SPECT
-  var efs = document.getElementById('m-efs').value;
-  var efr = document.getElementById('m-efr').value;
-  var gwm = document.getElementById('m-gwm').value;
-  var wmx = document.getElementById('m-wmx').value;
-  msg += 'GATED SPECT:\n';
-  if (efs) msg += 'LVEF stress: '+efs+'%\n';
-  if (efr) msg += 'LVEF rest: '+efr+'%\n';
-  msg += 'Global WM: '+gwm+'\n';
-  if (wmx) msg += 'Additional WM: '+wmx+'\n';
-
-  var ctx = document.getElementById('m-ctx').value;
-  if (ctx) msg += '\nClinical context: '+ctx+'\n';
-
-  return msg;
+  return lines.join('\n');
 }
 
-function setMT(type, btn) {
-  MT = type;
-  document.querySelectorAll('#mpi-type-row .tgl').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  var isStress  = (type==='adenosine'||type==='bruce');
-  var isVia     = (type==='viability');
-  document.getElementById('m-sparams').style.display   = isStress ? 'block' : 'none';
-  document.getElementById('m-aden-p').style.display    = (isStress&&type!=='bruce') ? 'block' : 'none';
-  document.getElementById('m-bruce-p').style.display   = (type==='bruce') ? 'block' : 'none';
-  document.getElementById('m-sd-wrap').style.display   = isStress ? '' : 'none';
-  document.getElementById('m-fd-wrap').style.display   = isVia ? '' : 'none';
-  document.getElementById('m-ef-s-wrap').style.display = isStress ? '' : 'none';
-  // Update picker rest/fdg visibility
-  document.getElementById('rest-wrap').style.display   = isStress ? 'block' : 'none';
-  document.getElementById('fdg-wrap').style.display    = isVia ? 'block' : 'none';
+function mpiSys(){
+  var L='\n';
+  var s='You are a senior Nuclear Medicine physician generating formal MPI reports for a department in India (Dr. Sunil H V / Dr. Bushra Sadeed).'+L;
+  s+='Use EXACTLY this format from the department archive:'+L+L;
+  s+='TITLE: All caps. Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Rest: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING | Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY'+L+L;
+  s+='PROTOCOL PARAGRAPH (exact wording from archive):'+L;
+  s+='Adenosine: "Intravenous injection of [X] mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of [Y] mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
+  s+='Bruce: "Intravenous injection of [X] mCi of 99mTc Sestamibi was given at the peak of exercise performed on a Tread Mill using Bruce Protocol. Post stress images were acquired 30 min later. Resting images were acquired after i.v. injection of [Y] mCi of the radiotracer. Imaging was performed under a dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
+  s+='Rest+Viability: "Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared."'+L+L;
+  s+='STRESS PARAMETERS format:'+L;
+  s+='Adenosine: Duration of infusion : 06:00 min | Baseline Heart Rate and BP : [X]/min, [Y] mmHg | ECG Changes : [val] | Complaints : [val] | Cause for termination : Maximum dose infused.'+L;
+  s+='Bruce: Duration of Exercise : [mm:ss] minutes ([METs] METS) | Baseline Heart Rate and BP | Maximum Heart Rate Achieved : [X]/min ([Y]% of MPHR) | Maximum Blood Pressure : [X] mm of Hg | Double Product : [val] | ECG Changes | Complaints | Cause for termination'+L+L;
+  s+='FINDINGS section:'+L;
+  s+='- LV cavity statement (e.g. "There is no evidence of LV cavity dilatation at stress and rest.")'+L;
+  s+='- RV uptake statement (e.g. "There is no evidence of increased tracer uptake in right ventricle at stress and rest.")'+L+L;
+  s+='STRESS IMAGES / REST PERFUSION FINDINGS:'+L;
+  s+='- Use: "Absent perfusion is noted in [segs]." or "Severely reduced perfusion is noted in [segs]."'+L;
+  s+='- End with: "Rest of the LV myocardium shows adequate perfusion at stress." (or normal for viability)'+L+L;
+  s+='REST IMAGES:'+L;
+  s+='- "There is no improvement in perfusion in [segs]." / "There is complete improvement in perfusion in [segs]." / "There is partial improvement in perfusion in [segs]."'+L;
+  s+='- End with: "Rest of the LV myocardium shows adequate perfusion at rest."'+L+L;
+  s+='GATED SPECT FINDINGS:'+L;
+  s+='- "LVEF at stress is [X]% and LVEF at rest is [Y]%." (stress) or "LVEF at rest is [X]%." (rest only)'+L;
+  s+='- "Note is made of global hypokinesia."'+L;
+  s+='- "[Segs] appear akinetic/hypokinetic at stress and at rest."'+L+L;
+  s+='18F-FDG PET-CT IMAGES (viability only):'+L;
+  s+='"There is evidence of partial glucose metabolism in [segs] (nontransmural scar pattern)."'+L;
+  s+='"There is evidence of preserved glucose metabolism in [segs] (Perfusion metabolism mismatch pattern)."'+L;
+  s+='"There is no evidence of glucose metabolism in [segs] (perfusion metabolism match pattern)."'+L+L;
+  s+='IMPRESSION (numbered list):'+L;
+  s+='- Transmural infarct: "[Territory] territory shows [large/medium] area of transmural infarct."'+L;
+  s+='- Nontransmural: "[Territory] territory shows [large/medium] area of nontransmural infarct."'+L;
+  s+='- Ischemia: "[Territory] territory shows [large/medium] area of [moderate/severe] intensity ischemia."'+L;
+  s+='- Viability: "[Territory] territory shows perfusion defect with [no/partial/preserved] glucose metabolism suggestive of [NON VIABLE myocardium / NONTRANSMURAL SCAR / VIABLE myocardium]."'+L;
+  s+='- Always: "Rest of the LV myocardium shows adequate/normal perfusion."'+L;
+  s+='- If no ischemia: "No evidence of inducible ischemia in the LV myocardium."'+L;
+  s+='- Bruce with good effort: start with "Adequate exercise." and "Good effort tolerance."'+L+L;
+  s+='Logic: No improvement at rest = infarct (akinetic=transmural, severely hypokinetic=nontransmural). Complete improvement = ischemia. Partial = mixed. Size: 1 seg=small, 2-3=medium, 4+=large. FDG match=non-viable, mismatch=viable, partial=nontransmural scar.'+L+L;
+  s+='SIGN-OFF (always last):'+L;
+  s+='Dr. Sunil H V        Dr. Bushra Sadeed'+L;
+  s+='Consultant           Jr. Consultant';
+  return s;
 }
 
-function calcDP() {
-  var mhr = parseInt(document.getElementById('m-mhr').value)||0;
-  var mbp = (document.getElementById('m-mbp').value||'').split('/')[0];
-  if (mhr && mbp) document.getElementById('m-dp').value = mhr * parseInt(mbp);
+function mpiMsg(){
+  var t=MT;
+  var sd=document.getElementById('m-sd').value||'4.5';
+  var rd=document.getElementById('m-rd').value||'13.5';
+  var fd=document.getElementById('m-fd').value||'2';
+  var nm=document.getElementById('m-name').value;
+  var mr=document.getElementById('m-mrn').value;
+  var lines=[];
+  lines.push('Generate formal MPI report.');
+  if(nm) lines.push('Patient: '+nm);
+  if(mr) lines.push('MRN: '+mr);
+  if(t==='adenosine'){
+    lines.push('Study: Adenosine Stress MPI');
+    lines.push('Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
+    lines.push('');
+    lines.push('STRESS PARAMETERS:');
+    lines.push('Baseline HR: '+(document.getElementById('m-bhr').value||'')+'/min');
+    lines.push('Baseline BP: '+(document.getElementById('m-bbp').value||'')+' mmHg');
+    lines.push('ECG Changes: '+document.getElementById('m-ecg').value);
+    lines.push('Complaints: '+document.getElementById('m-comp').value);
+  } else if(t==='bruce'){
+    var mhr=parseInt(document.getElementById('m-mhr').value)||0;
+    var age=parseInt(document.getElementById('m-age').value)||0;
+    var mphr=age?(220-age):0;
+    var pct=(mhr&&mphr)?Math.round(100*mhr/mphr):0;
+    lines.push('Study: Bruce Protocol Exercise Stress MPI');
+    lines.push('Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
+    lines.push('');
+    lines.push('STRESS PARAMETERS:');
+    lines.push('Duration: '+(document.getElementById('m-dur').value||'')+' min ('+(document.getElementById('m-mets').value||'')+' METS)');
+    lines.push('Baseline HR/BP: '+(document.getElementById('m-bhr2').value||'')+'/min, '+(document.getElementById('m-bbp2').value||'')+' mmHg');
+    lines.push('Max HR: '+mhr+'/min ('+(pct?pct+'% of MPHR':'')+') | Max BP: '+(document.getElementById('m-mbp').value||'')+' mmHg');
+    lines.push('Double Product: '+(document.getElementById('m-dp').value||''));
+    lines.push('ECG: '+document.getElementById('m-ecg2').value+' | Complaints: '+document.getElementById('m-comp2').value);
+    lines.push('Termination: '+document.getElementById('m-term').value);
+  } else if(t==='rest'){
+    lines.push('Study: Rest MPI only');
+    lines.push('Rest dose: '+rd+' mCi');
+  } else {
+    lines.push('Study: Rest MPI + FDG PET CT Viability');
+    lines.push('Rest dose: '+rd+' mCi | FDG dose: '+fd+' mCi');
+  }
+  lines.push('');
+  var lvv=document.getElementById('m-lv').value;
+  lines.push('LV cavity: '+(lvv==='none'?'No LV cavity dilatation':lvv==='both'?'LV cavity dilatation at stress and rest':lvv==='stress'?'LV cavity dilatation at stress only (TID)':'LV cavity dilatation at rest'));
+  var rvv=document.getElementById('m-rv').value;
+  lines.push('RV uptake: '+(rvv==='none'?'No increased RV tracer uptake':rvv==='both'?'Increased RV uptake at stress and rest':'Increased RV uptake at stress only'));
+  lines.push('');
+  lines.push('PERFUSION FINDINGS:');
+  lines.push(terrFindings());
+  lines.push('');
+  lines.push('GATED SPECT:');
+  var efs=document.getElementById('m-efs').value;
+  var efr=document.getElementById('m-efr').value;
+  if(efs) lines.push('LVEF stress: '+efs+'%');
+  if(efr) lines.push('LVEF rest: '+efr+'%');
+  lines.push('Global WM: '+document.getElementById('m-gwm').value);
+  var wmx=document.getElementById('m-wmx').value;if(wmx)lines.push('Additional WM: '+wmx);
+  var ctx=document.getElementById('m-ctx').value;if(ctx)lines.push('Clinical context: '+ctx);
+  return lines.join('\n');
 }
 
-function genMPI() {
-  var key = gk(); if (!key){ toast('Enter API key first','er'); resetKey(); return; }
-  var hasSegs = SEGS.some(function(s){ return SEG_STATE[s.id] && SEG_STATE[s.id].perf; });
-  var hasEF   = document.getElementById('m-efr').value;
-  if (!hasSegs && !hasEF) { toast('Select at least one segment or enter LVEF','er'); return; }
-
-  var oEl=document.getElementById('mpi-out'), lEl=document.getElementById('ld-mpi'), mEl=document.getElementById('mpi-md');
-  var btn=document.getElementById('btn-mpi');
-  oEl.classList.add('on'); lEl.style.display='flex'; mEl.innerHTML='';
-  btn.disabled=true; btn.textContent='Generating...';
-
-  callAPI(mpiSys(), mpiMsg()).then(function(full){
-    S.outs['mpi'] = full;
-    lEl.style.display = 'none';
+function genMPI(){
+  var key=gk();if(!key){toast('Enter API key first','er');resetKey();return;}
+  var hasSegs=Object.keys(SEG).some(function(id){return SEG[id]&&SEG[id].perf;});
+  var hasEF=document.getElementById('m-efr').value;
+  if(!hasSegs&&!hasEF){toast('Tap at least one segment and assign perfusion severity','er');return;}
+  var oEl=document.getElementById('mpi-out'),lEl=document.getElementById('ld-mpi'),mEl=document.getElementById('mpi-md'),btn=document.getElementById('btn-mpi');
+  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
+  btn.disabled=true;btn.textContent='Generating...';
+  callAPI(mpiSys(),mpiMsg()).then(function(full){
+    S.outs['mpi']=full;lEl.style.display='none';
     var i=0;
-    function tick(){ if(i<full.length){ mEl.innerHTML=rMD(full.slice(0,i+25),'mpi'); i+=25; setTimeout(tick,3); } else { mEl.innerHTML=rMD(full,'mpi'); } }
+    function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+25),'mpi');i+=25;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,'mpi');}}
     tick();
-    var nm = document.getElementById('m-name').value||'MPI Gamma Report';
-    addLib({tab:'compose',marker:null,label:nm,input:mpiMsg(),output:full},false);
+    var nm=document.getElementById('m-name').value||'MPI Report';
+    addLib({tab:'compose',marker:null,label:nm+' - Gamma Report',input:mpiMsg(),output:full},false);
     toast('Report generated');
   }).catch(function(e){
-    lEl.style.display='none'; mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
-  }).then(function(){
-    btn.disabled=false; btn.textContent='Generate Report';
-  });
+    lEl.style.display='none';mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
+  }).then(function(){btn.disabled=false;btn.textContent='Generate Report';});
 }
 
 function initMPI(){
-  buildSegGrid();
-  setMT('adenosine', document.querySelector('#mpi-type-row .tgl'));
+  setMT('adenosine',document.querySelector('#mpi-type-row .tgl'));
 }
 
 </script>
