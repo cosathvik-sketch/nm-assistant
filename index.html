@@ -1794,159 +1794,281 @@ function calcDP() {
 
 // ── Build territory findings text ─────────────────
 function terrFindings() {
-  var terrs={LAD:[],LCx:[],RCA:[]};
-  Object.keys(SEG).forEach(function(id){
-    var st=SEG[id]; if(!st||!st.perf) return;
-    var t=SEG_TERR[id]||'LAD';
-    terrs[t].push({id:id,label:st.label||SEG_LABELS[id]||id,st:st});
+  // Group segments by territory and perfusion severity
+  var terrs = {LAD:[], LCx:[], RCA:[]};
+  Object.keys(SEG).forEach(function(id) {
+    var st = SEG[id]; if (!st || !st.perf) return;
+    terrs[SEG_TERR[id] || 'LAD'].push({id:id, label:st.label || SEG_LABELS[id] || id});
   });
-  var lines=[];
-  ['LAD','LCx','RCA'].forEach(function(terr){
-    var segs=terrs[terr];
-    var wm  =TERR_WM[terr]||'';
-    var fdg =TERR_FDG[terr]||'';
-    var rest=TERR_REST[terr]||'';
-    if(!segs.length && !wm && !fdg && !rest) {
-      lines.push(terr+': Normal perfusion throughout.');
-      return;
-    }
-    // Perfusion
-    if(segs.length) {
-      var byPerf={};
-      segs.forEach(function(x){if(!byPerf[x.st.perf])byPerf[x.st.perf]=[];byPerf[x.st.perf].push(x.label.toLowerCase());});
-      var sp=[];
-      ['absent','severe','moderate','mild'].forEach(function(p){
-        if(!byPerf[p]) return;
-        var pre=p==='absent'?'Absent perfusion is noted in':p==='severe'?'Severely reduced perfusion is noted in':p==='moderate'?'Moderately reduced perfusion is noted in':'Mildly reduced perfusion is noted in';
-        sp.push(pre+' '+byPerf[p].join(', ')+' segment'+(byPerf[p].length>1?'s':''));
-      });
-      lines.push(terr+' stress perfusion: '+sp.join('. ')+'.');
-    }
-    // Rest (territory level)
-    if(rest && (MT==='adenosine'||MT==='bruce')) {
-      var restTxt=rest==='no-imp'?'There is no improvement in perfusion':rest==='complete'?'There is complete improvement in perfusion':'There is partial improvement in perfusion';
-      lines.push(terr+' rest: '+restTxt+'.');
-    }
-    // Wall motion (territory level)
-    if(wm) lines.push(terr+' wall motion: '+WM_LBL[wm]+'.');
-    // FDG (territory level)
-    if(fdg && MT==='viability') lines.push(terr+' FDG: '+FDG_LBL[fdg]+'.');
+
+  // Helper: list segment names for a territory
+  function segNames(terr) {
+    return terrs[terr].map(function(x){ return x.label.toLowerCase(); });
+  }
+  function segCount(terr) { return terrs[terr].length; }
+  function sz(n) { return n<=1?'small':n<=3?'medium':'large'; }
+
+  var out = [];
+
+  // ── PERFUSION FINDINGS (segment names only, no territory labels) ──────────
+  // Group ALL abnormal segments across all territories by severity
+  var byPerf = {};
+  ['LAD','LCx','RCA'].forEach(function(terr) {
+    terrs[terr].forEach(function(x) {
+      var p = (SEG[x.id]||{}).perf; if(!p) return;
+      if (!byPerf[p]) byPerf[p] = [];
+      byPerf[p].push(x.label.toLowerCase());
+    });
   });
-  return lines.join('\n');
+  var perfLines = [];
+  ['absent','severe','moderate','mild'].forEach(function(p) {
+    if (!byPerf[p]) return;
+    var names = byPerf[p];
+    var pre = p==='absent'   ? 'Absent perfusion is noted in'
+            : p==='severe'   ? 'Severely reduced perfusion is noted in'
+            : p==='moderate' ? 'Moderately reduced perfusion is noted in'
+            :                  'Mildly reduced perfusion is noted in';
+    perfLines.push(pre + ' ' + names.join(', ') + ' segment' + (names.length>1?'s':''));
+  });
+  if (perfLines.length) out.push('PERF_FINDINGS:\n' + perfLines.join('. ') + '.');
+
+  // ── REST IMAGES (segment names only, grouped by territory rest result) ────
+  if (MT==='adenosine' || MT==='bruce') {
+    var restLines = [];
+    ['LAD','LCx','RCA'].forEach(function(terr) {
+      var rest = TERR_REST[terr] || '';
+      var names = segNames(terr);
+      if (!names.length || !rest) return;
+      var pre = rest==='no-imp'   ? 'There is no improvement in perfusion in'
+              : rest==='complete' ? 'There is complete improvement in perfusion in'
+              :                    'There is partial improvement in perfusion in';
+      restLines.push(pre + ' ' + names.join(', ') + ' segment' + (names.length>1?'s':''));
+    });
+    if (restLines.length) out.push('REST_FINDINGS:\n' + restLines.join('. ') + '.');
+  }
+
+  // ── GATED SPECT wall motion (segment names, group same WM together) ───────
+  var wmGroups = {};
+  ['LAD','LCx','RCA'].forEach(function(terr) {
+    var wm = TERR_WM[terr] || ''; if (!wm) return;
+    var names = segNames(terr); if (!names.length) return;
+    if (!wmGroups[wm]) wmGroups[wm] = [];
+    wmGroups[wm] = wmGroups[wm].concat(names);
+  });
+  var wmLines = [];
+  ['akinetic','severe-hypo','moderate-hypo','mild-hypo','normal'].forEach(function(k) {
+    if (!wmGroups[k]) return;
+    wmLines.push(wmGroups[k].join(', ') + ' segment' + (wmGroups[k].length>1?'s':'') + ' appear ' + WM_LBL[k]);
+  });
+  if (wmLines.length) out.push('WM_FINDINGS:\n' + wmLines.join('. ') + '.');
+
+  // ── FDG PET-CT (segment names, group same FDG result together) ───────────
+  if (MT==='viability') {
+    var fdgGroups = {};
+    ['LAD','LCx','RCA'].forEach(function(terr) {
+      var fdg = TERR_FDG[terr] || ''; if (!fdg) return;
+      var names = segNames(terr); if (!names.length) return;
+      if (!fdgGroups[fdg]) fdgGroups[fdg] = [];
+      fdgGroups[fdg] = fdgGroups[fdg].concat(names);
+    });
+    var fdgLines = [];
+    if (fdgGroups['fdg-partial']) fdgLines.push('There is evidence of partial glucose metabolism in ' + fdgGroups['fdg-partial'].join(', ') + ' segments (nontransmural scar pattern)');
+    if (fdgGroups['preserved'])   fdgLines.push('There is evidence of preserved glucose metabolism in ' + fdgGroups['preserved'].join(', ') + ' segments (Perfusion metabolism mismatch pattern)');
+    if (fdgGroups['no-met'])      fdgLines.push('There is no evidence of glucose metabolism in ' + fdgGroups['no-met'].join(', ') + ' segments (perfusion metabolism match pattern)');
+    if (fdgLines.length) out.push('FDG_FINDINGS:\n' + fdgLines.join('. ') + '.');
+  }
+
+  // ── IMPRESSION DATA (territory-level, for IMPRESSION section only) ────────
+  var impLines = [];
+  ['LAD','LCx','RCA'].forEach(function(terr) {
+    var n    = segCount(terr); if (!n) return;
+    var size = sz(n);
+    var wm   = TERR_WM[terr]   || '';
+    var fdg  = TERR_FDG[terr]  || '';
+    var rest = TERR_REST[terr] || '';
+    if (MT === 'viability') {
+      // Viability: ONE combined impression line per territory
+      var fdgWord = fdg==='fdg-partial' ? 'partial glucose metabolism suggestive of NONTRANSMURAL SCAR'
+                  : fdg==='preserved'   ? 'preserved glucose metabolism suggestive of VIABLE myocardium'
+                  : fdg==='no-met'      ? 'no glucose metabolism suggestive of NON VIABLE myocardium'
+                  : 'perfusion defect';
+      impLines.push('IMP|'+terr+'|viab|'+size+'|'+fdgWord);
+    } else {
+      // Stress/Rest: infarct vs ischemia based on rest improvement and wall motion
+      var type = 'unknown';
+      if (rest==='no-imp') {
+        type = (wm==='akinetic') ? 'transmural_infarct' : 'nontransmural_infarct';
+      } else if (rest==='complete') {
+        type = 'ischemia';
+      } else if (rest==='partial') {
+        type = 'mixed';
+      } else if (!rest && wm==='akinetic') {
+        type = 'transmural_infarct';
+      } else if (!rest && wm) {
+        type = 'nontransmural_infarct';
+      }
+      impLines.push('IMP|'+terr+'|'+type+'|'+size+'|wm:'+wm);
+    }
+  });
+  if (impLines.length) out.push('IMPRESSION_DATA:\n' + impLines.join('\n'));
+
+  return out.join('\n\n');
 }
 
-// ── System prompt ─────────────────────────────────
+// ── System prompt — verbatim reference format ─────
 function mpiSys() {
-  var L='\n';
-  var s='You are a senior Nuclear Medicine physician generating formal MPI reports for a department in India (Dr. Sunil H V / Dr. Bushra Sadeed).'+L;
-  s+='Use EXACTLY this format from the department archive:'+L+L;
-  s+='TITLE: Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Rest only: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING | Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY'+L+L;
-  s+='PROTOCOL:'+L;
-  s+='Adenosine: "Intravenous injection of [X] mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of [Y] mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
-  s+='Bruce: "Intravenous injection of [X] mCi of 99mTc Sestamibi was given at the peak of exercise performed on a Tread Mill using Bruce Protocol. Post stress images were acquired 30 min later. Resting images were acquired after i.v. injection of [Y] mCi of the radiotracer. Imaging was performed under a dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
-  s+='Viability: "Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared."'+L+L;
-  s+='STRESS PARAMETERS (adenosine): Duration of infusion : 06:00 min | Baseline Heart Rate and BP | ECG Changes | Complaints | Cause for termination : Maximum dose infused.'+L;
-  s+='STRESS PARAMETERS (Bruce): Duration of Exercise | METs | Baseline HR and BP | Maximum Heart Rate Achieved (% of MPHR) | Maximum Blood Pressure | Double Product | ECG | Complaints | Cause for termination'+L+L;
-  s+='FINDINGS: LV cavity dilatation statement. RV uptake statement.'+L+L;
-  s+='STRESS IMAGES / REST PERFUSION FINDINGS: "Absent perfusion is noted in [segs]." / "Severely reduced perfusion is noted in [segs]." End: "Rest of the LV myocardium shows adequate perfusion at stress."'+L+L;
-  s+='REST IMAGES (stress studies): "There is no improvement in perfusion in [segs/territory]." / "There is complete improvement in perfusion in [segs/territory]." End: "Rest of the LV myocardium shows adequate perfusion at rest."'+L+L;
-  s+='GATED SPECT FINDINGS: "LVEF at stress is [X]% and LVEF at rest is [Y]%." | "Note is made of global hypokinesia." | List wall motion per territory: "[Territory segs] appear akinetic/hypokinetic at stress and at rest."'+L+L;
-  s+='18F-FDG PET-CT IMAGES (viability only):'+L;
-  s+='"There is evidence of partial glucose metabolism in [segs] (nontransmural scar pattern)."'+L;
-  s+='"There is evidence of preserved glucose metabolism in [segs] (Perfusion metabolism mismatch pattern)."'+L;
-  s+='"There is no evidence of glucose metabolism in [segs] (perfusion metabolism match pattern)."'+L+L;
-  s+='IMPRESSION (numbered list):'+L;
-  s+='Transmural infarct: "[Territory] territory shows [large/medium] area of transmural infarct."'+L;
-  s+='Nontransmural: "[Territory] territory shows [large/medium] area of nontransmural infarct."'+L;
-  s+='Ischemia: "[Territory] territory shows [large/medium] area of [moderate/severe] intensity ischemia."'+L;
-  s+='Viability: "[Territory] territory shows perfusion defect with [no/partial/preserved] glucose metabolism suggestive of [NON VIABLE myocardium / NONTRANSMURAL SCAR / VIABLE myocardium]."'+L;
-  s+='Always: "Rest of the LV myocardium shows adequate/normal perfusion." and if no ischemia: "No evidence of inducible ischemia in the LV myocardium." Bruce good effort: start with "Adequate exercise." and "Good effort tolerance."'+L+L;
-  s+='Logic: No rest improvement=infarct (akinetic=transmural, hypokinetic=nontransmural). Complete improvement=ischemia. Partial=mixed. Size: 1=small, 2-3=medium, 4+=large. FDG match=non-viable, mismatch=viable, partial=nontransmural scar.'+L+L;
-  s+='SIGN-OFF:\nDr. Sunil H V        Dr. Bushra Sadeed\nConsultant           Jr. Consultant';
+  var L = '\n';
+  var s = 'You are a Nuclear Medicine physician generating formal MPI reports.' + L;
+  s += 'Follow this EXACT format from the department archive. Do not deviate.' + L + L;
+
+  s += '--- EXACT REFERENCE FORMAT ---' + L + L;
+
+  s += 'VIABILITY REPORT EXAMPLE:' + L;
+  s += 'REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING' + L;
+  s += 'FOLLOWED BY FDG PET CT FOR VIABILITY' + L + L;
+  s += 'Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared.' + L + L;
+  s += 'REST PERFUSION FINDINGS:' + L;
+  s += 'There is no evidence of LV cavity dilatation at rest. There is no evidence of increased tracer uptake in right ventricle uptake at rest.' + L;
+  s += 'Severely reduced perfusion is noted in apex, apicoanterior, apicoseptum, apicoinferior, apicoseptal, apicolateral mid anterior and mid anteroseptal segments. Rest of the LV myocardium shows normal perfusion at rest.' + L + L;
+  s += 'GATED SPECT FINDINGS:' + L;
+  s += 'LVEF at rest is 74%. Note is made of global hypokinesia. Apex, apicoanterior, apicoseptum, apicoinferior, apicoseptal, apicolateral mid anterior and mid anteroseptal segments appear severely hypokinetic at rest.' + L + L;
+  s += '18F-FDG PET-CT IMAGES:' + L;
+  s += 'There is evidence of partial glucose metabolism in apex, apicoanterior, apicoseptum, apicoinferior, apicolateral segments (nontransmural scar pattern).' + L;
+  s += 'There is evidence of preserved glucose metabolism in mid to basal inferior and inferoseptal segments (Perfusion metabolism mismatch pattern).' + L + L;
+  s += 'IMPRESSION:' + L;
+  s += 'LAD territory shows perfusion defect with partial glucose metabolism suggestive of NONTRANSMURAL SCAR.' + L;
+  s += 'RCA territory shows perfusion defect with preserved glucose metabolism suggestive of VIABLE myocardium.' + L;
+  s += 'Rest of the LV myocardium shows normal perfusion at rest suggestive of VIABLE myocardium.' + L + L;
+
+  s += 'ADENOSINE STRESS REPORT EXAMPLE:' + L;
+  s += 'ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT' + L + L;
+  s += 'Intravenous injection of 10 mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of 20 mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other.' + L + L;
+  s += 'STRESS PARAMETERS:' + L;
+  s += 'Duration of infusion\t\t\t:\t06:00 min' + L;
+  s += 'Baseline Heart Rate and BP\t\t:\t90/min, 120/90 mmHg' + L;
+  s += 'ECG Changes\t\t\t\t:\tNil.' + L;
+  s += 'Complaints\t\t\t\t:\tNil.' + L;
+  s += 'Cause for termination\t\t\t:\tMaximum dose infused.' + L + L;
+  s += 'FINDINGS:' + L;
+  s += 'There is evidence of LV cavity dilatation at stress and rest.' + L;
+  s += 'There is no evidence of increased tracer uptake in right ventricle at stress and rest.' + L + L;
+  s += 'STRESS IMAGES:' + L;
+  s += 'Absent perfusion is noted in apex, apicoanterior, apicoseptum, apicoinferior, apicolateral and mid anterior segments. Severely reduced perfusion is noted in mid to basal inferior and inferoseptal segments. Rest of the LV myocardium shows adequate perfusion at stress.' + L + L;
+  s += 'REST IMAGES:' + L;
+  s += 'There is no improvement in perfusion in apex, apicoanterior, apicoseptum, apicoinferior, apicolateral and mid anterior segments. There is no improvement in perfusion in mid to basal inferior and inferoseptal segments. Rest of the LV myocardium shows adequate perfusion at rest.' + L + L;
+  s += 'GATED SPECT FINDINGS:' + L;
+  s += 'LVEF at stress is 33% and LVEF at rest is 30%. Note is made of global hypokinesia. Apex, apicoanterior, apicoseptum, apicoinferior, apicolateral and mid anterior segments appear akinetic at stress and at rest. Mid to basal inferior and inferoseptal segments appear severely hypokinetic at stress and at rest.' + L + L;
+  s += 'IMPRESSION:' + L;
+  s += 'LAD territory shows large area of transmural infarct.' + L;
+  s += 'RCA territory shows large area of nontransmural infarct.' + L;
+  s += 'Rest of the LV myocardium shows adequate perfusion.' + L;
+  s += 'No evidence of inducible ischemia in the LV myocardium.' + L + L;
+
+  s += '--- DATA INTERPRETATION RULES ---' + L;
+  s += '1. Use segment names from PERF_FINDINGS exactly as provided. NEVER write "LAD territory segments" or "LCx territory segments" or "RCA territory segments" in the perfusion/wall motion/FDG body sections.' + L;
+  s += '2. Territory labels (LAD/LCx/RCA) appear ONLY in the IMPRESSION section.' + L;
+  s += '3. IMPRESSION_DATA provides one line per territory. For viability: write exactly one impression line per territory combining the FDG result (do NOT write a separate infarct line AND a viability line for the same territory — only the viability line).' + L;
+  s += '4. For stress studies: no-imp+akinetic=transmural infarct; no-imp+hypokinetic=nontransmural infarct; complete=ischemia; partial=mixed.' + L;
+  s += '5. Size: small=1 seg, medium=2-3, large=4+ segments.' + L;
+  s += '6. For viability: last impression line is always "Rest of the LV myocardium shows normal perfusion at rest suggestive of VIABLE myocardium."' + L;
+  s += '7. For stress: last impression lines are "Rest of the LV myocardium shows adequate perfusion." and "No evidence of inducible ischemia in the LV myocardium." (if no ischemia).' + L;
+  s += '8. Bruce with METs>7: add "Adequate exercise." and "Good effort tolerance." as first impression items.' + L + L;
+
+  s += 'SIGN-OFF (always last):' + L;
+  s += 'Dr. Sunil H V        Dr. Bushra Sadeed' + L;
+  s += 'Consultant           Jr. Consultant';
   return s;
 }
 
-// ── User message ──────────────────────────────────
 function mpiMsg() {
-  var t=MT,sd=document.getElementById('m-sd').value||'4.5',rd=document.getElementById('m-rd').value||'13.5',fd=document.getElementById('m-fd').value||'2';
-  var nm=document.getElementById('m-name').value,mr=document.getElementById('m-mrn').value;
-  var lines=['Generate formal MPI report.'];
-  if(nm) lines.push('Patient: '+nm);
-  if(mr) lines.push('MRN: '+mr);
-  if(t==='adenosine'){
-    lines.push('Study: Adenosine Stress MPI | Stress: '+sd+' mCi | Rest: '+rd+' mCi');
+  var t=MT, sd=document.getElementById('m-sd').value||'4.5', rd=document.getElementById('m-rd').value||'13.5', fd=document.getElementById('m-fd').value||'2';
+  var nm=document.getElementById('m-name').value, mr=document.getElementById('m-mrn').value;
+  var lines = ['Generate the formal MPI report using the exact department format.'];
+  if (nm) lines.push('Patient: ' + nm);
+  if (mr) lines.push('MRN: ' + mr);
+  if (t==='adenosine') {
+    lines.push('Study: Adenosine Stress MPI | Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
     lines.push('STRESS PARAMETERS:');
-    lines.push('Baseline HR: '+(document.getElementById('m-bhr').value||'')+'/min | BP: '+(document.getElementById('m-bbp').value||'')+' mmHg');
-    lines.push('ECG: '+document.getElementById('m-ecg').value+' | Complaints: '+document.getElementById('m-comp').value);
-  } else if(t==='bruce'){
+    lines.push('Baseline HR: '+(document.getElementById('m-bhr').value||'')+'/min, BP: '+(document.getElementById('m-bbp').value||'')+' mmHg');
+    lines.push('ECG Changes: '+document.getElementById('m-ecg').value);
+    lines.push('Complaints: '+document.getElementById('m-comp').value);
+    lines.push('Cause for termination: Maximum dose infused.');
+  } else if (t==='bruce') {
     var mhr=parseInt(document.getElementById('m-mhr').value)||0;
     var age=parseInt(document.getElementById('m-age').value)||0;
     var pct=(mhr&&age)?Math.round(100*mhr/(220-age)):0;
-    lines.push('Study: Bruce Protocol MPI | Stress: '+sd+' mCi | Rest: '+rd+' mCi');
+    lines.push('Study: Bruce Protocol MPI | Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
+    lines.push('STRESS PARAMETERS:');
     lines.push('Duration: '+(document.getElementById('m-dur').value||'')+' min ('+(document.getElementById('m-mets').value||'')+' METS)');
-    lines.push('Baseline HR/BP: '+(document.getElementById('m-bhr2').value||'')+'/min, '+(document.getElementById('m-bbp2').value||'')+' mmHg');
+    lines.push('Baseline HR: '+(document.getElementById('m-bhr2').value||'')+'/min, BP: '+(document.getElementById('m-bbp2').value||'')+' mmHg');
     lines.push('Max HR: '+mhr+'/min ('+(pct?pct+'% of MPHR':'')+') | Max BP: '+(document.getElementById('m-mbp').value||'')+' mmHg');
     lines.push('Double Product: '+(document.getElementById('m-dp').value||''));
-    lines.push('ECG: '+document.getElementById('m-ecg2').value+' | Complaints: '+document.getElementById('m-comp2').value);
+    lines.push('ECG Changes: '+document.getElementById('m-ecg2').value);
+    lines.push('Complaints: '+document.getElementById('m-comp2').value);
     lines.push('Termination: '+document.getElementById('m-term').value);
-  } else if(t==='rest'){
-    lines.push('Study: Rest MPI only | Rest: '+rd+' mCi');
+  } else if (t==='rest') {
+    lines.push('Study: Rest MPI | Rest dose: '+rd+' mCi');
   } else {
-    lines.push('Study: Rest MPI + FDG Viability | Rest: '+rd+' mCi | FDG: '+fd+' mCi');
+    lines.push('Study: Rest MPI + FDG Viability | Rest dose: '+rd+' mCi | FDG dose: '+fd+' mCi');
   }
   lines.push('');
-  var lvv=document.getElementById('m-lv').value;
-  lines.push('LV cavity: '+(lvv==='none'?'No LV cavity dilatation':lvv==='both'?'LV cavity dilatation at stress and rest':lvv==='stress'?'LV cavity dilatation at stress only (TID)':'LV cavity dilatation at rest'));
-  lines.push('RV uptake: '+(document.getElementById('m-rv').value==='none'?'No increased RV tracer uptake':document.getElementById('m-rv').value==='both'?'Increased RV uptake at stress and rest':'Increased RV uptake at stress only'));
+  var lvv = document.getElementById('m-lv').value;
+  var lvcStr = lvv==='none'   ? 'There is no evidence of LV cavity dilatation'
+             : lvv==='both'   ? 'There is evidence of LV cavity dilatation at stress and rest'
+             : lvv==='stress' ? 'There is evidence of LV cavity dilatation at stress only (transient ischaemic dilatation)'
+             :                  'There is evidence of LV cavity dilatation at rest';
+  lines.push('LV_CAVITY: ' + lvcStr);
+  var rvv = document.getElementById('m-rv').value;
+  var rvStr = rvv==='none' ? 'There is no evidence of increased tracer uptake in right ventricle'
+            : rvv==='both' ? 'There is evidence of increased tracer uptake in right ventricle at stress and rest'
+            :                'There is evidence of increased right ventricle uptake at stress only';
+  lines.push('RV_UPTAKE: ' + rvStr);
   lines.push('');
-  lines.push('FINDINGS:');
   lines.push(terrFindings());
   lines.push('');
-  lines.push('GATED SPECT:');
-  var efs=document.getElementById('m-efs')&&document.getElementById('m-efs').value;
-  var efr=document.getElementById('m-efr').value;
-  if(efs) lines.push('LVEF stress: '+efs+'%');
-  if(efr) lines.push('LVEF rest: '+efr+'%');
-  lines.push('Global WM: '+document.getElementById('m-gwm').value);
-  var wmx=document.getElementById('m-wmx').value; if(wmx) lines.push('Additional: '+wmx);
-  var ctx=document.getElementById('m-ctx').value; if(ctx) lines.push('Clinical context: '+ctx);
+  lines.push('GATED_SPECT:');
+  var efs = document.getElementById('m-efs') && document.getElementById('m-efs').value;
+  var efr = document.getElementById('m-efr').value;
+  if (efs) lines.push('LVEF_STRESS: ' + efs + '%');
+  if (efr) lines.push('LVEF_REST: ' + efr + '%');
+  lines.push('GLOBAL_WM: ' + document.getElementById('m-gwm').value);
+  var wmx = document.getElementById('m-wmx').value; if (wmx) lines.push('WM_NOTES: ' + wmx);
+  var ctx = document.getElementById('m-ctx').value; if (ctx) lines.push('CLINICAL_CONTEXT: ' + ctx);
   return lines.join('\n');
 }
 
-// ── Generate report ───────────────────────────────
 function genMPI() {
   var key=gk(); if(!key){toast('Enter API key first','er');resetKey();return;}
   var hasSegs=Object.keys(SEG).some(function(id){return SEG[id]&&SEG[id].perf;});
   var hasEF=document.getElementById('m-efr').value;
   if(!hasSegs&&!hasEF){toast('Select at least one segment with perfusion severity','er');return;}
   var oEl=document.getElementById('mpi-out'),lEl=document.getElementById('ld-mpi'),mEl=document.getElementById('mpi-md'),btn=document.getElementById('btn-mpi');
-  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
-  btn.disabled=true;btn.textContent='Generating...';
-  callAPI(mpiSys(),mpiMsg()).then(function(full){
-    S.outs['mpi']=full;lEl.style.display='none';
+  oEl.classList.add('on'); lEl.style.display='flex'; mEl.innerHTML='';
+  btn.disabled=true; btn.textContent='Generating...';
+  callAPI(mpiSys(), mpiMsg()).then(function(full){
+    S.outs['mpi']=full; lEl.style.display='none';
     var i=0;
-    function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+25),'mpi');i+=25;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,'mpi');}}
+    function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+30),'mpi');i+=30;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,'mpi');}}
     tick();
     var nm=document.getElementById('m-name').value||'MPI Report';
     addLib({tab:'compose',marker:null,label:nm+' - Gamma Report',input:mpiMsg(),output:full},false);
     toast('Report generated');
   }).catch(function(e){
-    lEl.style.display='none';mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
-  }).then(function(){btn.disabled=false;btn.textContent='Generate Report';});
+    lEl.style.display='none'; mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
+  }).then(function(){btn.disabled=false; btn.textContent='Generate Report';});
 }
 
-function setMT(type,btn){
-  MT=type;
+function setMT(type, btn) {
+  MT = type;
   document.querySelectorAll('#mpi-type-row .tgl').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
-  var isS=(type==='adenosine'||type==='bruce'),isV=(type==='viability');
-  document.getElementById('m-sparams').style.display  = isS?'block':'none';
-  document.getElementById('m-aden-p').style.display   = (isS&&type!=='bruce')?'block':'none';
-  document.getElementById('m-bruce-p').style.display  = (type==='bruce')?'block':'none';
-  document.getElementById('m-sd-wrap').style.display  = isS?'':'none';
-  document.getElementById('m-fd-wrap').style.display  = isV?'':'none';
+  var isS = (type==='adenosine'||type==='bruce'), isV = (type==='viability');
+  document.getElementById('m-sparams').style.display = isS?'block':'none';
+  document.getElementById('m-aden-p').style.display  = (isS&&type!=='bruce')?'block':'none';
+  document.getElementById('m-bruce-p').style.display = (type==='bruce')?'block':'none';
+  document.getElementById('m-sd-wrap').style.display = isS?'':'none';
+  document.getElementById('m-fd-wrap').style.display = isV?'':'none';
   var efsw=document.getElementById('m-efs-wrap'); if(efsw) efsw.style.display=isS?'':'none';
-  // Show/hide per-territory FDG and Rest rows
   ['LAD','LCx','RCA'].forEach(function(terr){
     var fw=document.getElementById('fdg-'+terr+'-wrap'); if(fw) fw.style.display=isV?'block':'none';
     var rw=document.getElementById('rest-'+terr+'-wrap'); if(rw) rw.style.display=(!isV)?'block':'none';
@@ -1954,10 +2076,7 @@ function setMT(type,btn){
 }
 
 function initMPI(){
-  setMT('adenosine',document.querySelector('#mpi-type-row .tgl'));
-}
-function initMPI(){
-  setMT('adenosine',document.querySelector('#mpi-type-row .tgl'));
+  setMT('adenosine', document.querySelector('#mpi-type-row .tgl'));
 }
 
 </script>
