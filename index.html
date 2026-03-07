@@ -503,9 +503,10 @@ select option{background:var(–surface);color:var(–text);}
 <!-- GAMMA / MPI REPORT -->
 <div class="pane" id="pane-mpi">
   <div class="hbar" style="border-left-color:#0369a1;background:#e0f2fe;color:#0369a1;">
-    Gamma Camera MPI Report — tap segments in each territory column, assign severity, enter EF and generate report.
+    Gamma Camera MPI Report — select segments, assign perfusion severity, set wall motion and viability per territory, then generate.
   </div>
 
+  <!-- STUDY TYPE -->
   <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem" id="mpi-type-row">
     <button class="tgl on" onclick="setMT('adenosine',this)">Adenosine Stress</button>
     <button class="tgl"    onclick="setMT('bruce',this)">Exercise (Bruce)</button>
@@ -513,6 +514,7 @@ select option{background:var(–surface);color:var(–text);}
     <button class="tgl"    onclick="setMT('viability',this)">Rest + FDG Viability</button>
   </div>
 
+  <!-- DOSES -->
   <div class="fgrid" style="margin-bottom:.75rem">
     <div class="fgrp"><label>Patient Name</label><input class="ipt" id="m-name" placeholder="optional"/></div>
     <div class="fgrp"><label>MRN</label><input class="ipt" id="m-mrn" placeholder="optional"/></div>
@@ -521,6 +523,7 @@ select option{background:var(–surface);color:var(–text);}
     <div class="fgrp" id="m-fd-wrap" style="display:none"><label>FDG Dose (mCi F-18)</label><input class="ipt" id="m-fd" type="number" step="0.1" value="2"/></div>
   </div>
 
+  <!-- STRESS PARAMETERS -->
   <div id="m-sparams" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
     <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Stress Parameters</div>
     <div id="m-aden-p">
@@ -543,11 +546,12 @@ select option{background:var(–surface);color:var(–text);}
         <div class="fgrp"><label>Double Product</label><input class="ipt" id="m-dp" placeholder="auto-calc" readonly style="background:var(--surface2)"/></div>
         <div class="fgrp"><label>ECG Changes</label><select id="m-ecg2"><option value="Nil.">Nil</option><option value="1 mm ST depression in inferior leads.">ST depression inferior</option><option value="1 mm ST depression in lateral leads.">ST depression lateral</option><option value="LBBB pattern noted.">LBBB</option></select></div>
         <div class="fgrp"><label>Complaints</label><select id="m-comp2"><option value="Fatigue.">Fatigue</option><option value="Chest pain.">Chest pain</option><option value="Nil.">Nil</option></select></div>
-        <div class="fgrp"><label>Cause for Termination</label><select id="m-term"><option value="Target heart rate achieved, fatigue.">Target HR + fatigue</option><option value="Target heart rate achieved.">Target HR achieved</option><option value="Fatigue.">Fatigue only</option><option value="Chest pain.">Chest pain</option></select></div>
+        <div class="fgrp"><label>Termination</label><select id="m-term"><option value="Target heart rate achieved, fatigue.">Target HR + fatigue</option><option value="Target heart rate achieved.">Target HR achieved</option><option value="Fatigue.">Fatigue</option><option value="Chest pain.">Chest pain</option></select></div>
       </div>
     </div>
   </div>
 
+  <!-- OVERALL -->
   <div class="fgrid" style="margin-bottom:.75rem">
     <div class="fgrp"><label>LV Cavity Dilatation</label>
       <select id="m-lv"><option value="none">No LV cavity dilatation</option><option value="both">Dilatation at stress and rest</option><option value="stress">Dilatation at stress only (TID)</option><option value="rest-only">Dilatation at rest only</option></select>
@@ -557,111 +561,181 @@ select option{background:var(–surface);color:var(–text);}
     </div>
   </div>
 
-  <!-- SEGMENT SELECTOR -->
+  <!-- ═══ 3 TERRITORY COLUMNS ═══ -->
   <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
 
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem">
-      <div>
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1">Select Segments</div>
-        <div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">Tap to toggle. Select one or many, then assign severity below.</div>
+    <!-- Mode bar -->
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem">
+      <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1">Perfusion segments</span>
+      <div style="display:flex;border:1.5px solid var(--border);border-radius:20px;overflow:hidden;background:var(--surface)">
+        <button id="mode-single" onclick="setSegMode('single')" style="padding:.28rem .85rem;font-size:.72rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:#0369a1;color:#fff;transition:all .15s">Single</button>
+        <button id="mode-multi"  onclick="setSegMode('multi')"  style="padding:.28rem .85rem;font-size:.72rem;font-weight:600;border:none;cursor:pointer;font-family:inherit;background:var(--surface);color:var(--muted);transition:all .15s">Multi-select</button>
       </div>
-      <div style="display:flex;gap:.4rem">
-        <button onclick="selAll()" style="padding:.3rem .75rem;background:#e0f2fe;border:1.5px solid #7dd3fc;color:#0369a1;border-radius:14px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit">Select All</button>
-        <button onclick="clearAllSegs()" style="padding:.3rem .75rem;background:var(--red-light);border:1.5px solid var(--red-bg);color:var(--red);border-radius:14px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit">Clear All</button>
-      </div>
+      <span id="multi-hint" style="display:none;font-size:.7rem;color:#0369a1;font-weight:500">Tap segments to select, then Apply</span>
+      <button id="multi-apply-btn" onclick="showMultiPicker()" style="display:none;padding:.3rem .9rem;background:#0369a1;color:#fff;border:none;border-radius:20px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit">Apply to selected</button>
+      <button onclick="clearAllSegs()" style="margin-left:auto;padding:.28rem .7rem;background:var(--red-light);border:1.5px solid var(--red-bg);color:var(--red);border-radius:14px;font-size:.68rem;font-weight:600;cursor:pointer;font-family:inherit">Clear all</button>
     </div>
 
     <!-- 3 columns -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:1rem">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem">
 
-      <div>
-        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem">
+      <!-- ── LAD ── -->
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.1rem">
           <div style="flex:1;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#1d4ed8;background:#dbeafe;border-radius:6px;padding:.3rem;text-align:center">LAD</div>
           <button onclick="selTerr('LAD')" style="padding:.2rem .5rem;background:#dbeafe;border:1px solid #93c5fd;color:#1d4ed8;border-radius:6px;font-size:.6rem;font-weight:700;cursor:pointer;font-family:inherit">All</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.3rem">
-          <button class="seg-btn" id="sb-apex"          onclick="togSeg(this,'apex','Apex')">Apex</button>
-          <button class="seg-btn" id="sb-apicoanterior" onclick="togSeg(this,'apicoanterior','Apicoanterior')">Apicoanterior</button>
-          <button class="seg-btn" id="sb-apicoseptal"   onclick="togSeg(this,'apicoseptal','Apicoseptal')">Apicoseptal</button>
-          <button class="seg-btn" id="sb-midanterior"   onclick="togSeg(this,'midanterior','Mid Anterior')">Mid Anterior</button>
-          <button class="seg-btn" id="sb-midanterosep"  onclick="togSeg(this,'midanterosep','Mid Anteroseptal')">Mid Anteroseptal</button>
+        <button class="seg-btn" id="sb-apex"          onclick="handleSeg(this,'apex','Apex')">Apex</button>
+        <button class="seg-btn" id="sb-apicoanterior" onclick="handleSeg(this,'apicoanterior','Apicoanterior')">Apicoanterior</button>
+        <button class="seg-btn" id="sb-apicoseptal"   onclick="handleSeg(this,'apicoseptal','Apicoseptal')">Apicoseptal</button>
+        <button class="seg-btn" id="sb-midanterior"   onclick="handleSeg(this,'midanterior','Mid Anterior')">Mid Anterior</button>
+        <button class="seg-btn" id="sb-midanterosep"  onclick="handleSeg(this,'midanterosep','Mid Anteroseptal')">Mid Anteroseptal</button>
+
+        <div style="border-top:1px dashed var(--border);margin:.4rem 0"></div>
+
+        <!-- LAD Wall Motion -->
+        <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1d4ed8;margin-bottom:.2rem">Wall Motion</div>
+        <select id="twm-LAD" onchange="setTerrWM('LAD',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+          <option value="">Not involved</option>
+          <option value="akinetic">Akinetic</option>
+          <option value="severe-hypo">Severely Hypokinetic</option>
+          <option value="moderate-hypo">Moderately Hypokinetic</option>
+          <option value="mild-hypo">Mildly Hypokinetic</option>
+          <option value="normal">Normal</option>
+        </select>
+
+        <!-- LAD FDG (viability only) -->
+        <div id="fdg-LAD-wrap" style="display:none">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1d4ed8;margin:.35rem 0 .2rem">FDG Viability</div>
+          <select id="tfdg-LAD" onchange="setTerrFDG('LAD',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not applicable</option>
+            <option value="no-met">No Metabolism — Non-Viable</option>
+            <option value="fdg-partial">Partial Metabolism — Scar</option>
+            <option value="preserved">Preserved Metabolism — Viable</option>
+          </select>
+        </div>
+
+        <!-- LAD Rest (stress studies) -->
+        <div id="rest-LAD-wrap">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1d4ed8;margin:.35rem 0 .2rem">Rest Perfusion</div>
+          <select id="trest-LAD" onchange="setTerrRest('LAD',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not involved</option>
+            <option value="no-imp">No Improvement</option>
+            <option value="complete">Complete Improvement</option>
+            <option value="partial">Partial Improvement</option>
+          </select>
         </div>
       </div>
 
-      <div>
-        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem">
+      <!-- ── LCx ── -->
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.1rem">
           <div style="flex:1;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#15803d;background:#dcfce7;border-radius:6px;padding:.3rem;text-align:center">LCx</div>
           <button onclick="selTerr('LCx')" style="padding:.2rem .5rem;background:#dcfce7;border:1px solid #86efac;color:#15803d;border-radius:6px;font-size:.6rem;font-weight:700;cursor:pointer;font-family:inherit">All</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.3rem">
-          <button class="seg-btn" id="sb-apicolateral"  onclick="togSeg(this,'apicolateral','Apicolateral')">Apicolateral</button>
-          <button class="seg-btn" id="sb-midanterolat"  onclick="togSeg(this,'midanterolat','Mid Anterolateral')">Mid Anterolateral</button>
-          <button class="seg-btn" id="sb-midbsinflat"   onclick="togSeg(this,'midbsinflat','Mid-Basal Inferolateral')">Mid-Basal Inferolateral</button>
+        <button class="seg-btn" id="sb-apicolateral"  onclick="handleSeg(this,'apicolateral','Apicolateral')">Apicolateral</button>
+        <button class="seg-btn" id="sb-midanterolat"  onclick="handleSeg(this,'midanterolat','Mid Anterolateral')">Mid Anterolateral</button>
+        <button class="seg-btn" id="sb-midbsinflat"   onclick="handleSeg(this,'midbsinflat','Mid-Basal Inferolateral')">Mid-Basal Inferolateral</button>
+
+        <div style="border-top:1px dashed var(--border);margin:.4rem 0"></div>
+
+        <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#15803d;margin-bottom:.2rem">Wall Motion</div>
+        <select id="twm-LCx" onchange="setTerrWM('LCx',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+          <option value="">Not involved</option>
+          <option value="akinetic">Akinetic</option>
+          <option value="severe-hypo">Severely Hypokinetic</option>
+          <option value="moderate-hypo">Moderately Hypokinetic</option>
+          <option value="mild-hypo">Mildly Hypokinetic</option>
+          <option value="normal">Normal</option>
+        </select>
+
+        <div id="fdg-LCx-wrap" style="display:none">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#15803d;margin:.35rem 0 .2rem">FDG Viability</div>
+          <select id="tfdg-LCx" onchange="setTerrFDG('LCx',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not applicable</option>
+            <option value="no-met">No Metabolism — Non-Viable</option>
+            <option value="fdg-partial">Partial Metabolism — Scar</option>
+            <option value="preserved">Preserved Metabolism — Viable</option>
+          </select>
+        </div>
+
+        <div id="rest-LCx-wrap">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#15803d;margin:.35rem 0 .2rem">Rest Perfusion</div>
+          <select id="trest-LCx" onchange="setTerrRest('LCx',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not involved</option>
+            <option value="no-imp">No Improvement</option>
+            <option value="complete">Complete Improvement</option>
+            <option value="partial">Partial Improvement</option>
+          </select>
         </div>
       </div>
 
-      <div>
-        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.4rem">
+      <!-- ── RCA ── -->
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <div style="display:flex;align-items:center;gap:.3rem;margin-bottom:.1rem">
           <div style="flex:1;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#c2410c;background:#ffedd5;border-radius:6px;padding:.3rem;text-align:center">RCA</div>
           <button onclick="selTerr('RCA')" style="padding:.2rem .5rem;background:#ffedd5;border:1px solid #fdba74;color:#c2410c;border-radius:6px;font-size:.6rem;font-weight:700;cursor:pointer;font-family:inherit">All</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.3rem">
-          <button class="seg-btn" id="sb-apicoinferior" onclick="togSeg(this,'apicoinferior','Apicoinferior')">Apicoinferior</button>
-          <button class="seg-btn" id="sb-midbasinf"     onclick="togSeg(this,'midbasinf','Mid-Basal Inferior')">Mid-Basal Inferior</button>
-          <button class="seg-btn" id="sb-midbasinfsep"  onclick="togSeg(this,'midbasinfsep','Mid-Basal Inferoseptal')">Mid-Basal Inferoseptal</button>
+        <button class="seg-btn" id="sb-apicoinferior" onclick="handleSeg(this,'apicoinferior','Apicoinferior')">Apicoinferior</button>
+        <button class="seg-btn" id="sb-midbasinf"     onclick="handleSeg(this,'midbasinf','Mid-Basal Inferior')">Mid-Basal Inferior</button>
+        <button class="seg-btn" id="sb-midbasinfsep"  onclick="handleSeg(this,'midbasinfsep','Mid-Basal Inferoseptal')">Mid-Basal Inferoseptal</button>
+
+        <div style="border-top:1px dashed var(--border);margin:.4rem 0"></div>
+
+        <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#c2410c;margin-bottom:.2rem">Wall Motion</div>
+        <select id="twm-RCA" onchange="setTerrWM('RCA',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+          <option value="">Not involved</option>
+          <option value="akinetic">Akinetic</option>
+          <option value="severe-hypo">Severely Hypokinetic</option>
+          <option value="moderate-hypo">Moderately Hypokinetic</option>
+          <option value="mild-hypo">Mildly Hypokinetic</option>
+          <option value="normal">Normal</option>
+        </select>
+
+        <div id="fdg-RCA-wrap" style="display:none">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#c2410c;margin:.35rem 0 .2rem">FDG Viability</div>
+          <select id="tfdg-RCA" onchange="setTerrFDG('RCA',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not applicable</option>
+            <option value="no-met">No Metabolism — Non-Viable</option>
+            <option value="fdg-partial">Partial Metabolism — Scar</option>
+            <option value="preserved">Preserved Metabolism — Viable</option>
+          </select>
+        </div>
+
+        <div id="rest-RCA-wrap">
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#c2410c;margin:.35rem 0 .2rem">Rest Perfusion</div>
+          <select id="trest-RCA" onchange="setTerrRest('RCA',this.value)" style="font-size:.72rem;padding:.32rem .5rem;border:1.5px solid var(--border);border-radius:var(--r6);background:var(--surface);color:var(--text);font-family:inherit;width:100%">
+            <option value="">Not involved</option>
+            <option value="no-imp">No Improvement</option>
+            <option value="complete">Complete Improvement</option>
+            <option value="partial">Partial Improvement</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <!-- Selected badge -->
-    <div id="sel-count-bar" style="display:none;margin-bottom:.75rem;padding:.4rem .75rem;background:#e0f2fe;border-radius:8px;font-size:.72rem;font-weight:600;color:#0369a1">
-      <span id="sel-count-txt"></span>
-      <span style="font-weight:400;color:#0369a1"> — assign severity below, then tap more segments or generate report</span>
-    </div>
+    </div><!-- end 3col grid -->
 
-    <!-- SEVERITY PANEL — always visible once segments selected -->
-    <div id="sev-picker" style="display:none;border:2px solid #0369a1;border-radius:var(--r8);padding:.85rem;background:var(--surface)">
-      <div style="font-size:.72rem;font-weight:700;color:#0369a1;margin-bottom:.75rem" id="sev-title">Assign to selected segments:</div>
-
-      <div style="margin-bottom:.65rem">
+    <!-- SEGMENT SEVERITY PICKER -->
+    <div id="sev-picker" style="display:none;border:2px solid #0369a1;border-radius:var(--r8);padding:.85rem;background:var(--surface);margin-top:.9rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem">
+        <span style="font-size:.78rem;font-weight:700;color:#0369a1" id="picker-title">Segment: <span id="sev-seg-name" style="color:var(--text)"></span></span>
+        <button onclick="closePicker()" style="font-size:.68rem;background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);padding:.2rem .6rem;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:600">Done</button>
+      </div>
+      <div style="margin-bottom:.55rem">
         <div class="sev-row-lbl">Perfusion at Stress</div>
         <div class="sev-row">
           <button class="sev-opt" id="so-absent"   onclick="setSev('absent')"   style="color:#dc2626;border-color:#dc2626;background:#fee2e2">Absent</button>
-          <button class="sev-opt" id="so-severe"   onclick="setSev('severe')"   style="color:#c2410c;border-color:#c2410c;background:#fff7ed">Severely Reduced</button>
-          <button class="sev-opt" id="so-moderate" onclick="setSev('moderate')" style="color:#b45309;border-color:#b45309;background:#fffbeb">Moderately Reduced</button>
-          <button class="sev-opt" id="so-mild"     onclick="setSev('mild')"     style="color:#059669;border-color:#059669;background:#f0fdf4">Mildly Reduced</button>
+          <button class="sev-opt" id="so-severe"   onclick="setSev('severe')"   style="color:#c2410c;border-color:#c2410c;background:#fed7aa">Severely Reduced</button>
+          <button class="sev-opt" id="so-moderate" onclick="setSev('moderate')" style="color:#b45309;border-color:#b45309;background:#fef3c7">Moderately Reduced</button>
+          <button class="sev-opt" id="so-mild"     onclick="setSev('mild')"     style="color:#059669;border-color:#059669;background:#d1fae5">Mildly Reduced</button>
         </div>
       </div>
-
-      <div style="margin-bottom:.65rem">
-        <div class="sev-row-lbl">Wall Motion</div>
-        <div class="sev-row">
-          <button class="sev-opt" id="so-akinetic"       onclick="setWM('akinetic')"       style="color:#dc2626;border-color:#dc2626;background:#fee2e2">Akinetic</button>
-          <button class="sev-opt" id="so-severe-hypo"    onclick="setWM('severe-hypo')"    style="color:#c2410c;border-color:#c2410c;background:#fff7ed">Severely Hypokinetic</button>
-          <button class="sev-opt" id="so-moderate-hypo"  onclick="setWM('moderate-hypo')"  style="color:#b45309;border-color:#b45309;background:#fffbeb">Moderately Hypokinetic</button>
-          <button class="sev-opt" id="so-mild-hypo"      onclick="setWM('mild-hypo')"      style="color:#059669;border-color:#059669;background:#f0fdf4">Mildly Hypokinetic</button>
-        </div>
-      </div>
-
-      <div id="rest-row" style="display:none;margin-bottom:.65rem">
-        <div class="sev-row-lbl">Rest Perfusion</div>
-        <div class="sev-row">
-          <button class="sev-opt" id="so-no-imp"   onclick="setRest('no-imp')"   style="color:#dc2626;border-color:#dc2626;background:#fee2e2">No Improvement</button>
-          <button class="sev-opt" id="so-complete" onclick="setRest('complete')" style="color:#059669;border-color:#059669;background:#f0fdf4">Complete Improvement</button>
-          <button class="sev-opt" id="so-partial"  onclick="setRest('partial')"  style="color:#b45309;border-color:#b45309;background:#fffbeb">Partial Improvement</button>
-        </div>
-      </div>
-
-      <div id="fdg-row" style="display:none;margin-bottom:.65rem">
-        <div class="sev-row-lbl">FDG Viability</div>
-        <div class="sev-row">
-          <button class="sev-opt" id="so-no-met"       onclick="setFDG('no-met')"      style="color:#dc2626;border-color:#dc2626;background:#fee2e2">No Metabolism (Non-Viable)</button>
-          <button class="sev-opt" id="so-fdg-partial"  onclick="setFDG('fdg-partial')" style="color:#b45309;border-color:#b45309;background:#fffbeb">Partial (Scar)</button>
-          <button class="sev-opt" id="so-preserved"    onclick="setFDG('preserved')"   style="color:#059669;border-color:#059669;background:#f0fdf4">Preserved (Viable)</button>
-        </div>
+      <div id="single-clear-row" style="margin-top:.5rem">
+        <button onclick="clearSeg()" style="font-size:.68rem;background:var(--red-light);border:1.5px solid var(--red-bg);color:var(--red);padding:.22rem .65rem;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:600">Clear this segment</button>
       </div>
     </div>
-  </div>
+
+  </div><!-- end territory card -->
 
   <!-- GATED SPECT -->
   <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
@@ -669,12 +743,12 @@ select option{background:var(–surface);color:var(–text);}
     <div class="fgrid">
       <div class="fgrp" id="m-efs-wrap"><label>LVEF at Stress (%)</label><input class="ipt" id="m-efs" type="number" min="5" max="80" placeholder="e.g. 34"/></div>
       <div class="fgrp"><label>LVEF at Rest (%)</label><input class="ipt" id="m-efr" type="number" min="5" max="80" placeholder="e.g. 36"/></div>
-      <div class="fgrp"><label>Global Wall Motion</label>
+      <div class="fgrp"><label>Overall Wall Motion</label>
         <select id="m-gwm"><option value="global-hypo">Global hypokinesia</option><option value="normal">Normal global wall motion</option><option value="regional">Regional wall motion abnormality</option></select>
       </div>
     </div>
-    <div class="fgrp"><label>Additional WM note (optional)</label>
-      <textarea id="m-wmx" style="min-height:45px;border-color:var(--border)" placeholder="Any extra wall motion detail..."></textarea>
+    <div class="fgrp"><label>Additional WM / other notes (optional)</label>
+      <textarea id="m-wmx" style="min-height:45px;border-color:var(--border)" placeholder="Any extra detail..."></textarea>
     </div>
   </div>
 
@@ -1531,243 +1605,253 @@ window.onload=function(){
 // ═══════════════════════════════════════
 // ─────────────────────────────────────────
 // GAMMA / MPI REPORT
-var MT = 'adenosine';
-var SEG = {};          // {id: {label, perf, wm, rest, fdg}}
-var SEL = {};          // {id: true}  — currently selected/highlighted segments
-var SEG_TERR = {apex:'LAD',apicoanterior:'LAD',apicoseptal:'LAD',midanterior:'LAD',midanterosep:'LAD',apicolateral:'LCx',midanterolat:'LCx',midbsinflat:'LCx',apicoinferior:'RCA',midbasinf:'RCA',midbasinfsep:'RCA'};
-var SEG_LABEL = {apex:'Apex',apicoanterior:'Apicoanterior',apicoseptal:'Apicoseptal',midanterior:'Mid Anterior',midanterosep:'Mid Anteroseptal',apicolateral:'Apicolateral',midanterolat:'Mid Anterolateral',midbsinflat:'Mid-Basal Inferolateral',apicoinferior:'Apicoinferior',midbasinf:'Mid-Basal Inferior',midbasinfsep:'Mid-Basal Inferoseptal'};
+var MT       = 'adenosine';
+var SEG      = {};        // {id: {label, perf}}  — perfusion per segment
+var TERR_WM  = {};        // {LAD/LCx/RCA: wm value}
+var TERR_FDG = {};        // {LAD/LCx/RCA: fdg value}
+var TERR_REST= {};        // {LAD/LCx/RCA: rest value}
+var ASEG     = null;
+var SEL      = {};
+var SEG_MODE = 'single';
+
+var SEG_TERR = {
+  apex:'LAD',apicoanterior:'LAD',apicoseptal:'LAD',midanterior:'LAD',midanterosep:'LAD',
+  apicolateral:'LCx',midanterolat:'LCx',midbsinflat:'LCx',
+  apicoinferior:'RCA',midbasinf:'RCA',midbasinfsep:'RCA'
+};
+var SEG_LABELS = {
+  apex:'Apex',apicoanterior:'Apicoanterior',apicoseptal:'Apicoseptal',
+  midanterior:'Mid Anterior',midanterosep:'Mid Anteroseptal',
+  apicolateral:'Apicolateral',midanterolat:'Mid Anterolateral',midbsinflat:'Mid-Basal Inferolateral',
+  apicoinferior:'Apicoinferior',midbasinf:'Mid-Basal Inferior',midbasinfsep:'Mid-Basal Inferoseptal'
+};
 var PERF_CLS = {absent:'absent-p',severe:'severe-p',moderate:'moderate-p',mild:'mild-p'};
-var PERF_LBL = {absent:'Absent perfusion',severe:'Severely reduced perfusion',moderate:'Moderately reduced perfusion',mild:'Mildly reduced perfusion'};
 var WM_LBL   = {akinetic:'akinetic','severe-hypo':'severely hypokinetic','moderate-hypo':'moderately hypokinetic','mild-hypo':'mildly hypokinetic'};
+var FDG_LBL  = {'no-met':'no glucose metabolism (non-viable, perfusion-metabolism match pattern)','fdg-partial':'partial glucose metabolism (nontransmural scar pattern)','preserved':'preserved glucose metabolism (viable, perfusion-metabolism mismatch pattern)'};
+var REST_LBL = {'no-imp':'no improvement','complete':'complete improvement','partial':'partial improvement'};
 
-function setMT(type,btn){
-  MT=type;
-  document.querySelectorAll('#mpi-type-row .tgl').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  var isS=(type==='adenosine'||type==='bruce'),isV=(type==='viability');
-  document.getElementById('m-sparams').style.display  = isS?'block':'none';
-  document.getElementById('m-aden-p').style.display   = (isS&&type!=='bruce')?'block':'none';
-  document.getElementById('m-bruce-p').style.display  = (type==='bruce')?'block':'none';
-  document.getElementById('m-sd-wrap').style.display  = isS?'':'none';
-  document.getElementById('m-fd-wrap').style.display  = isV?'':'none';
-  document.getElementById('m-efs-wrap').style.display = isS?'':'none';
-  document.getElementById('rest-row').style.display   = isS?'block':'none';
-  document.getElementById('fdg-row').style.display    = isV?'block':'none';
+// ── Territory-level setters ───────────────────────
+function setTerrWM(terr, val)   { TERR_WM[terr]   = val; }
+function setTerrFDG(terr, val)  { TERR_FDG[terr]  = val; }
+function setTerrRest(terr, val) { TERR_REST[terr]  = val; }
+
+// ── Mode ─────────────────────────────────────────
+function setSegMode(mode) {
+  SEG_MODE = mode;
+  var isMul = mode === 'multi';
+  document.getElementById('mode-single').style.background = isMul ? 'var(--surface)' : '#0369a1';
+  document.getElementById('mode-single').style.color      = isMul ? 'var(--muted)'   : '#fff';
+  document.getElementById('mode-multi').style.background  = isMul ? '#0369a1'        : 'var(--surface)';
+  document.getElementById('mode-multi').style.color       = isMul ? '#fff'           : 'var(--muted)';
+  document.getElementById('multi-hint').style.display      = isMul ? 'inline' : 'none';
+  document.getElementById('multi-apply-btn').style.display = isMul ? 'inline-block' : 'none';
+  document.getElementById('single-clear-row').style.display= isMul ? 'none' : 'block';
+  SEL = {};
+  document.querySelectorAll('.seg-btn').forEach(function(b){b.classList.remove('seg-selected');});
+  document.getElementById('sev-picker').style.display = 'none';
 }
 
-// Toggle a segment on/off. If off→on: add to SEL. If on→on (already selected): open picker focused on it.
-function togSeg(btnEl,id,label){
-  if(SEL[id]){
-    // Already selected — deselect it
-    delete SEL[id];
+// ── Segment tap ───────────────────────────────────
+function handleSeg(btnEl, id, label) {
+  if (!SEG[id]) SEG[id] = {label:label};
+  if (SEG_MODE === 'multi') {
+    if (SEL[id]) { delete SEL[id]; btnEl.classList.remove('seg-selected'); }
+    else          { SEL[id]=true;  btnEl.classList.add('seg-selected'); }
+    var n = Object.keys(SEL).length;
+    var ab = document.getElementById('multi-apply-btn');
+    ab.textContent = n ? 'Apply to '+n+' segment'+(n>1?'s':'') : 'Apply to selected';
+    document.getElementById('sev-picker').style.display = 'none';
   } else {
-    // Select it
-    SEL[id] = true;
-    if(!SEG[id]) SEG[id]={label:label};
+    ASEG = id;
+    document.querySelectorAll('.seg-btn').forEach(function(b){b.classList.remove('seg-focus');});
+    btnEl.classList.add('seg-focus');
+    openPicker(label, false);
+    refreshPicker();
   }
-  renderSegBtn(id);
-  updateSelCount();
-  // Show picker if at least one selected
-  var picker = document.getElementById('sev-picker');
-  var anySelected = Object.keys(SEL).length > 0;
-  picker.style.display = anySelected ? 'block' : 'none';
-  if(anySelected) picker.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function selTerr(terr){
-  // Select all segments in territory
-  Object.keys(SEG_TERR).forEach(function(id){
-    if(SEG_TERR[id]===terr){
-      SEL[id]=true;
-      if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-      renderSegBtn(id);
-    }
-  });
-  updateSelCount();
-  var picker = document.getElementById('sev-picker');
-  picker.style.display = 'block';
-  picker.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-function selAll(){
-  Object.keys(SEG_TERR).forEach(function(id){
+// ── Territory All ─────────────────────────────────
+function selTerr(terr) {
+  if (SEG_MODE !== 'multi') setSegMode('multi');
+  Object.keys(SEG_TERR).forEach(function(id) {
+    if (SEG_TERR[id] !== terr) return;
     SEL[id]=true;
-    if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-    renderSegBtn(id);
+    if (!SEG[id]) SEG[id]={label:SEG_LABELS[id]};
+    var btn=document.getElementById('sb-'+id);
+    if (btn) btn.classList.add('seg-selected');
   });
-  updateSelCount();
-  document.getElementById('sev-picker').style.display='block';
+  var n=Object.keys(SEL).length;
+  var ab=document.getElementById('multi-apply-btn');
+  ab.textContent='Apply to '+n+' segment'+(n>1?'s':'');
+  ab.style.display='inline-block';
+  document.getElementById('multi-hint').style.display='inline';
 }
 
-function clearAllSegs(){
-  SEG={};SEL={};
-  Object.keys(SEG_TERR).forEach(function(id){renderSegBtn(id);});
-  updateSelCount();
+// ── Picker open ───────────────────────────────────
+function openPicker(titleText, isMulti) {
+  var pt = document.getElementById('picker-title');
+  pt.innerHTML = (isMulti?'<span style="color:#0369a1">Applying to: </span>':'<span style="color:#0369a1">Segment: </span>')
+    + '<span style="color:var(--text)">' + titleText + '</span>';
+  document.getElementById('sev-picker').style.display = 'block';
+  document.getElementById('sev-picker').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showMultiPicker() {
+  var ids = Object.keys(SEL);
+  if (!ids.length) { toast('Tap segments first','er'); return; }
+  var names = ids.map(function(id){return SEG_LABELS[id]||id;}).join(', ');
+  openPicker(names, true);
+  document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
+}
+
+function closePicker() {
+  document.getElementById('sev-picker').style.display = 'none';
+  if (SEG_MODE === 'multi') {
+    SEL = {};
+    document.querySelectorAll('.seg-btn').forEach(function(b){b.classList.remove('seg-selected');});
+    document.getElementById('multi-apply-btn').textContent = 'Apply to selected';
+  }
+}
+
+// ── Refresh picker selection indicators ──────────
+function refreshPicker() {
+  if (!ASEG) return;
+  var st = SEG[ASEG] || {};
+  document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
+  var perfMap = {absent:'so-absent',severe:'so-severe',moderate:'so-moderate',mild:'so-mild'};
+  if (st.perf && perfMap[st.perf]) { var e=document.getElementById(perfMap[st.perf]); if(e)e.classList.add('chosen'); }
+}
+
+// ── Apply perfusion severity ──────────────────────
+function applyPerf(val) {
+  if (SEG_MODE === 'multi') {
+    Object.keys(SEL).forEach(function(id){
+      if(!SEG[id]) SEG[id]={label:SEG_LABELS[id]};
+      SEG[id].perf = val;
+      updateSegBtn(id);
+    });
+    document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
+    var m={absent:'so-absent',severe:'so-severe',moderate:'so-moderate',mild:'so-mild'};
+    if(m[val]){var e=document.getElementById(m[val]);if(e)e.classList.add('chosen');}
+  } else {
+    if (!ASEG) return;
+    if (!SEG[ASEG]) SEG[ASEG]={};
+    SEG[ASEG].perf = val;
+    updateSegBtn(ASEG);
+    refreshPicker();
+  }
+}
+function setSev(val) { applyPerf(val); }
+
+function clearSeg() {
+  if (!ASEG) return;
+  delete SEG[ASEG];
+  var btn=document.getElementById('sb-'+ASEG);
+  if(btn) btn.className='seg-btn seg-focus';
+  document.querySelectorAll('.sev-opt').forEach(function(b){b.classList.remove('chosen');});
+}
+
+function clearAllSegs() {
+  SEG={}; SEL={}; ASEG=null;
+  TERR_WM={}; TERR_FDG={}; TERR_REST={};
+  document.querySelectorAll('.seg-btn').forEach(function(b){b.className='seg-btn';});
+  document.getElementById('sev-picker').style.display='none';
+  ['LAD','LCx','RCA'].forEach(function(t){
+    var wm=document.getElementById('twm-'+t); if(wm) wm.value='';
+    var fd=document.getElementById('tfdg-'+t); if(fd) fd.value='';
+    var re=document.getElementById('trest-'+t); if(re) re.value='';
+  });
+  toast('All cleared');
+}
+
+function updateSegBtn(id) {
+  var btn=document.getElementById('sb-'+id); if(!btn) return;
+  var st=SEG[id]||{};
+  var hasFocus=btn.classList.contains('seg-focus');
+  var hasSel  =btn.classList.contains('seg-selected');
+  btn.className='seg-btn'+(st.perf?' '+PERF_CLS[st.perf]:'')+(hasFocus?' seg-focus':'')+(hasSel?' seg-selected':'');
+}
+
+function resetMPI() {
+  SEG={}; SEL={}; ASEG=null; TERR_WM={}; TERR_FDG={}; TERR_REST={};
+  document.querySelectorAll('.seg-btn').forEach(function(b){b.className='seg-btn';});
   document.getElementById('sev-picker').style.display='none';
   document.getElementById('mpi-out').classList.remove('on');
   document.getElementById('mpi-md').innerHTML='';
-  toast('Cleared');
+  ['LAD','LCx','RCA'].forEach(function(t){
+    var wm=document.getElementById('twm-'+t); if(wm) wm.value='';
+    var fd=document.getElementById('tfdg-'+t); if(fd) fd.value='';
+    var re=document.getElementById('trest-'+t); if(re) re.value='';
+  });
+  toast('Reset');
 }
 
-function updateSelCount(){
-  var n = Object.keys(SEL).length;
-  var bar = document.getElementById('sel-count-bar');
-  var txt = document.getElementById('sel-count-txt');
-  if(n>0){
-    bar.style.display='block';
-    var names = Object.keys(SEL).map(function(id){return SEG_LABEL[id]||id;});
-    txt.textContent = n+' selected: '+names.join(', ');
-  } else {
-    bar.style.display='none';
-  }
-}
-
-// Apply severity to ALL selected segments
-function setSev(val){
-  Object.keys(SEL).forEach(function(id){
-    if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-    SEG[id].perf=val;
-    renderSegBtn(id);
-  });
-  highlightSevBtn('perf',val);
-}
-function setWM(val){
-  Object.keys(SEL).forEach(function(id){
-    if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-    SEG[id].wm=val;
-  });
-  highlightSevBtn('wm',val);
-}
-function setRest(val){
-  Object.keys(SEL).forEach(function(id){
-    if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-    SEG[id].rest=val;
-  });
-  highlightSevBtn('rest',val);
-}
-function setFDG(val){
-  Object.keys(SEL).forEach(function(id){
-    if(!SEG[id]) SEG[id]={label:SEG_LABEL[id]};
-    SEG[id].fdg=val;
-  });
-  highlightSevBtn('fdg',val);
-}
-
-var SEV_BTN_MAP = {
-  perf:{absent:'so-absent',severe:'so-severe',moderate:'so-moderate',mild:'so-mild'},
-  wm:{akinetic:'so-akinetic','severe-hypo':'so-severe-hypo','moderate-hypo':'so-moderate-hypo','mild-hypo':'so-mild-hypo'},
-  rest:{'no-imp':'so-no-imp',complete:'so-complete',partial:'so-partial'},
-  fdg:{'no-met':'so-no-met','fdg-partial':'so-fdg-partial',preserved:'so-preserved'}
-};
-function highlightSevBtn(group,val){
-  var ids = SEV_BTN_MAP[group];
-  if(!ids) return;
-  Object.keys(ids).forEach(function(k){
-    var el=document.getElementById(ids[k]);
-    if(el) el.style.outline = (k===val)?'3px solid #0369a1':'none';
-  });
-}
-
-function renderSegBtn(id){
-  var btn = document.getElementById('sb-'+id);
-  if(!btn) return;
-  var st   = SEG[id]||{};
-  var isSel= !!SEL[id];
-  // Class: perfusion colour class + selected ring
-  btn.className = 'seg-btn'+(st.perf?' '+PERF_CLS[st.perf]:'')+(isSel?' seg-sel':'');
-  // Label: show perfusion tag if assigned
-  var base = SEG_LABEL[id]||id;
-  btn.innerHTML = base + (st.perf?(' <span style="font-size:.58rem;font-weight:700;opacity:.85">['+st.perf.charAt(0).toUpperCase()+st.perf.slice(1)+']</span>'):'');
-}
-
-function calcDP(){
+function calcDP() {
   var mhr=parseInt(document.getElementById('m-mhr').value)||0;
   var mbp=(document.getElementById('m-mbp').value||'').split('/')[0];
   if(mhr&&mbp) document.getElementById('m-dp').value=mhr*parseInt(mbp);
 }
 
-function resetMPI(){
-  SEG={};SEL={};
-  Object.keys(SEG_TERR).forEach(function(id){renderSegBtn(id);});
-  updateSelCount();
-  document.getElementById('sev-picker').style.display='none';
-  document.getElementById('mpi-out').classList.remove('on');
-  document.getElementById('mpi-md').innerHTML='';
-  toast('Reset');
-}
-
-function terrFindings(){
+// ── Build territory findings text ─────────────────
+function terrFindings() {
   var terrs={LAD:[],LCx:[],RCA:[]};
   Object.keys(SEG).forEach(function(id){
     var st=SEG[id]; if(!st||!st.perf) return;
-    (terrs[SEG_TERR[id]||'LAD']).push({id:id,label:SEG_LABEL[id]||id,st:st});
+    var t=SEG_TERR[id]||'LAD';
+    terrs[t].push({id:id,label:st.label||SEG_LABELS[id]||id,st:st});
   });
   var lines=[];
   ['LAD','LCx','RCA'].forEach(function(terr){
     var segs=terrs[terr];
-    if(!segs.length){lines.push(terr+': Normal perfusion throughout.');return;}
-    var byPerf={};
-    segs.forEach(function(x){if(!byPerf[x.st.perf])byPerf[x.st.perf]=[];byPerf[x.st.perf].push(x.label.toLowerCase());});
-    var sp=[];
-    ['absent','severe','moderate','mild'].forEach(function(p){
-      if(!byPerf[p]) return;
-      var pre=p==='absent'?'Absent perfusion is noted in':p==='severe'?'Severely reduced perfusion is noted in':p==='moderate'?'Moderately reduced perfusion is noted in':'Mildly reduced perfusion is noted in';
-      sp.push(pre+' '+byPerf[p].join(', ')+' segment'+(byPerf[p].length>1?'s':''));
-    });
-    lines.push(terr+' stress: '+sp.join('. ')+'.');
-    if(MT==='adenosine'||MT==='bruce'){
-      var byR={};
-      segs.forEach(function(x){var r=x.st.rest||'no-imp';if(!byR[r])byR[r]=[];byR[r].push(x.label.toLowerCase());});
-      var rp=[];
-      if(byR['no-imp'])  rp.push('No improvement in '+byR['no-imp'].join(', '));
-      if(byR['complete'])rp.push('Complete improvement in '+byR['complete'].join(', '));
-      if(byR['partial']) rp.push('Partial improvement in '+byR['partial'].join(', '));
-      if(rp.length) lines.push(terr+' rest: '+rp.join('. ')+'.');
+    var wm  =TERR_WM[terr]||'';
+    var fdg =TERR_FDG[terr]||'';
+    var rest=TERR_REST[terr]||'';
+    if(!segs.length && !wm && !fdg && !rest) {
+      lines.push(terr+': Normal perfusion throughout.');
+      return;
     }
-    var byW={};
-    segs.forEach(function(x){if(x.st.wm){if(!byW[x.st.wm])byW[x.st.wm]=[];byW[x.st.wm].push(x.label.toLowerCase());}});
-    var wp=[];
-    ['akinetic','severe-hypo','moderate-hypo','mild-hypo'].forEach(function(k){
-      if(byW[k]) wp.push(byW[k].join(', ')+' appear '+WM_LBL[k]);
-    });
-    if(wp.length) lines.push(terr+' wall motion: '+wp.join('; ')+'.');
-    if(MT==='viability'){
-      var byF={};
-      segs.forEach(function(x){if(x.st.fdg){if(!byF[x.st.fdg])byF[x.st.fdg]=[];byF[x.st.fdg].push(x.label.toLowerCase());}});
-      var fp=[];
-      if(byF['no-met'])     fp.push('No glucose metabolism in '+byF['no-met'].join(', ')+' (non-viable, match pattern)');
-      if(byF['fdg-partial'])fp.push('Partial glucose metabolism in '+byF['fdg-partial'].join(', ')+' (nontransmural scar pattern)');
-      if(byF['preserved'])  fp.push('Preserved glucose metabolism in '+byF['preserved'].join(', ')+' (viable, mismatch pattern)');
-      if(fp.length) lines.push(terr+' FDG: '+fp.join('. ')+'.');
+    // Perfusion
+    if(segs.length) {
+      var byPerf={};
+      segs.forEach(function(x){if(!byPerf[x.st.perf])byPerf[x.st.perf]=[];byPerf[x.st.perf].push(x.label.toLowerCase());});
+      var sp=[];
+      ['absent','severe','moderate','mild'].forEach(function(p){
+        if(!byPerf[p]) return;
+        var pre=p==='absent'?'Absent perfusion is noted in':p==='severe'?'Severely reduced perfusion is noted in':p==='moderate'?'Moderately reduced perfusion is noted in':'Mildly reduced perfusion is noted in';
+        sp.push(pre+' '+byPerf[p].join(', ')+' segment'+(byPerf[p].length>1?'s':''));
+      });
+      lines.push(terr+' stress perfusion: '+sp.join('. ')+'.');
     }
+    // Rest (territory level)
+    if(rest && (MT==='adenosine'||MT==='bruce')) {
+      var restTxt=rest==='no-imp'?'There is no improvement in perfusion':rest==='complete'?'There is complete improvement in perfusion':'There is partial improvement in perfusion';
+      lines.push(terr+' rest: '+restTxt+'.');
+    }
+    // Wall motion (territory level)
+    if(wm) lines.push(terr+' wall motion: '+WM_LBL[wm]+'.');
+    // FDG (territory level)
+    if(fdg && MT==='viability') lines.push(terr+' FDG: '+FDG_LBL[fdg]+'.');
   });
   return lines.join('\n');
 }
 
-function mpiSys(){
+// ── System prompt ─────────────────────────────────
+function mpiSys() {
   var L='\n';
   var s='You are a senior Nuclear Medicine physician generating formal MPI reports for a department in India (Dr. Sunil H V / Dr. Bushra Sadeed).'+L;
   s+='Use EXACTLY this format from the department archive:'+L+L;
-  s+='TITLE: All caps. Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Rest: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING | Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY'+L+L;
-  s+='PROTOCOL PARAGRAPH (exact wording):'+L;
+  s+='TITLE: Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Rest only: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING | Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY'+L+L;
+  s+='PROTOCOL:'+L;
   s+='Adenosine: "Intravenous injection of [X] mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of [Y] mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
   s+='Bruce: "Intravenous injection of [X] mCi of 99mTc Sestamibi was given at the peak of exercise performed on a Tread Mill using Bruce Protocol. Post stress images were acquired 30 min later. Resting images were acquired after i.v. injection of [Y] mCi of the radiotracer. Imaging was performed under a dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other."'+L;
-  s+='Rest+Viability: "Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared."'+L+L;
-  s+='STRESS PARAMETERS:'+L;
-  s+='Adenosine: Duration of infusion : 06:00 min | Baseline Heart Rate and BP | ECG Changes | Complaints | Cause for termination : Maximum dose infused.'+L;
-  s+='Bruce: Duration of Exercise ([METs] METS) | Baseline HR/BP | Maximum HR Achieved ([%]% of MPHR) | Maximum BP | Double Product | ECG | Complaints | Cause for termination'+L+L;
-  s+='FINDINGS:'+L;
-  s+='- "There is [no] evidence of LV cavity dilatation at stress and rest."'+L;
-  s+='- "There is [no] evidence of increased tracer uptake in right ventricle at stress and rest."'+L+L;
-  s+='STRESS IMAGES / REST PERFUSION FINDINGS:'+L;
-  s+='"Absent perfusion is noted in [segs]." / "Severely reduced perfusion is noted in [segs]." / etc.'+L;
-  s+='End: "Rest of the LV myocardium shows adequate perfusion at stress."'+L+L;
-  s+='REST IMAGES:'+L;
-  s+='"There is no improvement in perfusion in [segs]." / "There is complete improvement..." / "There is partial improvement..."'+L;
-  s+='End: "Rest of the LV myocardium shows adequate perfusion at rest."'+L+L;
-  s+='GATED SPECT FINDINGS:'+L;
-  s+='"LVEF at stress is [X]% and LVEF at rest is [Y]%." | "Note is made of global hypokinesia." | "[Segs] appear akinetic/hypokinetic at stress and at rest."'+L+L;
-  s+='FDG PET-CT IMAGES (viability only):'+L;
+  s+='Viability: "Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared."'+L+L;
+  s+='STRESS PARAMETERS (adenosine): Duration of infusion : 06:00 min | Baseline Heart Rate and BP | ECG Changes | Complaints | Cause for termination : Maximum dose infused.'+L;
+  s+='STRESS PARAMETERS (Bruce): Duration of Exercise | METs | Baseline HR and BP | Maximum Heart Rate Achieved (% of MPHR) | Maximum Blood Pressure | Double Product | ECG | Complaints | Cause for termination'+L+L;
+  s+='FINDINGS: LV cavity dilatation statement. RV uptake statement.'+L+L;
+  s+='STRESS IMAGES / REST PERFUSION FINDINGS: "Absent perfusion is noted in [segs]." / "Severely reduced perfusion is noted in [segs]." End: "Rest of the LV myocardium shows adequate perfusion at stress."'+L+L;
+  s+='REST IMAGES (stress studies): "There is no improvement in perfusion in [segs/territory]." / "There is complete improvement in perfusion in [segs/territory]." End: "Rest of the LV myocardium shows adequate perfusion at rest."'+L+L;
+  s+='GATED SPECT FINDINGS: "LVEF at stress is [X]% and LVEF at rest is [Y]%." | "Note is made of global hypokinesia." | List wall motion per territory: "[Territory segs] appear akinetic/hypokinetic at stress and at rest."'+L+L;
+  s+='18F-FDG PET-CT IMAGES (viability only):'+L;
   s+='"There is evidence of partial glucose metabolism in [segs] (nontransmural scar pattern)."'+L;
   s+='"There is evidence of preserved glucose metabolism in [segs] (Perfusion metabolism mismatch pattern)."'+L;
   s+='"There is no evidence of glucose metabolism in [segs] (perfusion metabolism match pattern)."'+L+L;
@@ -1776,38 +1860,29 @@ function mpiSys(){
   s+='Nontransmural: "[Territory] territory shows [large/medium] area of nontransmural infarct."'+L;
   s+='Ischemia: "[Territory] territory shows [large/medium] area of [moderate/severe] intensity ischemia."'+L;
   s+='Viability: "[Territory] territory shows perfusion defect with [no/partial/preserved] glucose metabolism suggestive of [NON VIABLE myocardium / NONTRANSMURAL SCAR / VIABLE myocardium]."'+L;
-  s+='Always include: "Rest of the LV myocardium shows adequate/normal perfusion."'+L;
-  s+='If no ischemia: "No evidence of inducible ischemia in the LV myocardium."'+L;
-  s+='Bruce with adequate effort (>7 METs): start impression with "Adequate exercise." and "Good effort tolerance."'+L+L;
-  s+='Logic: No rest improvement = infarct (akinetic=transmural, severely hypokinetic=nontransmural). Complete improvement = ischemia. Partial = mixed. 1 seg=small, 2-3=medium, 4+=large. FDG match=non-viable, mismatch=viable.'+L+L;
-  s+='SIGN-OFF (always last):'+L;
-  s+='Dr. Sunil H V        Dr. Bushra Sadeed'+L;
-  s+='Consultant           Jr. Consultant';
+  s+='Always: "Rest of the LV myocardium shows adequate/normal perfusion." and if no ischemia: "No evidence of inducible ischemia in the LV myocardium." Bruce good effort: start with "Adequate exercise." and "Good effort tolerance."'+L+L;
+  s+='Logic: No rest improvement=infarct (akinetic=transmural, hypokinetic=nontransmural). Complete improvement=ischemia. Partial=mixed. Size: 1=small, 2-3=medium, 4+=large. FDG match=non-viable, mismatch=viable, partial=nontransmural scar.'+L+L;
+  s+='SIGN-OFF:\nDr. Sunil H V        Dr. Bushra Sadeed\nConsultant           Jr. Consultant';
   return s;
 }
 
-function mpiMsg(){
+// ── User message ──────────────────────────────────
+function mpiMsg() {
   var t=MT,sd=document.getElementById('m-sd').value||'4.5',rd=document.getElementById('m-rd').value||'13.5',fd=document.getElementById('m-fd').value||'2';
   var nm=document.getElementById('m-name').value,mr=document.getElementById('m-mrn').value;
   var lines=['Generate formal MPI report.'];
   if(nm) lines.push('Patient: '+nm);
   if(mr) lines.push('MRN: '+mr);
   if(t==='adenosine'){
-    lines.push('Study: Adenosine Stress MPI');
-    lines.push('Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
+    lines.push('Study: Adenosine Stress MPI | Stress: '+sd+' mCi | Rest: '+rd+' mCi');
     lines.push('STRESS PARAMETERS:');
-    lines.push('Baseline HR: '+(document.getElementById('m-bhr').value||'')+'/min');
-    lines.push('Baseline BP: '+(document.getElementById('m-bbp').value||'')+' mmHg');
-    lines.push('ECG Changes: '+document.getElementById('m-ecg').value);
-    lines.push('Complaints: '+document.getElementById('m-comp').value);
+    lines.push('Baseline HR: '+(document.getElementById('m-bhr').value||'')+'/min | BP: '+(document.getElementById('m-bbp').value||'')+' mmHg');
+    lines.push('ECG: '+document.getElementById('m-ecg').value+' | Complaints: '+document.getElementById('m-comp').value);
   } else if(t==='bruce'){
     var mhr=parseInt(document.getElementById('m-mhr').value)||0;
     var age=parseInt(document.getElementById('m-age').value)||0;
-    var mphr=age?(220-age):0;
-    var pct=(mhr&&mphr)?Math.round(100*mhr/mphr):0;
-    lines.push('Study: Bruce Protocol Exercise Stress MPI');
-    lines.push('Stress dose: '+sd+' mCi | Rest dose: '+rd+' mCi');
-    lines.push('STRESS PARAMETERS:');
+    var pct=(mhr&&age)?Math.round(100*mhr/(220-age)):0;
+    lines.push('Study: Bruce Protocol MPI | Stress: '+sd+' mCi | Rest: '+rd+' mCi');
     lines.push('Duration: '+(document.getElementById('m-dur').value||'')+' min ('+(document.getElementById('m-mets').value||'')+' METS)');
     lines.push('Baseline HR/BP: '+(document.getElementById('m-bhr2').value||'')+'/min, '+(document.getElementById('m-bbp2').value||'')+' mmHg');
     lines.push('Max HR: '+mhr+'/min ('+(pct?pct+'% of MPHR':'')+') | Max BP: '+(document.getElementById('m-mbp').value||'')+' mmHg');
@@ -1815,33 +1890,35 @@ function mpiMsg(){
     lines.push('ECG: '+document.getElementById('m-ecg2').value+' | Complaints: '+document.getElementById('m-comp2').value);
     lines.push('Termination: '+document.getElementById('m-term').value);
   } else if(t==='rest'){
-    lines.push('Study: Rest MPI only | Rest dose: '+rd+' mCi');
+    lines.push('Study: Rest MPI only | Rest: '+rd+' mCi');
   } else {
-    lines.push('Study: Rest MPI + FDG PET CT Viability | Rest dose: '+rd+' mCi | FDG dose: '+fd+' mCi');
+    lines.push('Study: Rest MPI + FDG Viability | Rest: '+rd+' mCi | FDG: '+fd+' mCi');
   }
   lines.push('');
   var lvv=document.getElementById('m-lv').value;
   lines.push('LV cavity: '+(lvv==='none'?'No LV cavity dilatation':lvv==='both'?'LV cavity dilatation at stress and rest':lvv==='stress'?'LV cavity dilatation at stress only (TID)':'LV cavity dilatation at rest'));
   lines.push('RV uptake: '+(document.getElementById('m-rv').value==='none'?'No increased RV tracer uptake':document.getElementById('m-rv').value==='both'?'Increased RV uptake at stress and rest':'Increased RV uptake at stress only'));
   lines.push('');
-  lines.push('PERFUSION FINDINGS:');
+  lines.push('FINDINGS:');
   lines.push(terrFindings());
   lines.push('');
   lines.push('GATED SPECT:');
-  var efs=document.getElementById('m-efs').value,efr=document.getElementById('m-efr').value;
+  var efs=document.getElementById('m-efs')&&document.getElementById('m-efs').value;
+  var efr=document.getElementById('m-efr').value;
   if(efs) lines.push('LVEF stress: '+efs+'%');
   if(efr) lines.push('LVEF rest: '+efr+'%');
   lines.push('Global WM: '+document.getElementById('m-gwm').value);
-  var wmx=document.getElementById('m-wmx').value; if(wmx) lines.push('Additional WM: '+wmx);
+  var wmx=document.getElementById('m-wmx').value; if(wmx) lines.push('Additional: '+wmx);
   var ctx=document.getElementById('m-ctx').value; if(ctx) lines.push('Clinical context: '+ctx);
   return lines.join('\n');
 }
 
-function genMPI(){
-  var key=gk();if(!key){toast('Enter API key first','er');resetKey();return;}
-  var hasData=Object.keys(SEG).some(function(id){return SEG[id]&&SEG[id].perf;});
+// ── Generate report ───────────────────────────────
+function genMPI() {
+  var key=gk(); if(!key){toast('Enter API key first','er');resetKey();return;}
+  var hasSegs=Object.keys(SEG).some(function(id){return SEG[id]&&SEG[id].perf;});
   var hasEF=document.getElementById('m-efr').value;
-  if(!hasData&&!hasEF){toast('Select segments and assign perfusion severity, or enter LVEF','er');return;}
+  if(!hasSegs&&!hasEF){toast('Select at least one segment with perfusion severity','er');return;}
   var oEl=document.getElementById('mpi-out'),lEl=document.getElementById('ld-mpi'),mEl=document.getElementById('mpi-md'),btn=document.getElementById('btn-mpi');
   oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
   btn.disabled=true;btn.textContent='Generating...';
@@ -1858,395 +1935,32 @@ function genMPI(){
   }).then(function(){btn.disabled=false;btn.textContent='Generate Report';});
 }
 
+function setMT(type,btn){
+  MT=type;
+  document.querySelectorAll('#mpi-type-row .tgl').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var isS=(type==='adenosine'||type==='bruce'),isV=(type==='viability');
+  document.getElementById('m-sparams').style.display  = isS?'block':'none';
+  document.getElementById('m-aden-p').style.display   = (isS&&type!=='bruce')?'block':'none';
+  document.getElementById('m-bruce-p').style.display  = (type==='bruce')?'block':'none';
+  document.getElementById('m-sd-wrap').style.display  = isS?'':'none';
+  document.getElementById('m-fd-wrap').style.display  = isV?'':'none';
+  var efsw=document.getElementById('m-efs-wrap'); if(efsw) efsw.style.display=isS?'':'none';
+  // Show/hide per-territory FDG and Rest rows
+  ['LAD','LCx','RCA'].forEach(function(terr){
+    var fw=document.getElementById('fdg-'+terr+'-wrap'); if(fw) fw.style.display=isV?'block':'none';
+    var rw=document.getElementById('rest-'+terr+'-wrap'); if(rw) rw.style.display=(!isV)?'block':'none';
+  });
+}
+
+function initMPI(){
+  setMT('adenosine',document.querySelector('#mpi-type-row .tgl'));
+}
 function initMPI(){
   setMT('adenosine',document.querySelector('#mpi-type-row .tgl'));
 }
 
 </script>
 
-</body>
-</html>
-// GAMMA / MPI REPORT
-var MT      = 'adenosine';
-var SEG     = {};          // {id: {label, perf, wm, rest, fdg}}
-var ASEG    = null;        // active segment (single mode)
-var SEL     = {};          // {id: true} — multi-select bucket
-var SEG_MODE = 'single';   // 'single' | 'multi'
-
-var SEG_TERR = {
-apex:‘LAD’, apicoanterior:‘LAD’, apicoseptal:‘LAD’, midanterior:‘LAD’, midanterosep:‘LAD’,
-apicolateral:‘LCx’, midanterolat:‘LCx’, midbsinflat:‘LCx’,
-apicoinferior:‘RCA’, midbasinf:‘RCA’, midbasinfsep:‘RCA’
-};
-var SEG_LABELS = {
-apex:‘Apex’, apicoanterior:‘Apicoanterior’, apicoseptal:‘Apicoseptal’,
-midanterior:‘Mid Anterior’, midanterosep:‘Mid Anteroseptal’,
-apicolateral:‘Apicolateral’, midanterolat:‘Mid Anterolateral’, midbsinflat:‘Mid-Basal Inferolateral’,
-apicoinferior:‘Apicoinferior’, midbasinf:‘Mid-Basal Inferior’, midbasinfsep:‘Mid-Basal Inferoseptal’
-};
-var PERF_CLS = {absent:‘absent-p’, severe:‘severe-p’, moderate:‘moderate-p’, mild:‘mild-p’};
-var WM_LBL   = {akinetic:‘akinetic’,‘severe-hypo’:‘severely hypokinetic’,‘moderate-hypo’:‘moderately hypokinetic’,‘mild-hypo’:‘mildly hypokinetic’};
-
-// ── Mode switch ──────────────────────────────────
-function setSegMode(mode) {
-SEG_MODE = mode;
-var isMul = mode === ‘multi’;
-document.getElementById(‘mode-single’).style.background = isMul ? ‘var(–surface)’ : ‘#0369a1’;
-document.getElementById(‘mode-single’).style.color      = isMul ? ‘var(–muted)’ : ‘#fff’;
-document.getElementById(‘mode-multi’).style.background  = isMul ? ‘#0369a1’ : ‘var(–surface)’;
-document.getElementById(‘mode-multi’).style.color       = isMul ? ‘#fff’ : ‘var(–muted)’;
-document.getElementById(‘multi-hint’).style.display       = isMul ? ‘inline’ : ‘none’;
-document.getElementById(‘multi-apply-btn’).style.display  = isMul ? ‘inline-block’ : ‘none’;
-document.getElementById(‘single-clear-row’).style.display = isMul ? ‘none’ : ‘block’;
-// clear multi selection bucket when switching modes
-SEL = {};
-document.querySelectorAll(’.seg-btn’).forEach(function(b) { b.classList.remove(‘seg-selected’); });
-document.getElementById(‘sev-picker’).style.display = ‘none’;
-}
-
-// ── Main tap handler ─────────────────────────────
-function handleSeg(btnEl, id, label) {
-if (!SEG[id]) SEG[id] = {label: label};
-if (SEG_MODE === ‘multi’) {
-// Toggle selection in bucket
-if (SEL[id]) {
-delete SEL[id];
-btnEl.classList.remove(‘seg-selected’);
-} else {
-SEL[id] = true;
-btnEl.classList.add(‘seg-selected’);
-}
-// Update apply button count
-var n = Object.keys(SEL).length;
-var ab = document.getElementById(‘multi-apply-btn’);
-ab.textContent = n ? ‘Apply to ’ + n + ’ segment’ + (n > 1 ? ‘s’ : ‘’) : ‘Apply to selected’;
-ab.style.display = ‘inline-block’;
-// Hide picker until they press Apply
-document.getElementById(‘sev-picker’).style.display = ‘none’;
-} else {
-// Single mode — open picker immediately
-ASEG = id;
-document.querySelectorAll(’.seg-btn’).forEach(function(b) { b.classList.remove(‘seg-focus’); });
-btnEl.classList.add(‘seg-focus’);
-openPicker(label, false);
-refreshPicker();
-}
-}
-
-// ── Territory “All” button ────────────────────────
-function selectTerritory(terr) {
-// Switch to multi mode first
-if (SEG_MODE !== ‘multi’) setSegMode(‘multi’);
-Object.keys(SEG_TERR).forEach(function(id) {
-if (SEG_TERR[id] !== terr) return;
-SEL[id] = true;
-if (!SEG[id]) SEG[id] = {label: SEG_LABELS[id]};
-var btn = document.getElementById(‘sb-’ + id);
-if (btn) btn.classList.add(‘seg-selected’);
-});
-var n = Object.keys(SEL).length;
-var ab = document.getElementById(‘multi-apply-btn’);
-ab.textContent = ‘Apply to ’ + n + ’ segment’ + (n > 1 ? ‘s’ : ‘’);
-ab.style.display = ‘inline-block’;
-document.getElementById(‘multi-hint’).style.display = ‘inline’;
-}
-
-// ── Open picker ───────────────────────────────────
-function openPicker(titleText, isMulti) {
-var isS = (MT === ‘adenosine’ || MT === ‘bruce’);
-var isV = (MT === ‘viability’);
-document.getElementById(‘rest-row’).style.display = isS ? ‘block’ : ‘none’;
-document.getElementById(‘fdg-row’).style.display  = isV ? ‘block’  : ‘none’;
-var pt = document.getElementById(‘picker-title’);
-pt.innerHTML = isMulti
-? ‘<span style="color:#0369a1">Applying to: </span><span style="color:var(--text)">’ + titleText + ‘</span>’
-: ‘<span style="color:#0369a1">Segment: </span><span id="sev-seg-name" style="color:var(--text)">’ + titleText + ‘</span>’;
-document.getElementById(‘sev-picker’).style.display = ‘block’;
-document.getElementById(‘sev-picker’).scrollIntoView({behavior:‘smooth’, block:‘nearest’});
-}
-
-function showMultiPicker() {
-var ids = Object.keys(SEL);
-if (!ids.length) { toast(‘Tap segments first’, ‘er’); return; }
-var names = ids.map(function(id) { return SEG_LABELS[id] || id; }).join(’, ‘);
-openPicker(names, true);
-// Clear sev-opt highlights for multi (mixed state)
-document.querySelectorAll(’.sev-opt’).forEach(function(b) { b.classList.remove(‘chosen’); });
-}
-
-function closePicker() {
-document.getElementById(‘sev-picker’).style.display = ‘none’;
-if (SEG_MODE === ‘multi’) {
-// Clear multi selection after applying
-SEL = {};
-document.querySelectorAll(’.seg-btn’).forEach(function(b) { b.classList.remove(‘seg-selected’); });
-document.getElementById(‘multi-apply-btn’).textContent = ‘Apply to selected’;
-}
-}
-
-// ── Refresh picker highlights (single mode) ───────
-function refreshPicker() {
-if (!ASEG) return;
-var st = SEG[ASEG] || {};
-document.querySelectorAll(’.sev-opt’).forEach(function(b) { b.classList.remove(‘chosen’); });
-var maps = {
-perf: {absent:‘so-absent’, severe:‘so-severe’, moderate:‘so-moderate’, mild:‘so-mild’},
-wm:   {akinetic:‘so-akinetic’,‘severe-hypo’:‘so-severe-hypo’,‘moderate-hypo’:‘so-moderate-hypo’,‘mild-hypo’:‘so-mild-hypo’},
-rest: {‘no-imp’:‘so-no-imp’, complete:‘so-complete’, partial:‘so-partial’},
-fdg:  {‘no-met’:‘so-no-met’,‘fdg-partial’:‘so-fdg-partial’, preserved:‘so-preserved’}
-};
-[‘perf’,‘wm’,‘rest’,‘fdg’].forEach(function(k) {
-var v = st[k];
-if (v && maps[k][v]) { var e = document.getElementById(maps[k][v]); if (e) e.classList.add(‘chosen’); }
-});
-}
-
-// ── Setters — apply to active single seg OR all in SEL bucket ─
-function applyToTargets(key, val) {
-if (SEG_MODE === ‘multi’) {
-Object.keys(SEL).forEach(function(id) {
-if (!SEG[id]) SEG[id] = {label: SEG_LABELS[id]};
-SEG[id][key] = val;
-if (key === ‘perf’) updateSegBtn(id);
-});
-// Mark chosen button
-document.querySelectorAll(’.sev-opt’).forEach(function(b) { b.classList.remove(‘chosen’); });
-var btnId = {
-perf: {absent:‘so-absent’,severe:‘so-severe’,moderate:‘so-moderate’,mild:‘so-mild’},
-wm:   {akinetic:‘so-akinetic’,‘severe-hypo’:‘so-severe-hypo’,‘moderate-hypo’:‘so-moderate-hypo’,‘mild-hypo’:‘so-mild-hypo’},
-rest: {‘no-imp’:‘so-no-imp’,complete:‘so-complete’,partial:‘so-partial’},
-fdg:  {‘no-met’:‘so-no-met’,‘fdg-partial’:‘so-fdg-partial’,preserved:‘so-preserved’}
-};
-if (btnId[key] && btnId[key][val]) { var e = document.getElementById(btnId[key][val]); if(e) e.classList.add(‘chosen’); }
-} else {
-if (!ASEG) return;
-if (!SEG[ASEG]) SEG[ASEG] = {};
-SEG[ASEG][key] = val;
-if (key === ‘perf’) updateSegBtn(ASEG);
-refreshPicker();
-}
-}
-
-function setSev(val)  { applyToTargets(‘perf’, val); }
-function setWM(val)   { applyToTargets(‘wm’,   val); }
-function setRest(val) { applyToTargets(‘rest’,  val); }
-function setFDG(val)  { applyToTargets(‘fdg’,   val); }
-
-function clearSeg() {
-if (!ASEG) return;
-delete SEG[ASEG];
-var btn = document.getElementById(‘sb-’ + ASEG);
-if (btn) { btn.className = ‘seg-btn seg-focus’; }
-document.querySelectorAll(’.sev-opt’).forEach(function(b) { b.classList.remove(‘chosen’); });
-}
-
-function clearAllSegs() {
-SEG = {}; SEL = {}; ASEG = null;
-document.querySelectorAll(’.seg-btn’).forEach(function(b) { b.className = ‘seg-btn’; });
-document.getElementById(‘sev-picker’).style.display = ‘none’;
-toast(‘All segments cleared’);
-}
-
-function updateSegBtn(id) {
-var btn = document.getElementById(‘sb-’ + id);
-if (!btn) return;
-var st = SEG[id] || {};
-var hasFocus    = btn.classList.contains(‘seg-focus’);
-var hasSelected = btn.classList.contains(‘seg-selected’);
-btn.className = ‘seg-btn’
-+ (st.perf ? ’ ’ + PERF_CLS[st.perf] : ‘’)
-+ (hasFocus    ? ’ seg-focus’    : ‘’)
-+ (hasSelected ? ’ seg-selected’ : ‘’);
-}
-
-function resetMPI() {
-SEG = {}; SEL = {}; ASEG = null;
-document.querySelectorAll(’.seg-btn’).forEach(function(b) { b.className = ‘seg-btn’; });
-document.getElementById(‘sev-picker’).style.display = ‘none’;
-document.getElementById(‘mpi-out’).classList.remove(‘on’);
-document.getElementById(‘mpi-md’).innerHTML = ‘’;
-toast(‘Reset’);
-}
-
-function calcDP() {
-var mhr = parseInt(document.getElementById(‘m-mhr’).value) || 0;
-var mbp = (document.getElementById(‘m-mbp’).value || ‘’).split(’/’)[0];
-if (mhr && mbp) document.getElementById(‘m-dp’).value = mhr * parseInt(mbp);
-}
-
-// ── Build territory text for AI ───────────────────
-function terrFindings() {
-var terrs = {LAD:[], LCx:[], RCA:[]};
-Object.keys(SEG).forEach(function(id) {
-var st = SEG[id]; if (!st || !st.perf) return;
-var t = SEG_TERR[id] || ‘LAD’;
-terrs[t].push({id:id, label:st.label || SEG_LABELS[id] || id, st:st});
-});
-var lines = [];
-[‘LAD’,‘LCx’,‘RCA’].forEach(function(terr) {
-var segs = terrs[terr];
-if (!segs.length) { lines.push(terr + ‘: Normal perfusion throughout.’); return; }
-var byPerf = {};
-segs.forEach(function(x) { if (!byPerf[x.st.perf]) byPerf[x.st.perf]=[]; byPerf[x.st.perf].push(x.label.toLowerCase()); });
-var sp = [];
-[‘absent’,‘severe’,‘moderate’,‘mild’].forEach(function(p) {
-if (!byPerf[p]) return;
-var pre = p===‘absent’?‘Absent perfusion is noted in’:p===‘severe’?‘Severely reduced perfusion is noted in’:p===‘moderate’?‘Moderately reduced perfusion is noted in’:‘Mildly reduced perfusion is noted in’;
-sp.push(pre + ’ ’ + byPerf[p].join(’, ‘) + ’ segment’ + (byPerf[p].length>1?‘s’:’’));
-});
-lines.push(terr + ’ stress: ’ + sp.join(’. ’) + ‘.’);
-if (MT===‘adenosine’ || MT===‘bruce’) {
-var byR = {};
-segs.forEach(function(x) { var r=x.st.rest||‘no-imp’; if(!byR[r])byR[r]=[]; byR[r].push(x.label.toLowerCase()); });
-var rp = [];
-if (byR[‘no-imp’])   rp.push(’No improvement in ‘+byR[‘no-imp’].join(’, ’));
-if (byR[‘complete’]) rp.push(’Complete improvement in ‘+byR[‘complete’].join(’, ’));
-if (byR[‘partial’])  rp.push(‘Partial improvement in ‘+byR[‘partial’].join(’, ‘));
-if (rp.length) lines.push(terr + ’ rest: ’ + rp.join(’. ‘) + ‘.’);
-}
-var byW = {};
-segs.forEach(function(x) { if(x.st.wm){if(!byW[x.st.wm])byW[x.st.wm]=[];byW[x.st.wm].push(x.label.toLowerCase());} });
-var wp = [];
-[‘akinetic’,‘severe-hypo’,‘moderate-hypo’,‘mild-hypo’].forEach(function(k) {
-if (byW[k]) wp.push(byW[k].join(’, ‘) + ’ appear ’ + WM_LBL[k]);
-});
-if (wp.length) lines.push(terr + ’ wall motion: ’ + wp.join(’; ‘) + ‘.’);
-if (MT===‘viability’) {
-var byF = {};
-segs.forEach(function(x) { if(x.st.fdg){if(!byF[x.st.fdg])byF[x.st.fdg]=[];byF[x.st.fdg].push(x.label.toLowerCase());} });
-var fp = [];
-if (byF[‘no-met’])      fp.push(‘No glucose metabolism in ‘+byF[‘no-met’].join(’, ‘)+’ (non-viable, match pattern)’);
-if (byF[‘fdg-partial’]) fp.push(‘Partial glucose metabolism in ‘+byF[‘fdg-partial’].join(’, ‘)+’ (nontransmural scar pattern)’);
-if (byF[‘preserved’])   fp.push(‘Preserved glucose metabolism in ‘+byF[‘preserved’].join(’, ‘)+’ (viable, mismatch pattern)’);
-if (fp.length) lines.push(terr + ’ FDG: ’ + fp.join(’. ‘) + ‘.’);
-}
-});
-return lines.join(’\n’);
-}
-
-// ── System prompt ─────────────────────────────────
-function mpiSys() {
-var L = ‘\n’;
-var s = ‘You are a senior Nuclear Medicine physician generating formal MPI reports for a department in India (Dr. Sunil H V / Dr. Bushra Sadeed).’ + L;
-s += ‘Use EXACTLY this format from the department archive:’ + L + L;
-s += ‘TITLE: All caps. Adenosine: ADENOSINE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Bruce: EXERCISE STRESS MYOCARDIAL PERFUSION IMAGING REPORT | Rest: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING | Viability: REST 99mTc SESTAMIBI MYOCARDIAL PERFUSION IMAGING FOLLOWED BY FDG PET CT FOR VIABILITY’ + L + L;
-s += ‘PROTOCOL PARAGRAPH:’ + L;
-s += ‘Adenosine: “Intravenous injection of [X] mCi of 99mTc Sestamibi was administered at 4th minute during 6 minute infusion of 140 mcg/kg/min adenosine. Post stress images were acquired 60 min later. Resting images were acquired after i.v. injection of [Y] mCi of the 99mTc Sestamibi. Imaging was performed under dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other.”’ + L;
-s += ‘Bruce: “Intravenous injection of [X] mCi of 99mTc Sestamibi was given at the peak of exercise performed on a Tread Mill using Bruce Protocol. Post stress images were acquired 30 min later. Resting images were acquired after i.v. injection of [Y] mCi of the radiotracer. Imaging was performed under a dedicated CZT cardiac camera. Reconstruction of both sets of images were done and compared with each other.”’ + L;
-s += ‘Rest+Viability: “Resting perfusion images were acquired at 30 min after injection of [X] mCi of the 99mTc Sestamibi. Cardiac PET CT images were acquired on same day at 60 min after IV injection of [Y] mCi of 18F FDG with oral glucose loading. Reconstruction of perfusion and PET images were done and compared.”’ + L + L;
-s += ‘STRESS PARAMETERS (Adenosine): Duration of infusion : 06:00 min | Baseline Heart Rate and BP | ECG Changes | Complaints | Cause for termination : Maximum dose infused.’ + L;
-s += ‘STRESS PARAMETERS (Bruce): Duration of Exercise : [mm:ss] minutes ([METs] METS) | Baseline Heart Rate and BP | Maximum Heart Rate Achieved : [X]/min ([Y]% of MPHR) | Maximum Blood Pressure | Double Product | ECG Changes | Complaints | Cause for termination’ + L + L;
-s += ‘FINDINGS: LV cavity statement. RV uptake statement.’ + L + L;
-s += ‘STRESS IMAGES / REST PERFUSION FINDINGS: “Absent perfusion is noted in [segs].” / “Severely reduced perfusion is noted in [segs].” End: “Rest of the LV myocardium shows adequate perfusion at stress.”’ + L + L;
-s += ‘REST IMAGES: “There is no improvement in perfusion in [segs].” / “There is complete improvement in perfusion in [segs].” End: “Rest of the LV myocardium shows adequate perfusion at rest.”’ + L + L;
-s += ‘GATED SPECT FINDINGS: “LVEF at stress is [X]% and LVEF at rest is [Y]%.” | “Note is made of global hypokinesia.” | “[Segs] appear akinetic/hypokinetic at stress and at rest.”’ + L + L;
-s += ‘18F-FDG PET-CT IMAGES (viability): “There is evidence of partial glucose metabolism in [segs] (nontransmural scar pattern).” | “There is evidence of preserved glucose metabolism in [segs] (Perfusion metabolism mismatch pattern).” | “There is no evidence of glucose metabolism in [segs] (perfusion metabolism match pattern).”’ + L + L;
-s += ‘IMPRESSION (numbered): Transmural infarct: “[Territory] territory shows [large/medium] area of transmural infarct.” | Nontransmural: “…nontransmural infarct.” | Ischemia: “…area of [moderate/severe] intensity ischemia.” | Viability: “…suggestive of [NON VIABLE myocardium / NONTRANSMURAL SCAR / VIABLE myocardium].” | Always end: “Rest of the LV myocardium shows adequate/normal perfusion.” | If no ischemia: “No evidence of inducible ischemia in the LV myocardium.” | Bruce good effort: start with “Adequate exercise.” and “Good effort tolerance.”’ + L + L;
-s += ‘Logic: No improvement=infarct (akinetic=transmural, hypokinetic=nontransmural). Complete improvement=ischemia. Partial=mixed. Size: 1=small, 2-3=medium, 4+=large. FDG match=non-viable, mismatch=viable, partial=nontransmural scar.’ + L + L;
-s += ‘SIGN-OFF (always last):\nDr. Sunil H V        Dr. Bushra Sadeed\nConsultant           Jr. Consultant’;
-return s;
-}
-
-// ── User message ──────────────────────────────────
-function mpiMsg() {
-var t=MT, sd=document.getElementById(‘m-sd’).value||‘4.5’, rd=document.getElementById(‘m-rd’).value||‘13.5’, fd=document.getElementById(‘m-fd’).value||‘2’;
-var nm=document.getElementById(‘m-name’).value, mr=document.getElementById(‘m-mrn’).value;
-var lines = [‘Generate formal MPI report.’];
-if (nm) lines.push(‘Patient: ’ + nm);
-if (mr) lines.push(‘MRN: ’ + mr);
-if (t===‘adenosine’) {
-lines.push(‘Study: Adenosine Stress MPI’);
-lines.push(‘Stress dose: ‘+sd+’ mCi | Rest dose: ‘+rd+’ mCi’);
-lines.push(’’);
-lines.push(‘STRESS PARAMETERS:’);
-lines.push(‘Baseline HR: ‘+(document.getElementById(‘m-bhr’).value||’’)+’/min’);
-lines.push(‘Baseline BP: ‘+(document.getElementById(‘m-bbp’).value||’’)+’ mmHg’);
-lines.push(‘ECG Changes: ‘+document.getElementById(‘m-ecg’).value);
-lines.push(‘Complaints: ‘+document.getElementById(‘m-comp’).value);
-} else if (t===‘bruce’) {
-var mhr=parseInt(document.getElementById(‘m-mhr’).value)||0;
-var age=parseInt(document.getElementById(‘m-age’).value)||0;
-var pct=(mhr&&age)?Math.round(100*mhr/(220-age)):0;
-lines.push(‘Study: Bruce Protocol Exercise Stress MPI’);
-lines.push(‘Stress dose: ‘+sd+’ mCi | Rest dose: ‘+rd+’ mCi’);
-lines.push(’’);
-lines.push(‘STRESS PARAMETERS:’);
-lines.push(‘Duration: ‘+(document.getElementById(‘m-dur’).value||’’)+’ min (’+(document.getElementById(‘m-mets’).value||’’)+’ METS)’);
-lines.push(‘Baseline HR/BP: ‘+(document.getElementById(‘m-bhr2’).value||’’)+’/min, ‘+(document.getElementById(‘m-bbp2’).value||’’)+’ mmHg’);
-lines.push(‘Max HR: ‘+mhr+’/min (’+(pct?pct+’% of MPHR’:’’)+’) | Max BP: ‘+(document.getElementById(‘m-mbp’).value||’’)+’ mmHg’);
-lines.push(‘Double Product: ‘+(document.getElementById(‘m-dp’).value||’’));
-lines.push(’ECG: ‘+document.getElementById(‘m-ecg2’).value+’ | Complaints: ’+document.getElementById(‘m-comp2’).value);
-lines.push(‘Termination: ‘+document.getElementById(‘m-term’).value);
-} else if (t===‘rest’) {
-lines.push(‘Study: Rest MPI only’);
-lines.push(‘Rest dose: ‘+rd+’ mCi’);
-} else {
-lines.push(‘Study: Rest MPI + FDG PET CT Viability’);
-lines.push(‘Rest dose: ‘+rd+’ mCi | FDG dose: ‘+fd+’ mCi’);
-}
-lines.push(’’);
-var lvv=document.getElementById(‘m-lv’).value;
-lines.push(‘LV cavity: ‘+(lvv===‘none’?‘No LV cavity dilatation’:lvv===‘both’?‘LV cavity dilatation at stress and rest’:lvv===‘stress’?‘LV cavity dilatation at stress only (TID)’:‘LV cavity dilatation at rest’));
-var rvv=document.getElementById(‘m-rv’).value;
-lines.push(‘RV uptake: ‘+(rvv===‘none’?‘No increased RV tracer uptake’:rvv===‘both’?‘Increased RV uptake at stress and rest’:‘Increased RV uptake at stress only’));
-lines.push(’’);
-lines.push(‘PERFUSION FINDINGS:’);
-lines.push(terrFindings());
-lines.push(’’);
-lines.push(‘GATED SPECT:’);
-var efs=document.getElementById(‘m-efs’)&&document.getElementById(‘m-efs’).value;
-var efr=document.getElementById(‘m-efr’).value;
-if (efs) lines.push(‘LVEF stress: ‘+efs+’%’);
-if (efr) lines.push(‘LVEF rest: ‘+efr+’%’);
-lines.push(’Global WM: ’+document.getElementById(‘m-gwm’).value);
-var wmx=document.getElementById(‘m-wmx’).value; if(wmx) lines.push(’Additional WM: ’+wmx);
-var ctx=document.getElementById(‘m-ctx’).value; if(ctx) lines.push(‘Clinical context: ‘+ctx);
-return lines.join(’\n’);
-}
-
-// ── Generate ──────────────────────────────────────
-function genMPI() {
-var key=gk(); if(!key){toast(‘Enter API key first’,‘er’);resetKey();return;}
-var hasSegs=Object.keys(SEG).some(function(id){return SEG[id]&&SEG[id].perf;});
-var hasEF=document.getElementById(‘m-efr’).value;
-if(!hasSegs&&!hasEF){toast(‘Select at least one segment and assign perfusion severity’,‘er’);return;}
-var oEl=document.getElementById(‘mpi-out’),lEl=document.getElementById(‘ld-mpi’),mEl=document.getElementById(‘mpi-md’),btn=document.getElementById(‘btn-mpi’);
-oEl.classList.add(‘on’);lEl.style.display=‘flex’;mEl.innerHTML=’’;
-btn.disabled=true;btn.textContent=‘Generating…’;
-callAPI(mpiSys(),mpiMsg()).then(function(full){
-S.outs[‘mpi’]=full; lEl.style.display=‘none’;
-var i=0;
-function tick(){if(i<full.length){mEl.innerHTML=rMD(full.slice(0,i+25),‘mpi’);i+=25;setTimeout(tick,3);}else{mEl.innerHTML=rMD(full,‘mpi’);}}
-tick();
-var nm=document.getElementById(‘m-name’).value||‘MPI Report’;
-addLib({tab:‘compose’,marker:null,label:nm+’ - Gamma Report’,input:mpiMsg(),output:full},false);
-toast(‘Report generated’);
-}).catch(function(e){
-lEl.style.display=‘none’; mEl.innerHTML=’<p style="color:var(--red)">Error: ‘+e.message+’</p>’;
-}).then(function(){btn.disabled=false;btn.textContent=‘Generate Report’;});
-}
-
-function setMT(type,btn){
-MT=type;
-document.querySelectorAll(’#mpi-type-row .tgl’).forEach(function(b){b.classList.remove(‘on’);});
-btn.classList.add(‘on’);
-var isS=(type===‘adenosine’||type===‘bruce’),isV=(type===‘viability’);
-document.getElementById(‘m-sparams’).style.display  = isS?‘block’:‘none’;
-document.getElementById(‘m-aden-p’).style.display   = (isS&&type!==‘bruce’)?‘block’:‘none’;
-document.getElementById(‘m-bruce-p’).style.display  = (type===‘bruce’)?‘block’:‘none’;
-document.getElementById(‘m-sd-wrap’).style.display  = isS?’’:‘none’;
-document.getElementById(‘m-fd-wrap’).style.display  = isV?’’:‘none’;
-var efsw=document.getElementById(‘m-efs-wrap’); if(efsw) efsw.style.display=isS?’’:‘none’;
-if(document.getElementById(‘rest-row’)){
-document.getElementById(‘rest-row’).style.display = isS?‘block’:‘none’;
-document.getElementById(‘fdg-row’).style.display  = isV?‘block’:‘none’;
-}
-}
-
-function initMPI(){
-setMT(‘adenosine’,document.querySelector(’#mpi-type-row .tgl’));
-}
-
-</script>
 </body>
 </html>
