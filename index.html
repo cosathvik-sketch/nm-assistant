@@ -276,8 +276,6 @@ select option{background:var(–surface);color:var(–text);}
 .thinking-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;color:#7c3aed;background:#f3e8ff;border:1px solid #ddd6fe;padding:.2rem .55rem;border-radius:12px;margin-bottom:.5rem;}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-
 </head>
 <body>
 
@@ -918,10 +916,10 @@ function syncFromCloud(){
 // API KEY
 function saveKey(){
   var k=document.getElementById('api-inp').value.trim();
-  if(k.indexOf('sk-')!==0){toast('Enter a valid key starting with sk-','er');return;}
-  localStorage.setItem('nmkey',k);
+  if(!k){toast('Paste your API key first','er');return;}
+  try{localStorage.setItem('nmkey',k);}catch(e){toast('Storage error: '+e.message,'er');return;}
   document.getElementById('api-modal').classList.add('off');
-  if(!localStorage.getItem('sburl')) document.getElementById('sb-modal').classList.remove('off');
+  try{if(!localStorage.getItem('sburl')) document.getElementById('sb-modal').classList.remove('off');}catch(e){}
 }
 function resetKey(){localStorage.removeItem('nmkey');document.getElementById('api-inp').value='';document.getElementById('api-modal').classList.remove('off');}
 
@@ -1818,8 +1816,12 @@ function toast(msg,type){var el=document.getElementById(‘toast’);el.textCont
 
 // INIT
 window.onload=function(){
-if(gk())document.getElementById(‘api-modal’).classList.add(‘off’);
-initSB();renderDev();renderLib();updBanner();
+try{if(gk())document.getElementById(‘api-modal’).classList.add(‘off’);}catch(e){}
+try{initSB();}catch(e){console.warn(‘initSB error:’,e);}
+try{renderDev();}catch(e){}
+try{renderLib();}catch(e){}
+try{updBanner();}catch(e){}
+try{initMPI();}catch(e){console.warn(‘initMPI error:’,e);}
 };
 
 // ═══════════════════════════════════════
@@ -2299,6 +2301,21 @@ function initMPI(){
 setMT(‘adenosine’, document.querySelector(’#mpi-type-row .tgl’));
 }
 
+</script>
+<script>
+// Load mermaid asynchronously — app works fine without it
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+  s.onload = function(){
+    try {
+      mermaid.initialize({startOnLoad:false, theme:'neutral',
+        flowchart:{curve:'basis'}, sequence:{useMaxWidth:true}});
+    } catch(e) { console.warn('Mermaid init error:', e); }
+  };
+  s.onerror = function(){ console.warn('Mermaid failed to load — charts will show as text.'); };
+  document.body.appendChild(s);
+})();
 </script>
 </body>
 </html>
