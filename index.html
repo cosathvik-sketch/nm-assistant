@@ -1172,7 +1172,7 @@ function pQA(m){
 'MINIMUM '+wmin+' words. Use at least 3 tables.\n\n'+
 'VISUAL FORMATTING RULES (mandatory):\n'+
 '1. For ANY decision tree, algorithm, or flow (e.g. diagnostic approach, management protocol, imaging workflow): produce a mermaid flowchart block like:\n'+
-'```mermaid\ngraph TD\n  A[Start] --> B{Decision}\n  B -->|Yes| C[Action 1]\n  B -->|No| D[Action 2]\n```\n'+
+'\x60\x60\x60mermaid\ngraph TD\n  A[Start] --> B{Decision}\n  B -->|Yes| C[Action 1]\n  B -->|No| D[Action 2]\n\x60\x60\x60\n'+
 '2. Use callout boxes with this EXACT syntax (use them liberally):\n'+
 ':::pearl\nKey exam fact here\n:::\n'+
 ':::mechanism\nMechanistic explanation here\n:::\n'+
@@ -1622,7 +1622,7 @@ function rMD(text, tabType) {
   var hbg = h2bg[tabType] || '#dbeafe';
 
   // ── Pre-pass: handle fenced blocks (mermaid + callout boxes) ──────────────
-  // Split on ``` fences and ::: callout fences
+  // Split on triple-backtick fences and ::: callout fences
   var BOX_TYPES = {
     pearl:    {cls:'box-pearl',    label:'⭐ Exam Pearl',     icon:'⭐'},
     mechanism:{cls:'box-mech',     label:'🔵 Mechanism',      icon:'🔵'},
@@ -1638,7 +1638,7 @@ function rMD(text, tabType) {
   function storeBlock(html) { var i = blocks.length; blocks.push(html); return '\x00BLOCK'+i+'\x00'; }
 
   // Handle mermaid code blocks
-  text = text.replace(/```mermaid\n([\s\S]*?)```/g, function(_, code) {
+  text = text.replace(/[\x60]{3}mermaid\n([\s\S]*?)[\x60]{3}/g, function(_, code) {
     var id = 'merm-' + Math.random().toString(36).slice(2,8);
     var html = '<div class="mermaid-wrap"><div class="mermaid" id="'+id+'">'+escH(code.trim())+'</div></div>';
     // Queue for mermaid rendering after DOM insertion
@@ -1657,7 +1657,7 @@ function rMD(text, tabType) {
   });
 
   // Handle other code blocks
-  text = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(_, lang, code) {
+  text = text.replace(/[\x60]{3}(\w*)\n([\s\S]*?)[\x60]{3}/g, function(_, lang, code) {
     return storeBlock('<pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.8rem;overflow-x:auto;font-size:.8rem;margin:.5rem 0"><code>'+escH(code.trim())+'</code></pre>');
 
 });
@@ -1674,7 +1674,7 @@ function bold(t) {
 return t
 .replace(/**(.+?)**/g, ‘<strong>$1</strong>’)
 .replace(/*(.+?)*/g, ‘<em>$1</em>’)
-.replace(/`(.+?)`/g, ‘<code>$1</code>’)
+.replace(/\x60(.+?)\x60/g, ‘<code>$1</code>’)
 .replace(/(\d+.?\d*\s*%)/g, ‘<span class="num">$1</span>’)
 .replace(/(\d+.?\d*\s*MBq)/g, ‘<span class="num">$1</span>’)
 .replace(/(\d+.?\d*\s*mCi)/g, ‘<span class="num">$1</span>’)
