@@ -1610,203 +1610,140 @@ var H2CLS={papers:'c',guidelines:'g',qa:'p',doubt:'a',report:'pk',compose:'pk',m
 function rMD(text, tabType) {
   if (!text) return '';
 
-  var H2COLORS = {
-    qa:'#1e40af', gl:'#15803d', doubt:'#7c3aed', mpi:'#0369a1',
-    compose:'#0369a1', papers:'#92400e'
-  };
-  var hcol = H2COLORS[tabType] || '#1e40af';
-  var h2bg = {
-    qa:'#dbeafe', gl:'#dcfce7', doubt:'#f3e8ff', mpi:'#e0f2fe',
-    compose:'#e0f2fe', papers:'#fef3c7'
-  };
-  var hbg = h2bg[tabType] || '#dbeafe';
+  var H2C = {qa:'#1e40af',gl:'#15803d',doubt:'#7c3aed',mpi:'#0369a1',compose:'#0369a1',papers:'#92400e'};
+  var H2B = {qa:'#dbeafe',gl:'#dcfce7',doubt:'#f3e8ff',mpi:'#e0f2fe',compose:'#e0f2fe',papers:'#fef3c7'};
+  var hcol = H2C[tabType] || '#1e40af';
+  var hbg  = H2B[tabType] || '#dbeafe';
 
-  // ── Pre-pass: handle fenced blocks (mermaid + callout boxes) ──────────────
-  // Split on triple-backtick fences and ::: callout fences
-  var BOX_TYPES = {
-    pearl:    {cls:'box-pearl',    label:'⭐ Exam Pearl',     icon:'⭐'},
-    mechanism:{cls:'box-mech',     label:'🔵 Mechanism',      icon:'🔵'},
-    clinical: {cls:'box-clinical', label:'🟢 Clinical Pearl', icon:'🟢'},
-    caution:  {cls:'box-caution',  label:'🔴 Caution',        icon:'🔴'},
-    mnemonic: {cls:'box-mnemonic', label:'🟣 Mnemonic',       icon:'🟣'},
-    trial:    {cls:'box-trial',    label:'🟠 Key Trial',      icon:'🟠'},
-    tip:      {cls:'box-pearl',    label:'⭐ Tip',             icon:'💡'},
+  var BOX = {
+    pearl:    ['box-pearl',    '\u2b50 Exam Pearl'],
+    mechanism:['box-mech',     '\ud83d\udd35 Mechanism'],
+    mech:     ['box-mech',     '\ud83d\udd35 Mechanism'],
+    clinical: ['box-clinical', '\ud83d\udfe2 Clinical Pearl'],
+    caution:  ['box-caution',  '\ud83d\udd34 Caution'],
+    mnemonic: ['box-mnemonic', '\ud83d\udfe3 Mnemonic'],
+    trial:    ['box-trial',    '\ud83d\udfe0 Key Trial'],
+    tip:      ['box-pearl',    '\ud83d\udca1 Tip']
   };
 
-  // Replace :::type\n...\n::: with placeholder then restore
+  // Store pre-rendered blocks, replace with placeholders
   var blocks = [];
-  function storeBlock(html) { var i = blocks.length; blocks.push(html); return '\x00BLOCK'+i+'\x00'; }
+  function stash(html) { var i = blocks.length; blocks.push(html); return '\x00B'+i+'\x00'; }
 
-  // Handle mermaid code blocks
-  text = text.replace(/[\x60]{3}mermaid\n([\s\S]*?)[\x60]{3}/g, function(_, code) {
-    var id = 'merm-' + Math.random().toString(36).slice(2,8);
-    var html = '<div class="mermaid-wrap"><div class="mermaid" id="'+id+'">'+escH(code.trim())+'</div></div>';
-    // Queue for mermaid rendering after DOM insertion
+  // Handle mermaid fenced blocks (triple backtick = \x60\x60\x60)
+  var FENCE = '\x60\x60\x60';
+  var mermRe = new RegExp(FENCE + 'mermaid\\n([\\s\\S]*?)' + FENCE, 'g');
+  text = text.replace(mermRe, function(_, code) {
+    var id = 'mm' + Math.random().toString(36).slice(2,7);
     setTimeout(function() {
       var el = document.getElementById(id);
       if (el && window.mermaid) {
-        try {
-          mermaid.initialize({startOnLoad:false, theme:'neutral', flowchart:{curve:'basis'}});
-          mermaid.run({nodes:[el]});
-        } catch(e) {
-          el.innerHTML = '<span class="flowchart-err">⚠ Chart render error</span>';
-        }
+        try { mermaid.initialize({startOnLoad:false,theme:'neutral'}); mermaid.run({nodes:[el]}); }
+        catch(e) { el.innerHTML = '\u26a0 Chart error'; }
       }
-    }, 50);
-    return storeBlock(html);
+    }, 80);
+    return stash('<div class="mermaid-wrap"><div class="mermaid" id="'+id+'">'+escH(code.trim())+'</div></div>');
   });
 
-  // Handle other code blocks
-  text = text.replace(/[\x60]{3}(\w*)\n([\s\S]*?)[\x60]{3}/g, function(_, lang, code) {
-    return storeBlock('<pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.8rem;overflow-x:auto;font-size:.8rem;margin:.5rem 0"><code>'+escH(code.trim())+'</code></pre>');
+  // Other code blocks
+  var codeRe = new RegExp(FENCE + '(\\w*)\\n([\\s\\S]*?)' + FENCE, 'g');
+  text = text.replace(codeRe, function(_, lang, code) {
+    return stash('<pre style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.8rem;overflow-x:auto;font-size:.8rem;margin:.5rem 0"><code>'+escH(code.trim())+'</code></pre>');
 
 });
 
-// Handle ::: callout boxes
-text = text.replace(/:::(\w+)\n([\s\S]*?):::/g, function(_, type, inner) {
-var bt = BOX_TYPES[type.toLowerCase()];
-if (!bt) return storeBlock(’<div class="box-pearl"><div class="box-label">’+escH(type.toUpperCase())+’</div>’+renderInner(inner.trim())+’</div>’);
-return storeBlock(’<div class="'+bt.cls+'"><div class="box-label">’+bt.label+’</div>’+renderInner(inner.trim())+’</div>’);
+// Callout boxes  :::type\n…\n:::
+var boxRe = /:::(\w+)\n([\s\S]*?):::/g;
+text = text.replace(boxRe, function(_, type, inner) {
+var bt = BOX[type.toLowerCase()] || [‘box-pearl’, type.toUpperCase()];
+return stash(’<div class="'+bt[0]+'"><div class="box-label">’+bt[1]+’</div>’+renderInner(inner.trim())+’</div>’);
 });
 
-// ── Line-by-line renderer ─────────────────────────────────────────────────
-function bold(t) {
+function inlineMarkup(t) {
 return t
 .replace(/**(.+?)**/g, ‘<strong>$1</strong>’)
-.replace(/*(.+?)*/g, ‘<em>$1</em>’)
-.replace(/\x60(.+?)\x60/g, ‘<code>$1</code>’)
+.replace(/*([^*]+?)*/g, ‘<em>$1</em>’)
+.replace(/\x60([^\x60]+?)\x60/g, ‘<code>$1</code>’)
 .replace(/(\d+.?\d*\s*%)/g, ‘<span class="num">$1</span>’)
 .replace(/(\d+.?\d*\s*MBq)/g, ‘<span class="num">$1</span>’)
 .replace(/(\d+.?\d*\s*mCi)/g, ‘<span class="num">$1</span>’)
 .replace(/(\d+.?\d*\s*GBq)/g, ‘<span class="num">$1</span>’);
 }
 
+function renderInner(txt) { return renderLines(txt.split(’\n’)); }
+
 function renderLines(lines) {
-var html = ‘’, inUL = false, inOL = false, inTable = false, tRows = [], tableHdr = true;
-function flUL() { if(inUL){html+=’</ul>’;inUL=false;} }
-function flOL() { if(inOL){html+=’</ol>’;inOL=false;} }
-function flList() { flUL(); flOL(); }
-function flTable() {
-if (inTable) {
-html += ‘<div style="overflow-x:auto"><table><tbody>’+tRows.join(’’)+’</tbody></table></div>’;
-inTable=false; tRows=[]; tableHdr=true;
+var html=’’, inUL=false, inOL=false, inTbl=false, tRows=[], tHdr=true;
+function flUL(){if(inUL){html+=’</ul>’;inUL=false;}}
+function flOL(){if(inOL){html+=’</ol>’;inOL=false;}}
+function flL(){flUL();flOL();}
+function flT(){
+if(inTbl){
+html+=’<div style="overflow-x:auto"><table><tbody>’+tRows.join(’’)+’</tbody></table></div>’;
+inTbl=false;tRows=[];tHdr=true;
 }
 }
-for (var i = 0; i < lines.length; i++) {
-var line = lines[i];
+for (var i=0; i<lines.length; i++) {
+var ln = lines[i];
 
 ```
-  // Stored blocks
-  if (line.indexOf('\x00BLOCK') !== -1) {
-    flList(); flTable();
-    html += line.replace(/\x00BLOCK(\d+)\x00/g, function(_, n){ return blocks[+n]||''; });
+  // Stashed blocks
+  if (ln.indexOf('\x00B') !== -1) {
+    flL();flT();
+    html += ln.replace(/\x00B(\d+)\x00/g, function(_,n){return blocks[+n]||'';});
     continue;
   }
 
-  // Table separator row — skip
-  if (/^\|[-: |]+\|$/.test(line)) { tableHdr = false; continue; }
+  // Table separator
+  if (/^\|[-: |]+\|$/.test(ln)) { tHdr=false; continue; }
 
   // Table row
-  if (/^\|.+\|$/.test(line)) {
-    flList(); inTable = true;
-    var cells = line.split('|').filter(function(c){return c.trim();});
-    if (tableHdr) {
-      tRows.push('<tr>'+cells.map(function(c){return '<th>'+bold(c.trim())+'</th>';}).join('')+'</tr>');
-      tableHdr = false;
+  if (/^\|.+\|$/.test(ln)) {
+    flL(); inTbl=true;
+    var cells = ln.split('|').filter(function(c){return c.trim();});
+    if (tHdr) {
+      tRows.push('<tr>'+cells.map(function(c){return '<th>'+inlineMarkup(c.trim())+'</th>';}).join('')+'</tr>');
+      tHdr=false;
     } else {
-      tRows.push('<tr>'+cells.map(function(c){return '<td>'+bold(c.trim())+'</td>';}).join('')+'</tr>');
+      tRows.push('<tr>'+cells.map(function(c){return '<td>'+inlineMarkup(c.trim())+'</td>';}).join('')+'</tr>');
     }
     continue;
   }
-  if (!inTable) tableHdr = true;
-  flTable();
+  if (!inTbl) tHdr=true;
+  flT();
 
-  // H1
-  if (line.indexOf('# ') === 0 && line.indexOf('## ') !== 0) {
-    flList();
-    html += '<h2 style="font-size:1.05rem;font-weight:700;color:'+hcol+';background:'+hbg+';padding:.4rem .8rem;border-radius:6px;margin:1rem 0 .4rem">'+bold(line.slice(2))+'</h2>';
-    continue;
-  }
-  // H2
-  if (line.indexOf('## ') === 0) {
-    flList();
-    html += '<h2 style="font-size:1rem;font-weight:700;color:'+hcol+';background:'+hbg+';padding:.35rem .7rem;border-radius:6px;margin:.9rem 0 .3rem">'+bold(line.slice(3))+'</h2>';
-    continue;
-  }
-  // H3
-  if (line.indexOf('### ') === 0) {
-    flList();
-    html += '<h3 style="font-size:.88rem;font-weight:700;color:'+hcol+';border-bottom:1.5px solid '+hbg+';padding-bottom:.2rem;margin:.7rem 0 .2rem">'+bold(line.slice(4))+'</h3>';
-    continue;
-  }
-  // H4
-  if (line.indexOf('#### ') === 0) {
-    flList();
-    html += '<h4 style="font-size:.83rem;font-weight:700;margin:.5rem 0 .15rem;color:var(--text)">'+bold(line.slice(5))+'</h4>';
-    continue;
-  }
+  // Headings
+  if (ln.indexOf('#### ')=== 0){flL();html+='<h4 style="font-size:.83rem;font-weight:700;margin:.5rem 0 .15rem;color:var(--text)">'+inlineMarkup(ln.slice(5))+'</h4>';continue;}
+  if (ln.indexOf('### ') === 0){flL();html+='<h3 style="font-size:.88rem;font-weight:700;color:'+hcol+';border-bottom:1.5px solid '+hbg+';padding-bottom:.2rem;margin:.7rem 0 .2rem">'+inlineMarkup(ln.slice(4))+'</h3>';continue;}
+  if (ln.indexOf('## ')  === 0){flL();html+='<h2 style="font-size:1rem;font-weight:700;color:'+hcol+';background:'+hbg+';padding:.35rem .7rem;border-radius:6px;margin:.9rem 0 .3rem">'+inlineMarkup(ln.slice(3))+'</h2>';continue;}
+  if (ln.indexOf('# ')   === 0 && ln.indexOf('## ')!==0){flL();html+='<h2 style="font-size:1.05rem;font-weight:700;color:'+hcol+';background:'+hbg+';padding:.4rem .8rem;border-radius:6px;margin:1rem 0 .4rem">'+inlineMarkup(ln.slice(2))+'</h2>';continue;}
 
-  // Blockquote — check for inline callout shorthand  > 🔵 MECHANISM | text
-  if (line.indexOf('> ') === 0) {
-    flList();
-    var qtext = line.slice(2);
-    // Check if it's a quick callout: > 🔵 LABEL | content
-    var qm = qtext.match(/^(🔵|🟢|🔴|🟣|🟠|⭐|💡)\s*([^|]+)\|\s*(.+)$/);
-    if (qm) {
-      var iconMap = {'🔵':'box-mech','🟢':'box-clinical','🔴':'box-caution','🟣':'box-mnemonic','🟠':'box-trial','⭐':'box-pearl','💡':'box-pearl'};
-      var bc = iconMap[qm[1]] || 'box-pearl';
-      html += '<div class="'+bc+'"><div class="box-label">'+qm[1]+' '+qm[2].trim()+'</div>'+bold(qm[3].trim())+'</div>';
-    } else {
-      html += '<blockquote>'+bold(qtext)+'</blockquote>';
-    }
-    continue;
-  }
+  // Blockquote
+  if (ln.indexOf('> ')===0){flL();html+='<blockquote>'+inlineMarkup(ln.slice(2))+'</blockquote>';continue;}
 
   // HR
-  if (line.trim() === '---' || line.trim() === '***') { flList(); html += '<hr>'; continue; }
+  if (ln.trim()==='---'||ln.trim()==='***'){flL();html+='<hr>';continue;}
 
   // Unordered list
-  if (/^[-•*]\s/.test(line)) {
-    flOL();
-    if (!inUL) { html += '<ul>'; inUL = true; }
-    html += '<li>'+bold(line.replace(/^[-•*]\s/,''))+'</li>';
-    continue;
-  }
+  if (/^[-\u2022*]\s/.test(ln)){flOL();if(!inUL){html+='<ul>';inUL=true;}html+='<li>'+inlineMarkup(ln.replace(/^[-\u2022*]\s/,''))+'</li>';continue;}
 
   // Ordered list
-  if (/^\d+\.\s/.test(line)) {
-    flUL();
-    if (!inOL) { html += '<ol>'; inOL = true; }
-    html += '<li>'+bold(line.replace(/^\d+\.\s/,''))+'</li>';
-    continue;
-  }
+  if (/^\d+\.\s/.test(ln)){flUL();if(!inOL){html+='<ol>';inOL=true;}html+='<li>'+inlineMarkup(ln.replace(/^\d+\.\s/,''))+'</li>';continue;}
 
-  flList();
-
-  // Empty line
-  if (!line.trim()) { html += '<div style="height:.3rem"></div>'; continue; }
-
-  // Bold-only line (section label)
-  if (/^\*\*[^*]+\*\*$/.test(line.trim())) {
-    html += '<p class="bline" style="font-weight:700;margin:.3rem 0">'+bold(line.trim())+'</p>';
-    continue;
-  }
-
-  html += '<p style="margin:.22rem 0;line-height:1.6">'+bold(line)+'</p>';
+  flL();
+  if (!ln.trim()){html+='<div style="height:.3rem"></div>';continue;}
+  if (/^\*\*[^*]+\*\*$/.test(ln.trim())){html+='<p class="bline" style="font-weight:700;margin:.3rem 0">'+inlineMarkup(ln.trim())+'</p>';continue;}
+  html+='<p style="margin:.22rem 0;line-height:1.6">'+inlineMarkup(ln)+'</p>';
 }
-flList(); flTable();
+flL();flT();
 return html;
 ```
 
 }
 
-function renderInner(txt) {
-return renderLines(txt.split(’\n’));
+return renderLines(text.split(’\n’));
 }
 
-var lines = text.split(’\n’);
-return renderLines(lines);
-}
 function escH(t){return(t||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’).replace(/”/g,’"’);}
 function ke(e,t){if(e.ctrlKey&&e.key===‘Enter’){e.preventDefault();gen(t);}}
 
