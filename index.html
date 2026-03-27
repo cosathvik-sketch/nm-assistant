@@ -686,10 +686,7 @@ select option{background:var(–surface);color:var(–text);}
                 <option value="LMCA">LMCA territory</option>
               </select>
             </div>
-            <div style="width:60px">
-              <div style="font-size:.6rem;font-weight:600;color:#1d4ed8;margin-bottom:.18rem">LV%</div>
-              <input id="tp-LAD" type="number" min="1" max="100" placeholder="~%" style="width:100%;font-size:.72rem;padding:.3rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;text-align:center">
-            </div>
+            
           </div>
         </div>
       </div>
@@ -732,10 +729,7 @@ select option{background:var(–surface);color:var(–text);}
                 <option value="OM">OM territory</option>
               </select>
             </div>
-            <div style="width:60px">
-              <div style="font-size:.6rem;font-weight:600;color:#15803d;margin-bottom:.18rem">LV%</div>
-              <input id="tp-LCx" type="number" min="1" max="100" placeholder="~%" style="width:100%;font-size:.72rem;padding:.3rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;text-align:center">
-            </div>
+            
           </div>
         </div>
       </div>
@@ -778,10 +772,7 @@ select option{background:var(–surface);color:var(–text);}
                 <option value="PDA">PDA territory</option>
               </select>
             </div>
-            <div style="width:60px">
-              <div style="font-size:.6rem;font-weight:600;color:#c2410c;margin-bottom:.18rem">LV%</div>
-              <input id="tp-RCA" type="number" min="1" max="100" placeholder="~%" style="width:100%;font-size:.72rem;padding:.3rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;text-align:center">
-            </div>
+            
           </div>
         </div>
       </div>
@@ -815,7 +806,7 @@ select option{background:var(–surface);color:var(–text);}
 
   <div class="obox" id="mpi-out" style="border-color:#0369a1;border-top:3px solid #0369a1">
     <div class="ldg" id="ld-mpi"><span class="spin">*</span> Generating report...</div>
-    <div class="md" id="mpi-md" style="white-space:pre-wrap;font-family:'DM Mono',monospace;font-size:.82rem;line-height:1.7"></div>
+    <div id="mpi-md" style="white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.5;color:#000;padding:.5rem 0;user-select:text"></div>
   </div>
 </div>
 
@@ -2078,11 +2069,10 @@ function terrFindings() {
     var wm     = T[terr].wm;
     var fdg    = T[terr].fdg;
     var qual   = document.getElementById('tq-'+terr) ? document.getElementById('tq-'+terr).value : terr;
-    var pct    = document.getElementById('tp-'+terr) ? document.getElementById('tp-'+terr).value : '';
     var n      = segs.length;
     var size   = n<=2?'small':n<=4?'medium size':'large';
 
-    var imp = 'IMP|terr:'+qual+'|segs:'+n+'|size:'+size+(pct?'|pct:'+pct+'%':'|pct:~'+(n*6)+'%')
+    var imp = 'IMP|terr:'+qual+'|segs:'+n+'|size:'+size
             + '|stress:'+stress+'|rest:'+rest+'|wm:'+wm+'|fdg:'+fdg;
     impLines.push(imp);
   });
@@ -2144,7 +2134,7 @@ function mpiSys() {
   s += 'IMPRESSION:' + L;
   s += 'Adequate exercise.' + L;
   s += 'Good effort tolerance.' + L;
-  s += 'LCx territory shows large area of severe intensity ischemia involving 27% of the LV myocardium.' + L;
+  s += 'LCx territory shows large area of severe intensity ischemia.' + L;
   s += 'Rest of the LV myocardium shows normal perfusion.' + L + L;
 
   s += 'EXAMPLE 3 - VIABILITY, LAD viable:' + L;
@@ -2180,7 +2170,6 @@ function mpiSys() {
   s += '1. STRESS_IMAGES and REST_IMAGES data provide exact segment names - use them as given.' + L;
   s += '2. When LCx segments (anterolateral + inferolateral) are adjacent, you may use "and adjacent" phrasing.' + L;
   s += '3. In IMPRESSION, use the territory qualifier from IMPRESSION_DATA (may say "Distal LAD", "OM territory" etc).' + L;
-  s += '4. Include "involving X% of the LV myocardium" in impression when pct is provided.' + L;
   s += '5. For VIABLE myocardium in viability: use "mismatched perfusion defect suggestive of VIABLE myocardium".' + L;
   s += '6. For NONTRANSMURAL SCAR: use "perfusion defect with partial glucose metabolism suggestive of NONTRANSMURAL SCAR".' + L;
   s += '7. For NON-VIABLE: use "perfusion defect with no glucose metabolism suggestive of NON VIABLE myocardium".' + L;
@@ -2290,7 +2279,18 @@ function genMPI() {
   btn.disabled=true; btn.textContent='Generating...';
   callAPI(mpiSys(), mpiMsg(), false).then(function(full) {
     S.outs['mpi'] = full; lEl.style.display='none';
-    mEl.innerHTML = full;  // plain text, monospaced - copy-paste ready
+    // Render as Times New Roman paragraphs - copy-paste ready for Word
+    var paras = full.split('\n');
+    var html = '';
+    for (var pi=0; pi<paras.length; pi++) {
+      var line = paras[pi];
+      if (!line.trim()) {
+        html += '<p style="margin:0;line-height:1.5;font-family:Times New Roman,Times,serif;font-size:12pt">&nbsp;</p>';
+      } else {
+        html += '<p style="margin:0;line-height:1.5;font-family:Times New Roman,Times,serif;font-size:12pt">' + line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>';
+      }
+    }
+    mEl.innerHTML = html;
     var nm = (document.getElementById('m-name')||{}).value || 'MPI Report';
     addLib({tab:'compose',marker:null,label:nm+' - Gamma Report',input:mpiMsg(),output:full},false);
     toast('Report generated');
