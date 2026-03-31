@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -41,54 +40,55 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'In
 .sev-opt:hover{filter:brightness(.93);}
 .sev-opt.chosen{outline:3px solid #0369a1;outline-offset:2px;}
 
-.sev-btn{padding:.32rem .8rem;border-radius:16px;border:1.5px solid;font-size:.73rem;font-weight:600;cursor:pointer;font-family:“Inter”,sans-serif;transition:all .12s;touch-action:manipulation;}
+.sev-btn{padding:.32rem .8rem;border-radius:16px;border:1.5px solid;font-size:.73rem;font-weight:600;cursor:pointer;font-family:"Inter",sans-serif;transition:all .12s;touch-action:manipulation;}
 .sev-btn:hover{filter:brightness(.92);transform:scale(1.02);}
-::-webkit-scrollbar-thumb{background:var(–border2);border-radius:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
 
 /* OVERLAYS */
 .modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1.5rem;}
 .modal.off{display:none;}
-.modal-box{background:var(–surface);border-radius:16px;padding:2rem;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
-.modal-box h2{font-size:1.25rem;font-weight:700;color:var(–text);margin-bottom:.4rem;}
-.modal-box p{color:var(–muted);font-size:.83rem;margin-bottom:1.2rem;line-height:1.65;}
-.modal-box input{width:100%;padding:.7rem 1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.88rem;outline:none;font-family:‘DM Mono’,monospace;margin-bottom:.8rem;}
-.modal-box input:focus{border-color:var(–cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
+.modal-box{background:var(--surface);border-radius:16px;padding:2rem;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-box h2{font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:.4rem;}
+.modal-box p{color:var(--muted);font-size:.83rem;margin-bottom:1.2rem;line-height:1.65;}
+.modal-box input{width:100%;padding:.7rem 1rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r8);color:var(--text);font-size:.88rem;outline:none;font-family:'DM Mono',monospace;margin-bottom:.8rem;}
+.modal-box input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
 .modal-icon{font-size:2rem;margin-bottom:.75rem;}
-.note-sm{font-size:.72rem;color:var(–dim);margin-top:.75rem;line-height:1.55;}
-.note-sm a{color:var(–cyan);}
-.steps{background:var(–surface2);border-radius:var(–r8);padding:.9rem 1rem;margin-bottom:1rem;font-size:.78rem;color:var(–text2);line-height:2;}
-.steps strong{color:var(–text);}
-.step-num{display:inline-flex;width:18px;height:18px;background:var(–cyan);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;align-items:center;justify-content:center;margin-right:.35rem;}
+.note-sm{font-size:.72rem;color:var(--dim);margin-top:.75rem;line-height:1.55;}
+.note-sm a{color:var(--cyan);}
+.steps{background:var(--surface2);border-radius:var(--r8);padding:.9rem 1rem;margin-bottom:1rem;font-size:.78rem;color:var(--text2);line-height:2;}
+.steps strong{color:var(--text);}
+.step-num{display:inline-flex;width:18px;height:18px;background:var(--cyan);color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;align-items:center;justify-content:center;margin-right:.35rem;}
 
 /* LAYOUT */
 #app{display:flex;flex-direction:column;min-height:100vh;}
-header{background:var(–surface);border-bottom:1.5px solid var(–border);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:500;box-shadow:var(–shadow);}
+header{background:var(--surface);border-bottom:1.5px solid var(--border);padding:.6rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:500;box-shadow:var(--shadow);}
 .logo{display:flex;align-items:center;gap:.6rem;}
-.logo-orb{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:var(–shadow);}
-.logo-text{font-weight:700;font-size:.95rem;color:var(–text);}
-.logo-sub{font-size:.55rem;color:var(–muted);letter-spacing:.08em;text-transform:uppercase;}
+.logo-orb{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#0891b2,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:var(--shadow);}
+.logo-text{font-weight:700;font-size:.95rem;color:var(--text);}
+.logo-sub{font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
 .hdr-r{display:flex;align-items:center;gap:.5rem;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:.3rem;}
-.sync-dot.off{background:var(–dim);}
+.sync-dot.off{background:var(--dim);}
 .sync-dot.spin{background:#f59e0b;animation:blink .8s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hdr-btn{font-size:.72rem;color:var(–muted);background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r6);padding:.28rem .65rem;cursor:pointer;font-family:‘Inter’,sans-serif;touch-action:manipulation;}
-.hdr-btn:hover{background:var(–border);color:var(–text);}
+.hdr-btn{font-size:.72rem;color:var(--muted);background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r6);padding:.28rem .65rem;cursor:pointer;font-family:'Inter',sans-serif;touch-action:manipulation;}
+.hdr-btn:hover{background:var(--border);color:var(--text);}
 
 /* NAV */
-nav{background:var(–surface);border-bottom:1.5px solid var(–border);overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:53px;z-index:499;display:flex;scrollbar-width:none;}
+nav{background:var(--surface);border-bottom:1.5px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:53px;z-index:499;display:flex;scrollbar-width:none;}
 nav::-webkit-scrollbar{display:none;}
-.ntab{padding:.6rem .9rem;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(–muted);cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;transition:all .15s;font-family:‘Inter’,sans-serif;touch-action:manipulation;min-height:44px;display:inline-flex;align-items:center;gap:.3rem;}
-.ntab:hover{color:var(–text);background:var(–surface2);}
-.ntab.on{color:var(–text);font-weight:700;}
-.ntab[data-t=“papers”].on{border-bottom-color:var(–cyan);background:var(–cyan-light);color:var(–cyan);}
-.ntab[data-t=“qa”].on{border-bottom-color:var(–purple);background:var(–purple-light);color:var(–purple);}
-.ntab[data-t=“guidelines”].on{border-bottom-color:var(–green);background:var(–green-light);color:var(–green);}
-.ntab[data-t=“doubt”].on{border-bottom-color:var(–amber);background:var(–amber-light);color:var(–amber);}
-.ntab[data-t=“report”].on{border-bottom-color:var(–pink);background:var(–pink-light);color:var(–pink);}
-.ntab[data-t=“library”].on{border-bottom-color:#6366f1;background:#eef2ff;color:#6366f1;}
-.ntab[data-t=“mpi”].on{border-bottom-color:#0369a1;background:#e0f2fe;color:#0369a1;}
-.ntab[data-t=“dev”].on{border-bottom-color:var(–red);background:var(–red-light);color:var(–red);}
+.ntab{padding:.6rem .9rem;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif;touch-action:manipulation;min-height:44px;display:inline-flex;align-items:center;gap:.3rem;}
+.ntab:hover{color:var(--text);background:var(--surface2);}
+.ntab.on{color:var(--text);font-weight:700;}
+.ntab[data-t="papers"].on{border-bottom-color:var(--cyan);background:var(--cyan-light);color:var(--cyan);}
+.ntab[data-t="qa"].on{border-bottom-color:var(--purple);background:var(--purple-light);color:var(--purple);}
+.ntab[data-t="guidelines"].on{border-bottom-color:var(--green);background:var(--green-light);color:var(--green);}
+.ntab[data-t="doubt"].on{border-bottom-color:var(--amber);background:var(--amber-light);color:var(--amber);}
+.ntab[data-t="report"].on{border-bottom-color:var(--pink);background:var(--pink-light);color:var(--pink);}
+.ntab[data-t="library"].on{border-bottom-color:#6366f1;background:#eef2ff;color:#6366f1;}
+.ntab[data-t="mpi"].on{border-bottom-color:#0369a1;background:#e0f2fe;color:#0369a1;}
+.ntab[data-t="dev"].on{border-bottom-color:var(--red);background:var(--red-light);color:var(--red);}
+.ntab[data-t="rad"].on{border-bottom-color:#0f766e;background:#f0fdfa;color:#0f766e;}
 
 /* MAIN */
 main{flex:1;padding:1.2rem 1rem 3rem;}
@@ -96,160 +96,160 @@ main{flex:1;padding:1.2rem 1rem 3rem;}
 .pane{display:none;}.pane.on{display:block;}
 
 /* HINT BAR */
-.hbar{margin-bottom:1rem;padding:.5rem 1rem;border-left:3px solid var(–cyan);border-radius:0 var(–r8) var(–r8) 0;font-size:.76rem;color:var(–text2);background:var(–cyan-light);}
-.hbar.p{border-left-color:var(–purple);background:var(–purple-light);color:var(–purple);}
-.hbar.g{border-left-color:var(–green);background:var(–green-light);color:var(–green);}
-.hbar.a{border-left-color:var(–amber);background:var(–amber-light);color:var(–amber);}
-.hbar.pk{border-left-color:var(–pink);background:var(–pink-light);color:var(–pink);}
-.hbar.r{border-left-color:var(–red);background:var(–red-light);color:var(–red);}
+.hbar{margin-bottom:1rem;padding:.5rem 1rem;border-left:3px solid var(--cyan);border-radius:0 var(--r8) var(--r8) 0;font-size:.76rem;color:var(--text2);background:var(--cyan-light);}
+.hbar.p{border-left-color:var(--purple);background:var(--purple-light);color:var(--purple);}
+.hbar.g{border-left-color:var(--green);background:var(--green-light);color:var(--green);}
+.hbar.a{border-left-color:var(--amber);background:var(--amber-light);color:var(--amber);}
+.hbar.pk{border-left-color:var(--pink);background:var(--pink-light);color:var(--pink);}
+.hbar.r{border-left-color:var(--red);background:var(--red-light);color:var(--red);}
 
 /* MARKER BAR */
 .mbar{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;}
-.mbar-lbl{font-size:.7rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;align-self:center;}
-.mk{padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface);color:var(–muted);font-size:.73rem;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;display:flex;flex-direction:column;align-items:center;line-height:1.3;touch-action:manipulation;font-weight:500;}
+.mbar-lbl{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;align-self:center;}
+.mk{padding:.35rem .85rem;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:.73rem;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;display:flex;flex-direction:column;align-items:center;line-height:1.3;touch-action:manipulation;font-weight:500;}
 .mk .sw{font-size:.58rem;opacity:.65;}
-.mk.c{border-color:var(–cyan);background:var(–cyan-bg);color:var(–cyan);font-weight:700;}
-.mk.p{border-color:var(–purple);background:var(–purple-bg);color:var(–purple);font-weight:700;}
-.mk.g{border-color:var(–green);background:var(–green-bg);color:var(–green);font-weight:700;}
-.mk-desc{font-size:.68rem;color:var(–muted);padding:.25rem .6rem;background:var(–surface2);border:1px solid var(–border);border-radius:20px;align-self:center;}
+.mk.c{border-color:var(--cyan);background:var(--cyan-bg);color:var(--cyan);font-weight:700;}
+.mk.p{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:700;}
+.mk.g{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:700;}
+.mk-desc{font-size:.68rem;color:var(--muted);padding:.25rem .6rem;background:var(--surface2);border:1px solid var(--border);border-radius:20px;align-self:center;}
 
 /* INPUTS */
-textarea,select,.ipt{width:100%;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);padding:.75rem 1rem;font-size:.88rem;font-family:‘Inter’,sans-serif;outline:none;line-height:1.65;transition:border-color .2s,box-shadow .2s;}
+textarea,select,.ipt{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r8);color:var(--text);padding:.75rem 1rem;font-size:.88rem;font-family:'Inter',sans-serif;outline:none;line-height:1.65;transition:border-color .2s,box-shadow .2s;}
 textarea{resize:vertical;min-height:110px;}
-textarea:focus,select:focus,.ipt:focus{border-color:var(–cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
-textarea.bp:focus{border-color:var(–purple);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
-textarea.bg:focus{border-color:var(–green);box-shadow:0 0 0 3px rgba(5,150,105,.1);}
-textarea.ba:focus{border-color:var(–amber);box-shadow:0 0 0 3px rgba(217,119,6,.1);}
-textarea.bpk:focus{border-color:var(–pink);box-shadow:0 0 0 3px rgba(219,39,119,.1);}
-select option{background:var(–surface);color:var(–text);}
+textarea:focus,select:focus,.ipt:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(8,145,178,.1);}
+textarea.bp:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
+textarea.bg:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,.1);}
+textarea.ba:focus{border-color:var(--amber);box-shadow:0 0 0 3px rgba(217,119,6,.1);}
+textarea.bpk:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(219,39,119,.1);}
+select option{background:var(--surface);color:var(--text);}
 .fgrp{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.75rem;}
-.flbl{font-size:.68rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;display:block;}
-.fgrp label{font-size:.68rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.flbl{font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;display:block;}
+.fgrp label{font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.65rem;margin-bottom:.9rem;}
 
 /* BUTTONS */
-.btn{padding:.6rem 1.4rem;border:none;border-radius:var(–r8);color:#fff;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;touch-action:manipulation;display:inline-flex;align-items:center;gap:.4rem;box-shadow:var(–shadow);}
-.btn:hover{transform:translateY(-1px);box-shadow:var(–shadow-md);}
+.btn{padding:.6rem 1.4rem;border:none;border-radius:var(--r8);color:#fff;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;touch-action:manipulation;display:inline-flex;align-items:center;gap:.4rem;box-shadow:var(--shadow);}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
-.btn-c{background:var(–cyan);}.btn-p{background:var(–purple);}.btn-g{background:var(–green);}
-.btn-a{background:var(–amber);}.btn-pk{background:var(–pink);}.btn-r{background:var(–red);}
-.btn-ghost{background:var(–surface);border:1.5px solid var(–border);color:var(–text2);box-shadow:var(–shadow);}
-.btn-ghost:hover{background:var(–surface2);}
+.btn-c{background:var(--cyan);}.btn-p{background:var(--purple);}.btn-g{background:var(--green);}
+.btn-a{background:var(--amber);}.btn-pk{background:var(--pink);}.btn-r{background:var(--red);}
+.btn-ghost{background:var(--surface);border:1.5px solid var(--border);color:var(--text2);box-shadow:var(--shadow);}
+.btn-ghost:hover{background:var(--surface2);}
 .arow{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap;align-items:center;}
-.arow .hint{font-size:.68rem;color:var(–dim);margin-left:auto;}
-.save-inp{padding:.5rem .85rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.78rem;outline:none;width:155px;font-family:‘Inter’,sans-serif;}
-.save-inp:focus{border-color:var(–cyan);}
+.arow .hint{font-size:.68rem;color:var(--dim);margin-left:auto;}
+.save-inp{padding:.5rem .85rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r8);color:var(--text);font-size:.78rem;outline:none;width:155px;font-family:'Inter',sans-serif;}
+.save-inp:focus{border-color:var(--cyan);}
 
 /* OUTPUT */
-.obox{margin-top:1.1rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r12);padding:1.4rem;display:none;box-shadow:var(–shadow);}
+.obox{margin-top:1.1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);padding:1.4rem;display:none;box-shadow:var(--shadow);}
 .obox.on{display:block;}
-.obox.bc{border-color:var(–cyan);border-top:3px solid var(–cyan);}
-.obox.bp{border-color:var(–purple);border-top:3px solid var(–purple);}
-.obox.bg{border-color:var(–green);border-top:3px solid var(–green);}
-.obox.ba{border-color:var(–amber);border-top:3px solid var(–amber);}
-.obox.bpk{border-color:var(–pink);border-top:3px solid var(–pink);}
-.ldg{color:var(–cyan);font-size:.83rem;display:flex;gap:8px;align-items:center;font-weight:500;}
+.obox.bc{border-color:var(--cyan);border-top:3px solid var(--cyan);}
+.obox.bp{border-color:var(--purple);border-top:3px solid var(--purple);}
+.obox.bg{border-color:var(--green);border-top:3px solid var(--green);}
+.obox.ba{border-color:var(--amber);border-top:3px solid var(--amber);}
+.obox.bpk{border-color:var(--pink);border-top:3px solid var(--pink);}
+.ldg{color:var(--cyan);font-size:.83rem;display:flex;gap:8px;align-items:center;font-weight:500;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 .spin{animation:pulse 1s infinite;}
 
 /* MARKDOWN */
-.md{line-height:1.75;color:var(–text2);}
-.md h2{font-size:.9rem;font-weight:700;margin:1.2rem 0 .45rem;padding:.4rem .85rem;border-radius:var(–r6);display:flex;align-items:center;gap:.4rem;font-family:‘Inter’,sans-serif;}
-.md h2.c{color:var(–cyan);background:var(–cyan-light);border-left:3px solid var(–cyan);}
-.md h2.p{color:var(–purple);background:var(–purple-light);border-left:3px solid var(–purple);}
-.md h2.g{color:var(–green);background:var(–green-light);border-left:3px solid var(–green);}
-.md h2.a{color:var(–amber);background:var(–amber-light);border-left:3px solid var(–amber);}
-.md h2.r{color:var(–red);background:var(–red-light);border-left:3px solid var(–red);}
-.md h2.pk{color:var(–pink);background:var(–pink-light);border-left:3px solid var(–pink);}
-.md h3{color:var(–text);font-size:.88rem;font-weight:600;margin:.8rem 0 .25rem;}
-.md p{color:var(–text2);margin:.25rem 0;line-height:1.7;}
+.md{line-height:1.75;color:var(--text2);}
+.md h2{font-size:.9rem;font-weight:700;margin:1.2rem 0 .45rem;padding:.4rem .85rem;border-radius:var(--r6);display:flex;align-items:center;gap:.4rem;font-family:'Inter',sans-serif;}
+.md h2.c{color:var(--cyan);background:var(--cyan-light);border-left:3px solid var(--cyan);}
+.md h2.p{color:var(--purple);background:var(--purple-light);border-left:3px solid var(--purple);}
+.md h2.g{color:var(--green);background:var(--green-light);border-left:3px solid var(--green);}
+.md h2.a{color:var(--amber);background:var(--amber-light);border-left:3px solid var(--amber);}
+.md h2.r{color:var(--red);background:var(--red-light);border-left:3px solid var(--red);}
+.md h2.pk{color:var(--pink);background:var(--pink-light);border-left:3px solid var(--pink);}
+.md h3{color:var(--text);font-size:.88rem;font-weight:600;margin:.8rem 0 .25rem;}
+.md p{color:var(--text2);margin:.25rem 0;line-height:1.7;}
 .md ul{padding-left:1.2rem;margin:.3rem 0;}
-.md li{color:var(–text2);margin:.18rem 0;line-height:1.6;}
-.md blockquote{border-left:3px solid var(–cyan);padding:.5rem 1rem;margin:.7rem 0;color:var(–cyan);background:var(–cyan-light);border-radius:0 var(–r8) var(–r8) 0;font-style:italic;}
-.md hr{border:none;border-top:1.5px solid var(–border);margin:.9rem 0;}
-.md table{border-collapse:collapse;margin:.7rem 0;width:100%;border-radius:var(–r8);overflow:hidden;box-shadow:var(–shadow);}
-.md th{padding:.45rem .8rem;background:var(–cyan-bg);color:var(–cyan);font-size:.78rem;font-weight:700;text-align:left;border:1px solid var(–cyan-light);}
-.md td{padding:.38rem .8rem;border:1px solid var(–border);color:var(–text2);font-size:.78rem;}
-.md td:first-child{color:var(–text);font-weight:600;background:var(–surface2);}
-.md strong{color:var(–text);font-weight:700;}
-.md code{background:var(–cyan-light);color:var(–cyan);padding:.1em .35em;border-radius:4px;font-family:‘DM Mono’,monospace;font-size:.88em;}
-.md .bline{color:var(–text);font-weight:700;margin:.5rem 0 .1rem;}
-.md .num{color:var(–amber);font-weight:700;font-family:‘DM Mono’,monospace;}
-.md .pearl{background:linear-gradient(135deg,var(–green-light),var(–cyan-light));border:1.5px solid var(–green-bg);border-radius:var(–r8);padding:.6rem 1rem;margin:.6rem 0;color:var(–green);font-weight:600;}
+.md li{color:var(--text2);margin:.18rem 0;line-height:1.6;}
+.md blockquote{border-left:3px solid var(--cyan);padding:.5rem 1rem;margin:.7rem 0;color:var(--cyan);background:var(--cyan-light);border-radius:0 var(--r8) var(--r8) 0;font-style:italic;}
+.md hr{border:none;border-top:1.5px solid var(--border);margin:.9rem 0;}
+.md table{border-collapse:collapse;margin:.7rem 0;width:100%;border-radius:var(--r8);overflow:hidden;box-shadow:var(--shadow);}
+.md th{padding:.45rem .8rem;background:var(--cyan-bg);color:var(--cyan);font-size:.78rem;font-weight:700;text-align:left;border:1px solid var(--cyan-light);}
+.md td{padding:.38rem .8rem;border:1px solid var(--border);color:var(--text2);font-size:.78rem;}
+.md td:first-child{color:var(--text);font-weight:600;background:var(--surface2);}
+.md strong{color:var(--text);font-weight:700;}
+.md code{background:var(--cyan-light);color:var(--cyan);padding:.1em .35em;border-radius:4px;font-family:'DM Mono',monospace;font-size:.88em;}
+.md .bline{color:var(--text);font-weight:700;margin:.5rem 0 .1rem;}
+.md .num{color:var(--amber);font-weight:700;font-family:'DM Mono',monospace;}
+.md .pearl{background:linear-gradient(135deg,var(--green-light),var(--cyan-light));border:1.5px solid var(--green-bg);border-radius:var(--r8);padding:.6rem 1rem;margin:.6rem 0;color:var(--green);font-weight:600;}
 
 /* QA */
 .tglrow{display:flex;gap:.4rem;margin-bottom:.85rem;flex-wrap:wrap;}
-.tgl{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.75rem;cursor:pointer;font-family:‘Inter’,sans-serif;transition:all .15s;touch-action:manipulation;font-weight:500;}
-.tgl.on{border-color:var(–purple);background:var(–purple-bg);color:var(–purple);font-weight:700;}
-.qlbl{font-size:.68rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:block;}
+.tgl{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:.75rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;touch-action:manipulation;font-weight:500;}
+.tgl.on{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:700;}
+.qlbl{font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:block;}
 .img-row{margin-top:.55rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}
-.img-lbl{padding:.4rem .9rem;background:var(–purple-bg);border:1.5px solid var(–purple-bg);border-radius:var(–r8);color:var(–purple);font-size:.75rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:500;}
-.img-nm{font-size:.7rem;color:var(–muted);}
-.img-clr{padding:.35rem .7rem;background:var(–red-light);border:1.5px solid var(–red-bg);border-radius:var(–r6);color:var(–red);font-size:.7rem;cursor:pointer;display:none;font-family:‘Inter’,sans-serif;}
+.img-lbl{padding:.4rem .9rem;background:var(--purple-bg);border:1.5px solid var(--purple-bg);border-radius:var(--r8);color:var(--purple);font-size:.75rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;}
+.img-nm{font-size:.7rem;color:var(--muted);}
+.img-clr{padding:.35rem .7rem;background:var(--red-light);border:1.5px solid var(--red-bg);border-radius:var(--r6);color:var(--red);font-size:.7rem;cursor:pointer;display:none;font-family:'Inter',sans-serif;}
 #qa-tw{margin-top:.4rem;display:none;}
-#qa-th{max-height:110px;border-radius:var(–r6);border:1.5px solid var(–border);object-fit:contain;background:var(–surface2);}
+#qa-th{max-height:110px;border-radius:var(--r6);border:1.5px solid var(--border);object-fit:contain;background:var(--surface2);}
 
 /* REPORT */
 .rmbar{display:flex;gap:.4rem;margin-bottom:1rem;flex-wrap:wrap;}
-.rmb{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:‘Inter’,sans-serif;font-weight:500;touch-action:manipulation;}
-.rmb.on{border-color:var(–pink);background:var(–pink-bg);color:var(–pink);font-weight:700;}
+.rmb{padding:.38rem .9rem;border-radius:20px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;font-weight:500;touch-action:manipulation;}
+.rmb.on{border-color:var(--pink);background:var(--pink-bg);color:var(--pink);font-weight:700;}
 .rp{display:none;}.rp.on{display:block;}
-.sc{background:var(–pink-light);border:1.5px solid var(–pink-bg);border-left:3px solid var(–pink);border-radius:var(–r8);padding:.75rem 1rem;font-size:.83rem;color:var(–text);line-height:1.6;cursor:pointer;transition:background .12s;margin-bottom:.5rem;position:relative;}
-.sc:hover{background:var(–pink-bg);}
-.sc .ch{position:absolute;top:.4rem;right:.7rem;font-size:.62rem;color:var(–pink);opacity:0;}
+.sc{background:var(--pink-light);border:1.5px solid var(--pink-bg);border-left:3px solid var(--pink);border-radius:var(--r8);padding:.75rem 1rem;font-size:.83rem;color:var(--text);line-height:1.6;cursor:pointer;transition:background .12s;margin-bottom:.5rem;position:relative;}
+.sc:hover{background:var(--pink-bg);}
+.sc .ch{position:absolute;top:.4rem;right:.7rem;font-size:.62rem;color:var(--pink);opacity:0;}
 .sc:hover .ch{opacity:1;}
-.dcm-drop{border:2px dashed var(–pink-bg);border-radius:var(–r12);padding:2rem;text-align:center;cursor:pointer;background:var(–pink-light);margin-bottom:1rem;transition:all .18s;}
-.dcm-drop:hover,.dcm-drop.ov{border-color:var(–pink);background:var(–pink-bg);}
-.dcm-drop p{color:var(–muted);font-size:.8rem;margin:.2rem 0;}
-#dicomCanvas{width:100%;max-width:512px;display:block;margin:0 auto;border-radius:var(–r8);border:1.5px solid var(–border);background:#000;}
+.dcm-drop{border:2px dashed var(--pink-bg);border-radius:var(--r12);padding:2rem;text-align:center;cursor:pointer;background:var(--pink-light);margin-bottom:1rem;transition:all .18s;}
+.dcm-drop:hover,.dcm-drop.ov{border-color:var(--pink);background:var(--pink-bg);}
+.dcm-drop p{color:var(--muted);font-size:.8rem;margin:.2rem 0;}
+#dicomCanvas{width:100%;max-width:512px;display:block;margin:0 auto;border-radius:var(--r8);border:1.5px solid var(--border);background:#000;}
 .dmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.4rem;margin:.7rem 0;}
-.dmi{background:var(–surface2);border:1px solid var(–border);border-radius:var(–r6);padding:.45rem .7rem;}
-.dmil{font-size:.6rem;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
-.dmiv{font-size:.8rem;color:var(–text);margin-top:.1rem;font-weight:500;}
+.dmi{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r6);padding:.45rem .7rem;}
+.dmil{font-size:.6rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.dmiv{font-size:.8rem;color:var(--text);margin-top:.1rem;font-weight:500;}
 .wlrow{display:flex;gap:.65rem;margin:.65rem 0;flex-wrap:wrap;align-items:center;}
-.wlg{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(–muted);}
-.wlg input[type=range]{width:90px;accent-color:var(–pink);}
+.wlg{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--muted);}
+.wlg input[type=range]{width:90px;accent-color:var(--pink);}
 
 /* LIBRARY */
 .lib-top{display:flex;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap;align-items:center;}
-.lib-search{flex:1;min-width:180px;padding:.6rem .9rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r8);color:var(–text);font-size:.85rem;outline:none;}
-.lib-search:focus{border-color:var(–cyan);}
+.lib-search{flex:1;min-width:180px;padding:.6rem .9rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r8);color:var(--text);font-size:.85rem;outline:none;}
+.lib-search:focus{border-color:var(--cyan);}
 .frow{display:flex;gap:.35rem;flex-wrap:wrap;}
-.fb{padding:.3rem .7rem;border-radius:14px;border:1.5px solid var(–border);background:var(–surface2);color:var(–muted);font-size:.7rem;cursor:pointer;transition:all .12s;font-family:‘Inter’,sans-serif;font-weight:500;touch-action:manipulation;}
-.fb.on{border-color:var(–cyan);background:var(–cyan-bg);color:var(–cyan);}
-.sync-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;padding:.75rem 1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r8);}
+.fb{padding:.3rem .7rem;border-radius:14px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:.7rem;cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif;font-weight:500;touch-action:manipulation;}
+.fb.on{border-color:var(--cyan);background:var(--cyan-bg);color:var(--cyan);}
+.sync-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;padding:.75rem 1rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r8);}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:.65rem;}
-.lcard{padding:1rem;background:var(–surface);border:1.5px solid var(–border);border-radius:var(–r12);cursor:pointer;transition:all .12s;border-top:3px solid transparent;box-shadow:var(–shadow);}
-.lcard:hover{box-shadow:var(–shadow-md);transform:translateY(-1px);}
-.cat-papers{border-top-color:var(–cyan);}
-.cat-qa{border-top-color:var(–purple);}
-.cat-guidelines{border-top-color:var(–green);}
-.cat-doubt{border-top-color:var(–amber);}
-.cat-compose{border-top-color:var(–pink);}
+.lcard{padding:1rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r12);cursor:pointer;transition:all .12s;border-top:3px solid transparent;box-shadow:var(--shadow);}
+.lcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.cat-papers{border-top-color:var(--cyan);}
+.cat-qa{border-top-color:var(--purple);}
+.cat-guidelines{border-top-color:var(--green);}
+.cat-doubt{border-top-color:var(--amber);}
+.cat-compose{border-top-color:var(--pink);}
 .lcard-tag{font-size:.6rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;margin-bottom:.3rem;}
-.lcard-title{color:var(–text);font-size:.83rem;font-weight:500;line-height:1.4;margin-bottom:.5rem;}
+.lcard-title{color:var(--text);font-size:.83rem;font-weight:500;line-height:1.4;margin-bottom:.5rem;}
 .lcard-ft{display:flex;justify-content:space-between;align-items:center;}
-.lcard-date{font-size:.65rem;color:var(–dim);}
-.lcard-x{font-size:.68rem;color:var(–dim);background:none;border:none;cursor:pointer;padding:.2rem .4rem;touch-action:manipulation;}
-.lcard-x:hover{color:var(–red);}
-.lib-empty{text-align:center;padding:3.5rem 2rem;color:var(–muted);}
-.det-back{margin-bottom:.9rem;padding:.4rem .9rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r6);color:var(–text2);font-size:.78rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:500;}
-.det-hd{padding:.75rem 1.1rem;background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r12) var(–r12) 0 0;display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;}
-.det-bd{padding:1.4rem;background:var(–surface);border:1.5px solid var(–border);border-top:none;border-radius:0 0 var(–r12) var(–r12);}
-.btn-del{padding:.3rem .75rem;background:var(–red-light);border:1.5px solid var(–red-bg);border-radius:var(–r6);color:var(–red);font-size:.72rem;cursor:pointer;font-family:‘Inter’,sans-serif;font-weight:600;}
-.sec-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(–muted);padding:.35rem 0;border-bottom:1.5px solid var(–border);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;}
+.lcard-date{font-size:.65rem;color:var(--dim);}
+.lcard-x{font-size:.68rem;color:var(--dim);background:none;border:none;cursor:pointer;padding:.2rem .4rem;touch-action:manipulation;}
+.lcard-x:hover{color:var(--red);}
+.lib-empty{text-align:center;padding:3.5rem 2rem;color:var(--muted);}
+.det-back{margin-bottom:.9rem;padding:.4rem .9rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r6);color:var(--text2);font-size:.78rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;}
+.det-hd{padding:.75rem 1.1rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12) var(--r12) 0 0;display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;}
+.det-bd{padding:1.4rem;background:var(--surface);border:1.5px solid var(--border);border-top:none;border-radius:0 0 var(--r12) var(--r12);}
+.btn-del{padding:.3rem .75rem;background:var(--red-light);border:1.5px solid var(--red-bg);border-radius:var(--r6);color:var(--red);font-size:.72rem;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
+.sec-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.35rem 0;border-bottom:1.5px solid var(--border);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;}
 
 /* DEV */
-.dcard{background:var(–red-light);border:1.5px solid var(–red-bg);border-left:3px solid var(–red);border-radius:var(–r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.65rem;margin-bottom:.55rem;}
-.dcard-txt{color:var(–red);font-size:.82rem;line-height:1.55;flex:1;}
-.dcard-meta{font-size:.62rem;color:var(–dim);margin-top:.25rem;}
-.dev-banner{background:var(–amber-light);border:1.5px solid var(–amber-bg);border-radius:var(–r8);padding:.55rem .9rem;margin-bottom:.9rem;font-size:.73rem;color:var(–amber);font-weight:500;}
+.dcard{background:var(--red-light);border:1.5px solid var(--red-bg);border-left:3px solid var(--red);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.65rem;margin-bottom:.55rem;}
+.dcard-txt{color:var(--red);font-size:.82rem;line-height:1.55;flex:1;}
+.dcard-meta{font-size:.62rem;color:var(--dim);margin-top:.25rem;}
+.dev-banner{background:var(--amber-light);border:1.5px solid var(--amber-bg);border-radius:var(--r8);padding:.55rem .9rem;margin-bottom:.9rem;font-size:.73rem;color:var(--amber);font-weight:500;}
 
 /* TOAST */
-#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:.6rem 1.2rem;border-radius:var(–r8);color:#fff;font-size:.8rem;font-weight:600;box-shadow:var(–shadow-md);opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;transform:translateY(8px);}
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;padding:.6rem 1.2rem;border-radius:var(--r8);color:#fff;font-size:.8rem;font-weight:600;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;transform:translateY(8px);}
 #toast.on{opacity:1;transform:translateY(0);}
 #toast.ok{background:#16a34a;}
-#toast.er{background:var(–red);}
+#toast.er{background:var(--red);}
 
 /* ── RICH ANSWER RENDERER ─────────────────────── */
 .box-pearl    {background:#fef9c3;border-left:4px solid #ca8a04;padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:.6rem 0;}
@@ -261,26 +261,24 @@ select option{background:var(–surface);color:var(–text);}
 .box-label    {font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem;opacity:.8;}
 .mermaid-wrap {background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:1rem;margin:.8rem 0;overflow-x:auto;text-align:center;}
 .mermaid      {max-width:100%;}
-.flowchart-err{color:var(–red);font-size:.8rem;padding:.5rem;}
+.flowchart-err{color:var(--red);font-size:.8rem;padding:.5rem;}
 .md table     {border-collapse:collapse;width:100%;margin:.6rem 0;font-size:.82rem;}
-.md th        {background:var(–surface2);padding:.45rem .65rem;text-align:left;border:1px solid var(–border);font-weight:700;}
-.md td        {padding:.4rem .65rem;border:1px solid var(–border);}
-.md tr:nth-child(even) td {background:var(–surface2);}
+.md th        {background:var(--surface2);padding:.45rem .65rem;text-align:left;border:1px solid var(--border);font-weight:700;}
+.md td        {padding:.4rem .65rem;border:1px solid var(--border);}
+.md tr:nth-child(even) td {background:var(--surface2);}
 .md h2        {font-size:1rem;font-weight:700;margin:1.1rem 0 .3rem;padding:.35rem .7rem;border-radius:6px;}
-.md h3        {font-size:.9rem;font-weight:700;margin:.8rem 0 .2rem;color:var(–text);}
-.md blockquote{border-left:3px solid var(–border);padding:.3rem .7rem;color:var(–muted);margin:.3rem 0;}
-.md code      {background:var(–surface2);padding:.1rem .35rem;border-radius:4px;font-size:.82rem;}
+.md h3        {font-size:.9rem;font-weight:700;margin:.8rem 0 .2rem;color:var(--text);}
+.md blockquote{border-left:3px solid var(--border);padding:.3rem .7rem;color:var(--muted);margin:.3rem 0;}
+.md code      {background:var(--surface2);padding:.1rem .35rem;border-radius:4px;font-size:.82rem;}
 .md .num      {font-weight:700;color:#0369a1;}
 .md li        {margin:.18rem 0;line-height:1.55;}
 .md .bline    {font-weight:700;margin:.3rem 0;}
 .thinking-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;color:#7c3aed;background:#f3e8ff;border:1px solid #ddd6fe;padding:.2rem .55rem;border-radius:12px;margin-bottom:.5rem;}
 </style>
-
 </head>
 <body>
 
 <!-- API KEY MODAL -->
-
 <div class="modal" id="api-modal">
   <div class="modal-box">
     <div class="modal-icon">☢️</div>
@@ -293,7 +291,6 @@ select option{background:var(–surface);color:var(–text);}
 </div>
 
 <!-- SUPABASE SETUP MODAL -->
-
 <div class="modal off" id="sb-modal">
   <div class="modal-box" style="max-width:520px">
     <div class="modal-icon">☁️</div>
@@ -341,490 +338,570 @@ select option{background:var(–surface);color:var(–text);}
     <button class="ntab"    data-t="report"     onclick="tab('report')">PET/CT Report</button>
     <button class="ntab"    data-t="library"    onclick="tab('library')">Library</button>
     <button class="ntab"    data-t="mpi"        onclick="tab('mpi')">Gamma Report</button>
+    <button class="ntab"    data-t="rad"        onclick="tab('rad')">Radiology Writer</button>
     <button class="ntab"    data-t="dev"        onclick="tab('dev')">Improve AI</button>
   </nav>
 
   <main><div class="wrap">
 
-```
-<!-- PAPERS -->
-<div class="pane on" id="pane-papers">
-  <div class="hbar">Paste abstract or full paper text — rich DNB-level summary with colour-coded sections, auto-saved to library</div>
-  <div class="mbar">
-    <span class="mbar-lbl">Length:</span>
-    <button class="mk c" data-g="papers" onclick="setMk('papers',10,this)">10 Marker<span class="sw">500-800 words</span></button>
-    <button class="mk"   data-g="papers" onclick="setMk('papers',5,this)">5 Marker<span class="sw">300-400 words</span></button>
-    <button class="mk"   data-g="papers" onclick="setMk('papers',3,this)">3 Marker<span class="sw">100-200 words</span></button>
-    <span class="mk-desc" id="papers-desc">Long answer — full detail, tables, clinical pearls</span>
-  </div>
-  <textarea id="papers-inp" placeholder="Paste abstract, title, or full paper text here...&#10;&#10;E.g.: Radiomic Profiling of Head and Neck Cancer: 18F-FDG PET Texture Analysis as Predictor of Patient Survival" onkeydown="ke(event,'papers')"></textarea>
-  <div class="arow">
-    <button class="btn btn-c" id="btn-papers" onclick="gen('papers')">Generate</button>
-    <span class="hint">Auto-saved · Ctrl+Enter</span>
-  </div>
-  <div class="obox bc" id="obox-papers"><div class="ldg" id="ld-papers"><span class="spin">●</span> Summarising paper...</div><div class="md" id="md-papers"></div></div>
-</div>
-
-<!-- QA -->
-<div class="pane" id="pane-qa">
-  <div class="hbar p">Model Answer — AI writes the full answer &nbsp;|&nbsp; Answer Checker — you write, AI shows what is missing and scores you</div>
-  <div class="mbar">
-    <span class="mbar-lbl">Length:</span>
-    <button class="mk p" data-g="qa" onclick="setMk('qa',10,this)">10 Marker<span class="sw">500-800 words</span></button>
-    <button class="mk"   data-g="qa" onclick="setMk('qa',5,this)">5 Marker<span class="sw">300-400 words</span></button>
-    <button class="mk"   data-g="qa" onclick="setMk('qa',3,this)">3 Marker<span class="sw">100-200 words</span></button>
-    <span class="mk-desc" id="qa-desc">Long answer — full detail, tables, clinical pearls</span>
-  </div>
-  <div class="tglrow">
-    <button class="tgl on" id="tgl-model" onclick="setQM('model')">Model Answer</button>
-    <button class="tgl"    id="tgl-check" onclick="setQM('check')">Answer Checker</button>
-  </div>
-  <span class="qlbl">Question — type, paste, or upload a photo of your question paper</span>
-  <textarea id="qa-q" style="min-height:85px;border-color:var(--border)" placeholder="Type your DNB question or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy. What is the role of FNAC?&#10;&#10;Or upload a photo of the question paper below" onkeydown="ke(event,'qa')"></textarea>
-  <div class="img-row">
-    <label class="img-lbl">Upload Question Paper Photo<input type="file" id="qa-img" accept="image/*" style="display:none" onchange="loadQI(this)"/></label>
-    <span class="img-nm" id="qa-img-nm"></span>
-    <button class="img-clr" id="qa-img-clr" onclick="clearQI()">Remove</button>
-  </div>
-  <div id="qa-tw"><img id="qa-th" src=""/></div>
-  <div id="qa-aw" style="display:none;margin-top:.75rem">
-    <span class="qlbl" style="margin-top:.3rem">Your Answer — write here and AI will check it</span>
-    <textarea id="qa-a" style="min-height:120px;background:#faf5ff;border-color:var(--purple)" placeholder="Write your answer here. AI will score it and tell you exactly what key points you missed."></textarea>
-  </div>
-  <div class="arow">
-    <button class="btn btn-p" id="btn-qa" onclick="gen('qa')">Generate Model Answer</button>
-    <input class="save-inp" id="qa-lbl" placeholder="Label (optional)" style="display:none"/>
-    <button class="btn btn-ghost" id="qa-sv" onclick="mSave('qa')" style="display:none">Save</button>
-    <span class="hint">Ctrl+Enter</span>
-  </div>
-  <div class="obox bp" id="obox-qa"><div class="ldg" id="ld-qa"><span class="spin">●</span> <span id="ld-qa-t">Searching latest papers and generating answer...</span></div><div class="md" id="md-qa"></div></div>
-</div>
-
-<!-- GUIDELINES -->
-<div class="pane" id="pane-guidelines">
-  <div class="hbar g">SNMMI · EANM · AERB · ISNM guidelines — comprehensive 10-marker depth, auto-saved to library</div>
-  <textarea id="gl-inp" style="border-color:var(--border)" placeholder="E.g.: SNMMI guidelines for thyroid cancer radioiodine ablation&#10;Or: AERB regulations for patient release after I-131 therapy&#10;Or: EANM guidelines for PSMA PET/CT in prostate cancer" onkeydown="ke(event,'guidelines')"></textarea>
-  <div class="arow">
-    <button class="btn btn-g" id="btn-guidelines" onclick="gen('guidelines')">Generate</button>
-    <span class="hint">Auto-saved · Ctrl+Enter</span>
-  </div>
-  <div class="obox bg" id="obox-guidelines"><div class="ldg" id="ld-guidelines"><span class="spin">●</span> Fetching guidelines...</div><div class="md" id="md-guidelines"></div></div>
-</div>
-
-<!-- DOUBTS -->
-<div class="pane" id="pane-doubt">
-  <div class="hbar a">Ask anything — concepts, mechanisms, doses, differentials, clinical scenarios</div>
-  <textarea id="db-inp" style="border-color:var(--border)" placeholder="E.g.: Why does Tc-99m MDP show uptake in soft tissue calcification?&#10;Or: Difference between SPECT and PET resolution in simple terms&#10;Or: What is SUV cutoff for malignancy in FDG PET?&#10;Or: How do I calculate injected dose from residual syringe activity?" onkeydown="ke(event,'doubt')"></textarea>
-  <div class="arow">
-    <button class="btn btn-a" id="btn-doubt" onclick="gen('doubt')">Ask</button>
-    <input class="save-inp" id="db-lbl" placeholder="Label (optional)" style="display:none"/>
-    <button class="btn btn-ghost" id="db-sv" onclick="mSave('doubt')" style="display:none">Save</button>
-    <span class="hint">Ctrl+Enter</span>
-  </div>
-  <div class="obox ba" id="obox-doubt"><div class="ldg" id="ld-doubt"><span class="spin">●</span> Thinking...</div><div class="md" id="md-doubt"></div></div>
-</div>
-
-<!-- PET/CT REPORT -->
-<div class="pane" id="pane-report">
-  <div class="hbar pk">PET/CT Reporting — Lesion sentence builder · Full report composer · DICOM viewer with AI analysis</div>
-  <div class="rmbar">
-    <button class="rmb on" onclick="setRM('lesion',this)">Lesion Builder</button>
-    <button class="rmb"    onclick="setRM('compose',this)">Report Composer</button>
-    <button class="rmb"    onclick="setRM('dicom',this)">DICOM Viewer</button>
-  </div>
-
-  <div class="rp on" id="rp-lesion">
-    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Fill lesion details — get professional reporting sentences. Tap any sentence to copy.</p>
-    <div class="fgrid">
-      <div class="fgrp"><label>Organ / Region</label>
-        <select id="l-org"><option value="">Select...</option><option>Liver</option><option>Lung - right upper lobe</option><option>Lung - right middle lobe</option><option>Lung - right lower lobe</option><option>Lung - left upper lobe</option><option>Lung - left lower lobe</option><option>Mediastinum</option><option>Cervical lymph node</option><option>Axillary LN - right</option><option>Axillary LN - left</option><option>Mediastinal LN</option><option>Para-aortic LN</option><option>Iliac LN</option><option>Inguinal LN</option><option>Prostate bed</option><option>Prostate</option><option>Spine - cervical</option><option>Spine - thoracic</option><option>Spine - lumbar</option><option>Pelvis</option><option>Rib</option><option>Sternum</option><option>Femur</option><option>Thyroid - right lobe</option><option>Thyroid - left lobe</option><option>Adrenal - right</option><option>Adrenal - left</option><option>Kidney - right</option><option>Kidney - left</option><option>Pancreas - head</option><option>Pancreas - body/tail</option><option>Spleen</option><option>Brain</option><option>Peritoneum</option><option>Soft tissue</option></select>
+    <!-- PAPERS -->
+    <div class="pane on" id="pane-papers">
+      <div class="hbar">Paste abstract or full paper text — rich DNB-level summary with colour-coded sections, auto-saved to library</div>
+      <div class="mbar">
+        <span class="mbar-lbl">Length:</span>
+        <button class="mk c" data-g="papers" onclick="setMk('papers',10,this)">10 Marker<span class="sw">500-800 words</span></button>
+        <button class="mk"   data-g="papers" onclick="setMk('papers',5,this)">5 Marker<span class="sw">300-400 words</span></button>
+        <button class="mk"   data-g="papers" onclick="setMk('papers',3,this)">3 Marker<span class="sw">100-200 words</span></button>
+        <span class="mk-desc" id="papers-desc">Long answer — full detail, tables, clinical pearls</span>
       </div>
-      <div class="fgrp"><label>Custom Location</label><input class="ipt" id="l-cust" placeholder="e.g. right iliac crest"/></div>
-      <div class="fgrp"><label>Lesion Type</label><select id="l-type"><option value="">Select...</option><option>Soft tissue lesion</option><option>Lymph node</option><option>Osseous lesion</option><option>Pulmonary nodule</option><option>Hepatic lesion</option><option>Mass</option><option>Nodule</option><option>Focus of uptake</option></select></div>
-      <div class="fgrp"><label>Size (cm)</label><input class="ipt" id="l-size" placeholder="e.g. 2.3 x 1.8"/></div>
-      <div class="fgrp"><label>SUVmax</label><input class="ipt" type="number" id="l-smax" step="0.1" placeholder="e.g. 8.4"/></div>
-      <div class="fgrp"><label>SUVmean</label><input class="ipt" type="number" id="l-smean" step="0.1" placeholder="e.g. 5.2"/></div>
-      <div class="fgrp"><label>Background SUV (liver)</label><input class="ipt" type="number" id="l-bg" step="0.1" placeholder="e.g. 2.8"/></div>
-      <div class="fgrp"><label>Tracer</label><select id="l-tr"><option>FDG (F-18)</option><option>PSMA (Ga-68)</option><option>DOTATATE (Ga-68)</option><option>Choline (F-18)</option><option>NaF (F-18)</option><option>FLT (F-18)</option><option>PSMA (F-18 DCFPyL)</option></select></div>
-      <div class="fgrp"><label>Uptake Pattern</label><select id="l-pat"><option value="">Select...</option><option>Intense focal uptake</option><option>Moderately increased uptake</option><option>Mildly increased uptake</option><option>Diffuse uptake</option><option>Heterogeneous uptake</option><option>Homogeneous uptake</option><option>Peripheral uptake with central photopenia</option><option>No significant uptake</option><option>Photopenic defect</option></select></div>
-      <div class="fgrp"><label>CT Morphology</label><select id="l-morf"><option value="">Select...</option><option>Hypodense</option><option>Hyperdense</option><option>Isodense</option><option>Lytic</option><option>Sclerotic</option><option>Mixed lytic-sclerotic</option><option>Spiculated</option><option>Lobulated</option><option>Well-defined</option><option>Ill-defined</option><option>With necrotic centre</option><option>Calcified</option></select></div>
-      <div class="fgrp"><label>Impression</label><select id="l-imp"><option value="">Select...</option><option>Likely malignant - metabolically active</option><option>Highly suspicious for malignancy</option><option>Consistent with known malignancy</option><option>Suspicious for metastatic disease</option><option>Likely benign - physiological uptake</option><option>Indeterminate</option><option>Consistent with treated/responding disease</option><option>Progressive disease</option><option>New lesion compared to prior</option></select></div>
-    </div>
-    <div class="arow" style="margin-bottom:.9rem">
-      <button class="btn btn-pk" onclick="buildSC()">Build Sentence</button>
-      <button class="btn btn-p" onclick="aiSC()">AI Enhance</button>
-      <button class="btn btn-ghost" onclick="clearL()">Clear</button>
-    </div>
-    <div id="sc-cards"></div>
-    <div class="obox bpk" id="obox-lsn"><div class="ldg" id="ld-lsn"><span class="spin">●</span> Generating...</div><div class="md" id="md-lsn"></div></div>
-  </div>
-
-  <div class="rp" id="rp-compose">
-    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Dump rough bullet-point findings — AI builds a complete formal PET/CT report</p>
-    <div class="fgrp"><label>Indication / Clinical History</label><input class="ipt" id="rc-ind" placeholder="e.g. Known Ca prostate post RP, rising PSA 3.2 ng/mL, for restaging"/></div>
-    <div class="fgrp"><label>Radiopharmaceutical and Technique</label><input class="ipt" id="rc-rp" placeholder="e.g. 185 MBq F-18 FDG IV, blood glucose 96 mg/dL, uptake 60 min"/></div>
-    <div class="fgrp"><label>Your Rough Findings</label>
-      <textarea id="rc-find" style="min-height:130px;border-color:var(--border)" placeholder="- Liver seg 6 lesion, 2.3cm, SUVmax 9.2&#10;- Multiple mediastinal LN, largest 1.8cm, SUVmax 6.4&#10;- No brain mets&#10;- Bones clear&#10;- No uptake at prostate bed"></textarea>
-    </div>
-    <div class="fgrp" style="max-width:250px"><label>Report Style</label><select id="rc-style"><option value="standard">Standard structured</option><option value="narrative">Narrative style</option><option value="concise">Concise / brief</option></select></div>
-    <div class="arow">
-      <button class="btn btn-pk" id="btn-compose" onclick="gen('compose')">Generate Report</button>
-      <input class="save-inp" id="cmp-lbl" placeholder="Label (optional)"/>
-      <button class="btn btn-ghost" onclick="mSave('compose')">Save</button>
-    </div>
-    <div class="obox bpk" id="obox-compose"><div class="ldg" id="ld-compose"><span class="spin">●</span> Composing...</div><div class="md" id="md-compose"></div></div>
-  </div>
-
-  <div class="rp" id="rp-dicom">
-    <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Upload a .dcm file — view, adjust window/level, run AI analysis</p>
-    <div class="dcm-drop" id="dcm-drop" onclick="document.getElementById('dcm-f').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
-      <div style="font-size:1.8rem;opacity:.35;margin-bottom:.4rem">image</div>
-      <p><strong>Tap or click to upload</strong> or drag a .dcm file</p>
-      <p>Single-slice viewer — no software needed</p>
-      <input type="file" id="dcm-f" accept=".dcm" style="display:none" onchange="loadDCM(this.files[0])"/>
-    </div>
-    <div id="dcm-view" style="display:none">
-      <div class="dmg" id="dcm-meta"></div>
-      <div class="wlrow">
-        <div class="wlg">WC:<input type="range" id="wc" min="-1000" max="3000" value="40" oninput="applyWL()"/><span id="wc-v">40</span></div>
-        <div class="wlg">WW:<input type="range" id="ww" min="1" max="4000" value="400" oninput="applyWL()"/><span id="ww-v">400</span></div>
-        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('soft')">Soft Tissue</button>
-        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('lung')">Lung</button>
-        <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('bone')">Bone</button>
+      <textarea id="papers-inp" placeholder="Paste abstract, title, or full paper text here...&#10;&#10;E.g.: Radiomic Profiling of Head and Neck Cancer: 18F-FDG PET Texture Analysis as Predictor of Patient Survival" onkeydown="ke(event,'papers')"></textarea>
+      <div class="arow">
+        <button class="btn btn-c" id="btn-papers" onclick="gen('papers')">Generate</button>
+        <span class="hint">Auto-saved · Ctrl+Enter</span>
       </div>
-      <canvas id="dicomCanvas" width="512" height="512"></canvas>
-      <div class="arow" style="margin-top:.9rem">
-        <button class="btn btn-pk" id="btn-dcm-ai" onclick="dcmAI()">AI Analysis of Image</button>
+      <div class="obox bc" id="obox-papers"><div class="ldg" id="ld-papers"><span class="spin">●</span> Summarising paper...</div><div class="md" id="md-papers"></div></div>
+    </div>
+
+    <!-- QA -->
+    <div class="pane" id="pane-qa">
+      <div class="hbar p">Model Answer — AI writes the full answer &nbsp;|&nbsp; Answer Checker — you write, AI shows what is missing and scores you</div>
+      <div class="mbar">
+        <span class="mbar-lbl">Length:</span>
+        <button class="mk p" data-g="qa" onclick="setMk('qa',10,this)">10 Marker<span class="sw">500-800 words</span></button>
+        <button class="mk"   data-g="qa" onclick="setMk('qa',5,this)">5 Marker<span class="sw">300-400 words</span></button>
+        <button class="mk"   data-g="qa" onclick="setMk('qa',3,this)">3 Marker<span class="sw">100-200 words</span></button>
+        <span class="mk-desc" id="qa-desc">Long answer — full detail, tables, clinical pearls</span>
       </div>
-      <div class="obox bpk" id="obox-dcm"><div class="ldg" id="ld-dcm"><span class="spin">●</span> Analysing...</div><div class="md" id="md-dcm"></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- LIBRARY -->
-<div class="pane" id="pane-library">
-  <div class="lib-top">
-    <input class="lib-search" id="lib-q" placeholder="Search library..." oninput="renderLib()"/>
-    <div class="frow">
-      <button class="fb on" data-f="all"        onclick="setF('all',this)">All</button>
-      <button class="fb"    data-f="papers"     onclick="setF('papers',this)">Papers</button>
-      <button class="fb"    data-f="qa"         onclick="setF('qa',this)">Q&A</button>
-      <button class="fb"    data-f="guidelines" onclick="setF('guidelines',this)">Guidelines</button>
-      <button class="fb"    data-f="doubt"      onclick="setF('doubt',this)">Doubts</button>
-      <button class="fb"    data-f="compose"    onclick="setF('compose',this)">Reports</button>
-    </div>
-  </div>
-  <div class="sync-row">
-    <span id="lib-sync-status" style="font-size:.75rem;color:var(--muted);flex:1">Cloud sync: not connected</span>
-    <button class="btn btn-ghost" onclick="syncFromCloud()" style="font-size:.72rem;padding:.38rem .8rem">Pull from Cloud</button>
-    <button class="btn btn-ghost" onclick="exportLib()" style="font-size:.72rem;padding:.38rem .8rem">Export JSON</button>
-    <label class="btn btn-ghost" style="font-size:.72rem;padding:.38rem .8rem;cursor:pointer">Import JSON<input type="file" accept=".json" style="display:none" onchange="importLib(this)"/></label>
-  </div>
-  <div id="lib-content"></div>
-</div>
-
-
-<!-- GAMMA / MPI REPORT -->
-<div class="pane" id="pane-mpi">
-  <div class="hbar" style="border-left-color:#0369a1;background:#e0f2fe;color:#0369a1">
-    Gamma Camera MPI Report
-  </div>
-
-  <!-- STUDY TYPE -->
-  <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem" id="mpi-type-row">
-    <button class="tgl on" onclick="setMT('adenosine',this)">Adenosine Stress</button>
-    <button class="tgl"    onclick="setMT('bruce',this)">Exercise (Bruce)</button>
-    <button class="tgl"    onclick="setMT('rest',this)">Rest Only</button>
-    <button class="tgl"    onclick="setMT('viability',this)">Rest + FDG Viability</button>
-  </div>
-
-  <!-- PATIENT + DOSES -->
-  <div class="fgrid" style="margin-bottom:.75rem">
-    <div class="fgrp"><label>Patient Name</label><input class="ipt" id="m-name" placeholder="optional"/></div>
-    <div class="fgrp"><label>MRN</label><input class="ipt" id="m-mrn" placeholder="optional"/></div>
-    <div class="fgrp" id="m-sd-wrap"><label>Stress Dose (mCi MIBI)</label><input class="ipt" id="m-sd" type="number" step="0.1" placeholder="e.g. 5.8"/></div>
-    <div class="fgrp"><label>Rest Dose (mCi MIBI)</label><input class="ipt" id="m-rd" type="number" step="0.1" placeholder="e.g. 17.4"/></div>
-    <div class="fgrp" id="m-fd-wrap" style="display:none"><label>FDG Dose (mCi F-18)</label><input class="ipt" id="m-fd" type="number" step="0.1" value="2"/></div>
-  </div>
-
-  <!-- STRESS PARAMETERS -->
-  <div id="m-sparams" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
-    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Stress Parameters</div>
-    <div id="m-aden-p">
-      <div class="fgrid">
-        <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr" type="number" placeholder="74"/></div>
-        <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp" placeholder="120/80"/></div>
-        <div class="fgrp"><label>ECG Changes</label>
-          <select id="m-ecg" class="ipt">
-            <option value="Nil.">Nil</option>
-            <option value="Baseline LBBB.">Baseline LBBB</option>
-            <option value="1 mm ST depression in inferior leads.">ST depression inferior</option>
-            <option value="1 mm ST depression in lateral leads.">ST depression lateral</option>
-            <option value="1 mm ST depression in anterior leads.">ST depression anterior</option>
-            <option value="Depression downsloping.">ST depression downsloping</option>
-            <option value="Depression horizontal.">ST depression horizontal</option>
-          </select>
-        </div>
-        <div class="fgrp"><label>Complaints</label>
-          <select id="m-comp" class="ipt">
-            <option value="Nil.">Nil</option>
-            <option value="Mild dyspnea.">Mild dyspnea</option>
-            <option value="Chest pain.">Chest pain</option>
-            <option value="Burning type of chest pain.">Burning chest pain</option>
-            <option value="Mild right sided chest heaviness.">Chest heaviness</option>
-          </select>
-        </div>
+      <div class="tglrow">
+        <button class="tgl on" id="tgl-model" onclick="setQM('model')">Model Answer</button>
+        <button class="tgl"    id="tgl-check" onclick="setQM('check')">Answer Checker</button>
       </div>
-    </div>
-    <div id="m-bruce-p" style="display:none">
-      <div class="fgrid">
-        <div class="fgrp"><label>Duration (mm:ss)</label><input class="ipt" id="m-dur" placeholder="06:33"/></div>
-        <div class="fgrp"><label>METs</label><input class="ipt" id="m-mets" type="number" step="0.01" placeholder="8.70"/></div>
-        <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr2" type="number" placeholder="61"/></div>
-        <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp2" placeholder="120/80"/></div>
-        <div class="fgrp"><label>Max HR (/min)</label><input class="ipt" id="m-mhr" type="number" placeholder="144" oninput="calcDP()"/></div>
-        <div class="fgrp"><label>Patient Age</label><input class="ipt" id="m-age" type="number" placeholder="55"/></div>
-        <div class="fgrp"><label>Max BP (mmHg)</label><input class="ipt" id="m-mbp" placeholder="174/90" oninput="calcDP()"/></div>
-        <div class="fgrp"><label>Double Product</label><input class="ipt" id="m-dp" placeholder="auto" readonly style="background:var(--surface2)"/></div>
-        <div class="fgrp"><label>ECG Changes</label>
-          <select id="m-ecg2" class="ipt">
-            <option value="Nil.">Nil</option>
-            <option value="Depression horizontal.">ST depression horizontal</option>
-            <option value="Depression downsloping.">ST depression downsloping</option>
-            <option value="Baseline LBBB.">Baseline LBBB</option>
-            <option value="Occasional VPCs, No significant ST T Changes.">Occasional VPCs</option>
-          </select>
-        </div>
-        <div class="fgrp"><label>Complaints</label>
-          <select id="m-comp2" class="ipt">
-            <option value="Nil.">Nil</option>
-            <option value="Mild dyspnea.">Mild dyspnea</option>
-            <option value="Mild right sided chest heaviness.">Chest heaviness</option>
-            <option value="Chest pain.">Chest pain</option>
-            <option value=">2mm horizontal ST depression.">&gt;2mm ST depression</option>
-          </select>
-        </div>
-        <div class="fgrp"><label>Termination reason</label>
-          <select id="m-term" class="ipt">
-            <option value="Target heart rate achieved.">Target HR achieved</option>
-            <option value="Target heart rate achieved, fatigue.">Target HR + fatigue</option>
-            <option value="Fatigue.">Fatigue</option>
-            <option value="Chest pain.">Chest pain</option>
-          </select>
-        </div>
+      <span class="qlbl">Question — type, paste, or upload a photo of your question paper</span>
+      <textarea id="qa-q" style="min-height:85px;border-color:var(--border)" placeholder="Type your DNB question or paste an entire question paper...&#10;&#10;E.g.: Enumerate causes of cold nodule on thyroid scintigraphy. What is the role of FNAC?&#10;&#10;Or upload a photo of the question paper below" onkeydown="ke(event,'qa')"></textarea>
+      <div class="img-row">
+        <label class="img-lbl">Upload Question Paper Photo<input type="file" id="qa-img" accept="image/*" style="display:none" onchange="loadQI(this)"/></label>
+        <span class="img-nm" id="qa-img-nm"></span>
+        <button class="img-clr" id="qa-img-clr" onclick="clearQI()">Remove</button>
       </div>
+      <div id="qa-tw"><img id="qa-th" src=""/></div>
+      <div id="qa-aw" style="display:none;margin-top:.75rem">
+        <span class="qlbl" style="margin-top:.3rem">Your Answer — write here and AI will check it</span>
+        <textarea id="qa-a" style="min-height:120px;background:#faf5ff;border-color:var(--purple)" placeholder="Write your answer here. AI will score it and tell you exactly what key points you missed."></textarea>
+      </div>
+      <div class="arow">
+        <button class="btn btn-p" id="btn-qa" onclick="gen('qa')">Generate Model Answer</button>
+        <input class="save-inp" id="qa-lbl" placeholder="Label (optional)" style="display:none"/>
+        <button class="btn btn-ghost" id="qa-sv" onclick="mSave('qa')" style="display:none">Save</button>
+        <span class="hint">Ctrl+Enter</span>
+      </div>
+      <div class="obox bp" id="obox-qa"><div class="ldg" id="ld-qa"><span class="spin">●</span> <span id="ld-qa-t">Searching latest papers and generating answer...</span></div><div class="md" id="md-qa"></div></div>
     </div>
-  </div>
 
-  <!-- LV / RV -->
-  <div class="fgrid" style="margin-bottom:.75rem">
-    <div class="fgrp"><label>LV Cavity Dilatation</label>
-      <select id="m-lv" class="ipt">
-        <option value="none">No LV cavity dilatation</option>
-        <option value="stress">Dilatation at stress only (TID)</option>
-        <option value="both">Dilatation at stress and rest</option>
-        <option value="rest-only">Dilatation at rest only</option>
-      </select>
+    <!-- GUIDELINES -->
+    <div class="pane" id="pane-guidelines">
+      <div class="hbar g">SNMMI · EANM · AERB · ISNM guidelines — comprehensive 10-marker depth, auto-saved to library</div>
+      <textarea id="gl-inp" style="border-color:var(--border)" placeholder="E.g.: SNMMI guidelines for thyroid cancer radioiodine ablation&#10;Or: AERB regulations for patient release after I-131 therapy&#10;Or: EANM guidelines for PSMA PET/CT in prostate cancer" onkeydown="ke(event,'guidelines')"></textarea>
+      <div class="arow">
+        <button class="btn btn-g" id="btn-guidelines" onclick="gen('guidelines')">Generate</button>
+        <span class="hint">Auto-saved · Ctrl+Enter</span>
+      </div>
+      <div class="obox bg" id="obox-guidelines"><div class="ldg" id="ld-guidelines"><span class="spin">●</span> Fetching guidelines...</div><div class="md" id="md-guidelines"></div></div>
     </div>
-    <div class="fgrp"><label>RV Tracer Uptake</label>
-      <select id="m-rv" class="ipt">
-        <option value="none">No increased RV uptake</option>
-        <option value="both">Increased RV uptake at stress and rest</option>
-        <option value="stress">Increased RV uptake at stress only</option>
-      </select>
-    </div>
-    <div class="fgrp"><label>Special Finding (LBBB artifact etc)</label>
-      <input class="ipt" id="m-special" placeholder="e.g. Mid to basal anteroseptum shows reduced tracer uptake suggestive of LBBB artifact."/>
-    </div>
-  </div>
 
-  <!-- ============================================================ -->
-  <!-- TERRITORY SECTION -->
-  <!-- ============================================================ -->
-  <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
-    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.75rem">
-      Territory Perfusion
-      <span style="font-size:.65rem;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;margin-left:.5rem">Tap territory header to enable. Shared segments (inferolateral, inferior) shown in both LCx and RCA.</span>
+    <!-- DOUBTS -->
+    <div class="pane" id="pane-doubt">
+      <div class="hbar a">Ask anything — concepts, mechanisms, doses, differentials, clinical scenarios</div>
+      <textarea id="db-inp" style="border-color:var(--border)" placeholder="E.g.: Why does Tc-99m MDP show uptake in soft tissue calcification?&#10;Or: Difference between SPECT and PET resolution in simple terms&#10;Or: What is SUV cutoff for malignancy in FDG PET?&#10;Or: How do I calculate injected dose from residual syringe activity?" onkeydown="ke(event,'doubt')"></textarea>
+      <div class="arow">
+        <button class="btn btn-a" id="btn-doubt" onclick="gen('doubt')">Ask</button>
+        <input class="save-inp" id="db-lbl" placeholder="Label (optional)" style="display:none"/>
+        <button class="btn btn-ghost" id="db-sv" onclick="mSave('doubt')" style="display:none">Save</button>
+        <span class="hint">Ctrl+Enter</span>
+      </div>
+      <div class="obox ba" id="obox-doubt"><div class="ldg" id="ld-doubt"><span class="spin">●</span> Thinking...</div><div class="md" id="md-doubt"></div></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem">
 
-      <!-- ═══ LAD ═══ -->
-      <div style="border:1.5px solid #bfdbfe;border-radius:10px;overflow:hidden">
-        <div id="th-LAD" onclick="toggleTerr('LAD')" style="padding:.55rem .7rem;background:#dbeafe;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
-          <span style="font-size:.75rem;font-weight:800;color:#1d4ed8;letter-spacing:.07em">LAD</span>
-          <span id="thi-LAD" style="font-size:.6rem;font-weight:600;color:#93c5fd">TAP TO ENABLE</span>
-        </div>
-        <div id="tb-LAD" style="display:none;padding:.6rem .65rem">
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.3rem">Segments</div>
-          <div id="sc-LAD" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Stress Perfusion</div>
-          <div id="ss-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          <div id="tr-wrap-LAD">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Rest Result</div>
-            <div id="sr-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+    <!-- PET/CT REPORT -->
+    <div class="pane" id="pane-report">
+      <div class="hbar pk">PET/CT Reporting — Lesion sentence builder · Full report composer · DICOM viewer with AI analysis</div>
+      <div class="rmbar">
+        <button class="rmb on" onclick="setRM('lesion',this)">Lesion Builder</button>
+        <button class="rmb"    onclick="setRM('compose',this)">Report Composer</button>
+        <button class="rmb"    onclick="setRM('dicom',this)">DICOM Viewer</button>
+      </div>
+
+      <div class="rp on" id="rp-lesion">
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Fill lesion details — get professional reporting sentences. Tap any sentence to copy.</p>
+        <div class="fgrid">
+          <div class="fgrp"><label>Organ / Region</label>
+            <select id="l-org"><option value="">Select...</option><option>Liver</option><option>Lung - right upper lobe</option><option>Lung - right middle lobe</option><option>Lung - right lower lobe</option><option>Lung - left upper lobe</option><option>Lung - left lower lobe</option><option>Mediastinum</option><option>Cervical lymph node</option><option>Axillary LN - right</option><option>Axillary LN - left</option><option>Mediastinal LN</option><option>Para-aortic LN</option><option>Iliac LN</option><option>Inguinal LN</option><option>Prostate bed</option><option>Prostate</option><option>Spine - cervical</option><option>Spine - thoracic</option><option>Spine - lumbar</option><option>Pelvis</option><option>Rib</option><option>Sternum</option><option>Femur</option><option>Thyroid - right lobe</option><option>Thyroid - left lobe</option><option>Adrenal - right</option><option>Adrenal - left</option><option>Kidney - right</option><option>Kidney - left</option><option>Pancreas - head</option><option>Pancreas - body/tail</option><option>Spleen</option><option>Brain</option><option>Peritoneum</option><option>Soft tissue</option></select>
           </div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Wall Motion</div>
-          <select id="twm-LAD" onchange="T.LAD.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
-            <option value="">-- select --</option>
-            <option value="akinetic">Akinetic</option>
-            <option value="severe-hypo">Severely hypokinetic</option>
-            <option value="moderate-hypo">Moderately hypokinetic</option>
-            <option value="mild-hypo">Mildly hypokinetic</option>
-            <option value="normal">Normal</option>
-          </select>
-          <div id="fdg-wrap-LAD" style="display:none">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">FDG Viability</div>
-            <div id="sf-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+          <div class="fgrp"><label>Custom Location</label><input class="ipt" id="l-cust" placeholder="e.g. right iliac crest"/></div>
+          <div class="fgrp"><label>Lesion Type</label><select id="l-type"><option value="">Select...</option><option>Soft tissue lesion</option><option>Lymph node</option><option>Osseous lesion</option><option>Pulmonary nodule</option><option>Hepatic lesion</option><option>Mass</option><option>Nodule</option><option>Focus of uptake</option></select></div>
+          <div class="fgrp"><label>Size (cm)</label><input class="ipt" id="l-size" placeholder="e.g. 2.3 x 1.8"/></div>
+          <div class="fgrp"><label>SUVmax</label><input class="ipt" type="number" id="l-smax" step="0.1" placeholder="e.g. 8.4"/></div>
+          <div class="fgrp"><label>SUVmean</label><input class="ipt" type="number" id="l-smean" step="0.1" placeholder="e.g. 5.2"/></div>
+          <div class="fgrp"><label>Background SUV (liver)</label><input class="ipt" type="number" id="l-bg" step="0.1" placeholder="e.g. 2.8"/></div>
+          <div class="fgrp"><label>Tracer</label><select id="l-tr"><option>FDG (F-18)</option><option>PSMA (Ga-68)</option><option>DOTATATE (Ga-68)</option><option>Choline (F-18)</option><option>NaF (F-18)</option><option>FLT (F-18)</option><option>PSMA (F-18 DCFPyL)</option></select></div>
+          <div class="fgrp"><label>Uptake Pattern</label><select id="l-pat"><option value="">Select...</option><option>Intense focal uptake</option><option>Moderately increased uptake</option><option>Mildly increased uptake</option><option>Diffuse uptake</option><option>Heterogeneous uptake</option><option>Homogeneous uptake</option><option>Peripheral uptake with central photopenia</option><option>No significant uptake</option><option>Photopenic defect</option></select></div>
+          <div class="fgrp"><label>CT Morphology</label><select id="l-morf"><option value="">Select...</option><option>Hypodense</option><option>Hyperdense</option><option>Isodense</option><option>Lytic</option><option>Sclerotic</option><option>Mixed lytic-sclerotic</option><option>Spiculated</option><option>Lobulated</option><option>Well-defined</option><option>Ill-defined</option><option>With necrotic centre</option><option>Calcified</option></select></div>
+          <div class="fgrp"><label>Impression</label><select id="l-imp"><option value="">Select...</option><option>Likely malignant - metabolically active</option><option>Highly suspicious for malignancy</option><option>Consistent with known malignancy</option><option>Suspicious for metastatic disease</option><option>Likely benign - physiological uptake</option><option>Indeterminate</option><option>Consistent with treated/responding disease</option><option>Progressive disease</option><option>New lesion compared to prior</option></select></div>
+        </div>
+        <div class="arow" style="margin-bottom:.9rem">
+          <button class="btn btn-pk" onclick="buildSC()">Build Sentence</button>
+          <button class="btn btn-p" onclick="aiSC()">AI Enhance</button>
+          <button class="btn btn-ghost" onclick="clearL()">Clear</button>
+        </div>
+        <div id="sc-cards"></div>
+        <div class="obox bpk" id="obox-lsn"><div class="ldg" id="ld-lsn"><span class="spin">●</span> Generating...</div><div class="md" id="md-lsn"></div></div>
+      </div>
+
+      <div class="rp" id="rp-compose">
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Dump rough bullet-point findings — AI builds a complete formal PET/CT report</p>
+        <div class="fgrp"><label>Indication / Clinical History</label><input class="ipt" id="rc-ind" placeholder="e.g. Known Ca prostate post RP, rising PSA 3.2 ng/mL, for restaging"/></div>
+        <div class="fgrp"><label>Radiopharmaceutical and Technique</label><input class="ipt" id="rc-rp" placeholder="e.g. 185 MBq F-18 FDG IV, blood glucose 96 mg/dL, uptake 60 min"/></div>
+        <div class="fgrp"><label>Your Rough Findings</label>
+          <textarea id="rc-find" style="min-height:130px;border-color:var(--border)" placeholder="- Liver seg 6 lesion, 2.3cm, SUVmax 9.2&#10;- Multiple mediastinal LN, largest 1.8cm, SUVmax 6.4&#10;- No brain mets&#10;- Bones clear&#10;- No uptake at prostate bed"></textarea>
+        </div>
+        <div class="fgrp" style="max-width:250px"><label>Report Style</label><select id="rc-style"><option value="standard">Standard structured</option><option value="narrative">Narrative style</option><option value="concise">Concise / brief</option></select></div>
+        <div class="arow">
+          <button class="btn btn-pk" id="btn-compose" onclick="gen('compose')">Generate Report</button>
+          <input class="save-inp" id="cmp-lbl" placeholder="Label (optional)"/>
+          <button class="btn btn-ghost" onclick="mSave('compose')">Save</button>
+        </div>
+        <div class="obox bpk" id="obox-compose"><div class="ldg" id="ld-compose"><span class="spin">●</span> Composing...</div><div class="md" id="md-compose"></div></div>
+      </div>
+
+      <div class="rp" id="rp-dicom">
+        <p style="font-size:.75rem;color:var(--muted);margin-bottom:.8rem">Upload a .dcm file — view, adjust window/level, run AI analysis</p>
+        <div class="dcm-drop" id="dcm-drop" onclick="document.getElementById('dcm-f').click()" ondragover="dOver(event)" ondragleave="dLeave()" ondrop="dDrop(event)">
+          <div style="font-size:1.8rem;opacity:.35;margin-bottom:.4rem">image</div>
+          <p><strong>Tap or click to upload</strong> or drag a .dcm file</p>
+          <p>Single-slice viewer — no software needed</p>
+          <input type="file" id="dcm-f" accept=".dcm" style="display:none" onchange="loadDCM(this.files[0])"/>
+        </div>
+        <div id="dcm-view" style="display:none">
+          <div class="dmg" id="dcm-meta"></div>
+          <div class="wlrow">
+            <div class="wlg">WC:<input type="range" id="wc" min="-1000" max="3000" value="40" oninput="applyWL()"/><span id="wc-v">40</span></div>
+            <div class="wlg">WW:<input type="range" id="ww" min="1" max="4000" value="400" oninput="applyWL()"/><span id="ww-v">400</span></div>
+            <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('soft')">Soft Tissue</button>
+            <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('lung')">Lung</button>
+            <button class="btn btn-ghost" style="font-size:.7rem;padding:.35rem .75rem" onclick="pset('bone')">Bone</button>
           </div>
-          <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
-            <div style="flex:1">
-              <div style="font-size:.6rem;font-weight:600;color:#1d4ed8;margin-bottom:.18rem">Qualifier</div>
-              <select id="tq-LAD" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
-                <option value="LAD">LAD territory</option>
-                <option value="Distal LAD">Distal LAD territory</option>
-                <option value="Proximal LAD">Proximal LAD territory</option>
-                <option value="LMCA">LMCA territory</option>
+          <canvas id="dicomCanvas" width="512" height="512"></canvas>
+          <div class="arow" style="margin-top:.9rem">
+            <button class="btn btn-pk" id="btn-dcm-ai" onclick="dcmAI()">AI Analysis of Image</button>
+          </div>
+          <div class="obox bpk" id="obox-dcm"><div class="ldg" id="ld-dcm"><span class="spin">●</span> Analysing...</div><div class="md" id="md-dcm"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div class="pane" id="pane-library">
+      <div class="lib-top">
+        <input class="lib-search" id="lib-q" placeholder="Search library..." oninput="renderLib()"/>
+        <div class="frow">
+          <button class="fb on" data-f="all"        onclick="setF('all',this)">All</button>
+          <button class="fb"    data-f="papers"     onclick="setF('papers',this)">Papers</button>
+          <button class="fb"    data-f="qa"         onclick="setF('qa',this)">Q&A</button>
+          <button class="fb"    data-f="guidelines" onclick="setF('guidelines',this)">Guidelines</button>
+          <button class="fb"    data-f="doubt"      onclick="setF('doubt',this)">Doubts</button>
+          <button class="fb"    data-f="compose"    onclick="setF('compose',this)">Reports</button>
+        </div>
+      </div>
+      <div class="sync-row">
+        <span id="lib-sync-status" style="font-size:.75rem;color:var(--muted);flex:1">Cloud sync: not connected</span>
+        <button class="btn btn-ghost" onclick="syncFromCloud()" style="font-size:.72rem;padding:.38rem .8rem">Pull from Cloud</button>
+        <button class="btn btn-ghost" onclick="exportLib()" style="font-size:.72rem;padding:.38rem .8rem">Export JSON</button>
+        <label class="btn btn-ghost" style="font-size:.72rem;padding:.38rem .8rem;cursor:pointer">Import JSON<input type="file" accept=".json" style="display:none" onchange="importLib(this)"/></label>
+      </div>
+      <div id="lib-content"></div>
+    </div>
+
+
+    <!-- GAMMA / MPI REPORT -->
+    <div class="pane" id="pane-mpi">
+      <div class="hbar" style="border-left-color:#0369a1;background:#e0f2fe;color:#0369a1">
+        Gamma Camera MPI Report
+      </div>
+
+      <!-- STUDY TYPE -->
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem" id="mpi-type-row">
+        <button class="tgl on" onclick="setMT('adenosine',this)">Adenosine Stress</button>
+        <button class="tgl"    onclick="setMT('bruce',this)">Exercise (Bruce)</button>
+        <button class="tgl"    onclick="setMT('rest',this)">Rest Only</button>
+        <button class="tgl"    onclick="setMT('viability',this)">Rest + FDG Viability</button>
+      </div>
+
+      <!-- PATIENT + DOSES -->
+      <div class="fgrid" style="margin-bottom:.75rem">
+        <div class="fgrp"><label>Patient Name</label><input class="ipt" id="m-name" placeholder="optional"/></div>
+        <div class="fgrp"><label>MRN</label><input class="ipt" id="m-mrn" placeholder="optional"/></div>
+        <div class="fgrp" id="m-sd-wrap"><label>Stress Dose (mCi MIBI)</label><input class="ipt" id="m-sd" type="number" step="0.1" placeholder="e.g. 5.8"/></div>
+        <div class="fgrp"><label>Rest Dose (mCi MIBI)</label><input class="ipt" id="m-rd" type="number" step="0.1" placeholder="e.g. 17.4"/></div>
+        <div class="fgrp" id="m-fd-wrap" style="display:none"><label>FDG Dose (mCi F-18)</label><input class="ipt" id="m-fd" type="number" step="0.1" value="2"/></div>
+      </div>
+
+      <!-- STRESS PARAMETERS -->
+      <div id="m-sparams" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Stress Parameters</div>
+        <div id="m-aden-p">
+          <div class="fgrid">
+            <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr" type="number" placeholder="74"/></div>
+            <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp" placeholder="120/80"/></div>
+            <div class="fgrp"><label>ECG Changes</label>
+              <select id="m-ecg" class="ipt">
+                <option value="Nil.">Nil</option>
+                <option value="Baseline LBBB.">Baseline LBBB</option>
+                <option value="1 mm ST depression in inferior leads.">ST depression inferior</option>
+                <option value="1 mm ST depression in lateral leads.">ST depression lateral</option>
+                <option value="1 mm ST depression in anterior leads.">ST depression anterior</option>
+                <option value="Depression downsloping.">ST depression downsloping</option>
+                <option value="Depression horizontal.">ST depression horizontal</option>
               </select>
             </div>
-            
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ LCx ═══ -->
-      <div style="border:1.5px solid #bbf7d0;border-radius:10px;overflow:hidden">
-        <div id="th-LCx" onclick="toggleTerr('LCx')" style="padding:.55rem .7rem;background:#dcfce7;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
-          <span style="font-size:.75rem;font-weight:800;color:#15803d;letter-spacing:.07em">LCx</span>
-          <span id="thi-LCx" style="font-size:.6rem;font-weight:600;color:#86efac">TAP TO ENABLE</span>
-        </div>
-        <div id="tb-LCx" style="display:none;padding:.6rem .65rem">
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.3rem">Segments</div>
-          <div id="sc-LCx" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Stress Perfusion</div>
-          <div id="ss-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          <div id="tr-wrap-LCx">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Rest Result</div>
-            <div id="sr-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          </div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Wall Motion</div>
-          <select id="twm-LCx" onchange="T.LCx.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
-            <option value="">-- select --</option>
-            <option value="akinetic">Akinetic</option>
-            <option value="severe-hypo">Severely hypokinetic</option>
-            <option value="moderate-hypo">Moderately hypokinetic</option>
-            <option value="mild-hypo">Mildly hypokinetic</option>
-            <option value="normal">Normal</option>
-          </select>
-          <div id="fdg-wrap-LCx" style="display:none">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">FDG Viability</div>
-            <div id="sf-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          </div>
-          <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
-            <div style="flex:1">
-              <div style="font-size:.6rem;font-weight:600;color:#15803d;margin-bottom:.18rem">Qualifier</div>
-              <select id="tq-LCx" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
-                <option value="LCx">LCx territory</option>
-                <option value="Distal LCx">Distal LCx territory</option>
-                <option value="Proximal LCx">Proximal LCx territory</option>
-                <option value="OM">OM territory</option>
+            <div class="fgrp"><label>Complaints</label>
+              <select id="m-comp" class="ipt">
+                <option value="Nil.">Nil</option>
+                <option value="Mild dyspnea.">Mild dyspnea</option>
+                <option value="Chest pain.">Chest pain</option>
+                <option value="Burning type of chest pain.">Burning chest pain</option>
+                <option value="Mild right sided chest heaviness.">Chest heaviness</option>
               </select>
             </div>
-            
           </div>
         </div>
-      </div>
-
-      <!-- ═══ RCA ═══ -->
-      <div style="border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden">
-        <div id="th-RCA" onclick="toggleTerr('RCA')" style="padding:.55rem .7rem;background:#ffedd5;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
-          <span style="font-size:.75rem;font-weight:800;color:#c2410c;letter-spacing:.07em">RCA</span>
-          <span id="thi-RCA" style="font-size:.6rem;font-weight:600;color:#fdba74">TAP TO ENABLE</span>
-        </div>
-        <div id="tb-RCA" style="display:none;padding:.6rem .65rem">
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.3rem">Segments</div>
-          <div id="sc-RCA" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Stress Perfusion</div>
-          <div id="ss-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          <div id="tr-wrap-RCA">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Rest Result</div>
-            <div id="sr-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          </div>
-          <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Wall Motion</div>
-          <select id="twm-RCA" onchange="T.RCA.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
-            <option value="">-- select --</option>
-            <option value="akinetic">Akinetic</option>
-            <option value="severe-hypo">Severely hypokinetic</option>
-            <option value="moderate-hypo">Moderately hypokinetic</option>
-            <option value="mild-hypo">Mildly hypokinetic</option>
-            <option value="normal">Normal</option>
-          </select>
-          <div id="fdg-wrap-RCA" style="display:none">
-            <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">FDG Viability</div>
-            <div id="sf-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
-          </div>
-          <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
-            <div style="flex:1">
-              <div style="font-size:.6rem;font-weight:600;color:#c2410c;margin-bottom:.18rem">Qualifier</div>
-              <select id="tq-RCA" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
-                <option value="RCA">RCA territory</option>
-                <option value="Distal RCA">Distal RCA territory</option>
-                <option value="Proximal RCA">Proximal RCA territory</option>
-                <option value="PDA">PDA territory</option>
+        <div id="m-bruce-p" style="display:none">
+          <div class="fgrid">
+            <div class="fgrp"><label>Duration (mm:ss)</label><input class="ipt" id="m-dur" placeholder="06:33"/></div>
+            <div class="fgrp"><label>METs</label><input class="ipt" id="m-mets" type="number" step="0.01" placeholder="8.70"/></div>
+            <div class="fgrp"><label>Baseline HR (/min)</label><input class="ipt" id="m-bhr2" type="number" placeholder="61"/></div>
+            <div class="fgrp"><label>Baseline BP (mmHg)</label><input class="ipt" id="m-bbp2" placeholder="120/80"/></div>
+            <div class="fgrp"><label>Max HR (/min)</label><input class="ipt" id="m-mhr" type="number" placeholder="144" oninput="calcDP()"/></div>
+            <div class="fgrp"><label>Patient Age</label><input class="ipt" id="m-age" type="number" placeholder="55"/></div>
+            <div class="fgrp"><label>Max BP (mmHg)</label><input class="ipt" id="m-mbp" placeholder="174/90" oninput="calcDP()"/></div>
+            <div class="fgrp"><label>Double Product</label><input class="ipt" id="m-dp" placeholder="auto" readonly style="background:var(--surface2)"/></div>
+            <div class="fgrp"><label>ECG Changes</label>
+              <select id="m-ecg2" class="ipt">
+                <option value="Nil.">Nil</option>
+                <option value="Depression horizontal.">ST depression horizontal</option>
+                <option value="Depression downsloping.">ST depression downsloping</option>
+                <option value="Baseline LBBB.">Baseline LBBB</option>
+                <option value="Occasional VPCs, No significant ST T Changes.">Occasional VPCs</option>
               </select>
             </div>
-            
+            <div class="fgrp"><label>Complaints</label>
+              <select id="m-comp2" class="ipt">
+                <option value="Nil.">Nil</option>
+                <option value="Mild dyspnea.">Mild dyspnea</option>
+                <option value="Mild right sided chest heaviness.">Chest heaviness</option>
+                <option value="Chest pain.">Chest pain</option>
+                <option value=">2mm horizontal ST depression.">&gt;2mm ST depression</option>
+              </select>
+            </div>
+            <div class="fgrp"><label>Termination reason</label>
+              <select id="m-term" class="ipt">
+                <option value="Target heart rate achieved.">Target HR achieved</option>
+                <option value="Target heart rate achieved, fatigue.">Target HR + fatigue</option>
+                <option value="Fatigue.">Fatigue</option>
+                <option value="Chest pain.">Chest pain</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-    </div><!-- end 3-col grid -->
-  </div><!-- end territory section -->
+      <!-- LV / RV -->
+      <div class="fgrid" style="margin-bottom:.75rem">
+        <div class="fgrp"><label>LV Cavity Dilatation</label>
+          <select id="m-lv" class="ipt">
+            <option value="none">No LV cavity dilatation</option>
+            <option value="stress">Dilatation at stress only (TID)</option>
+            <option value="both">Dilatation at stress and rest</option>
+            <option value="rest-only">Dilatation at rest only</option>
+          </select>
+        </div>
+        <div class="fgrp"><label>RV Tracer Uptake</label>
+          <select id="m-rv" class="ipt">
+            <option value="none">No increased RV uptake</option>
+            <option value="both">Increased RV uptake at stress and rest</option>
+            <option value="stress">Increased RV uptake at stress only</option>
+          </select>
+        </div>
+        <div class="fgrp"><label>Special Finding (LBBB artifact etc)</label>
+          <input class="ipt" id="m-special" placeholder="e.g. Mid to basal anteroseptum shows reduced tracer uptake suggestive of LBBB artifact."/>
+        </div>
+      </div>
 
-  <!-- GATED SPECT -->
-  <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
-    <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Gated SPECT</div>
-    <div class="fgrid">
-      <div class="fgrp" id="m-efs-wrap"><label>LVEF at Stress (%)</label><input class="ipt" id="m-efs" type="number" min="5" max="80" placeholder="e.g. 58"/></div>
-      <div class="fgrp"><label>LVEF at Rest (%)</label><input class="ipt" id="m-efr" type="number" min="5" max="80" placeholder="e.g. 66"/></div>
-      <div class="fgrp"><label>Overall Wall Motion</label>
-        <select id="m-gwm" class="ipt">
-          <option value="normal">Normal global wall motion</option>
-          <option value="global-hypo">Global hypokinesia</option>
-          <option value="regional">Regional wall motion abnormality</option>
+      <!-- ============================================================ -->
+      <!-- TERRITORY SECTION -->
+      <!-- ============================================================ -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.75rem">
+          Territory Perfusion
+          <span style="font-size:.65rem;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0;margin-left:.5rem">Tap territory header to enable. Shared segments (inferolateral, inferior) shown in both LCx and RCA.</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem">
+
+          <!-- ═══ LAD ═══ -->
+          <div style="border:1.5px solid #bfdbfe;border-radius:10px;overflow:hidden">
+            <div id="th-LAD" onclick="toggleTerr('LAD')" style="padding:.55rem .7rem;background:#dbeafe;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
+              <span style="font-size:.75rem;font-weight:800;color:#1d4ed8;letter-spacing:.07em">LAD</span>
+              <span id="thi-LAD" style="font-size:.6rem;font-weight:600;color:#93c5fd">TAP TO ENABLE</span>
+            </div>
+            <div id="tb-LAD" style="display:none;padding:.6rem .65rem">
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.3rem">Segments</div>
+              <div id="sc-LAD" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Stress Perfusion</div>
+              <div id="ss-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              <div id="tr-wrap-LAD">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Rest Result</div>
+                <div id="sr-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">Wall Motion</div>
+              <select id="twm-LAD" onchange="T.LAD.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
+                <option value="">-- select --</option>
+                <option value="akinetic">Akinetic</option>
+                <option value="severe-hypo">Severely hypokinetic</option>
+                <option value="moderate-hypo">Moderately hypokinetic</option>
+                <option value="mild-hypo">Mildly hypokinetic</option>
+                <option value="normal">Normal</option>
+              </select>
+              <div id="fdg-wrap-LAD" style="display:none">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1d4ed8;margin-bottom:.28rem">FDG Viability</div>
+                <div id="sf-LAD" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
+                <div style="flex:1">
+                  <div style="font-size:.6rem;font-weight:600;color:#1d4ed8;margin-bottom:.18rem">Qualifier</div>
+                  <select id="tq-LAD" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
+                    <option value="LAD">LAD territory</option>
+                    <option value="Distal LAD">Distal LAD territory</option>
+                    <option value="Proximal LAD">Proximal LAD territory</option>
+                    <option value="LMCA">LMCA territory</option>
+                  </select>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ LCx ═══ -->
+          <div style="border:1.5px solid #bbf7d0;border-radius:10px;overflow:hidden">
+            <div id="th-LCx" onclick="toggleTerr('LCx')" style="padding:.55rem .7rem;background:#dcfce7;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
+              <span style="font-size:.75rem;font-weight:800;color:#15803d;letter-spacing:.07em">LCx</span>
+              <span id="thi-LCx" style="font-size:.6rem;font-weight:600;color:#86efac">TAP TO ENABLE</span>
+            </div>
+            <div id="tb-LCx" style="display:none;padding:.6rem .65rem">
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.3rem">Segments</div>
+              <div id="sc-LCx" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Stress Perfusion</div>
+              <div id="ss-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              <div id="tr-wrap-LCx">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Rest Result</div>
+                <div id="sr-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">Wall Motion</div>
+              <select id="twm-LCx" onchange="T.LCx.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
+                <option value="">-- select --</option>
+                <option value="akinetic">Akinetic</option>
+                <option value="severe-hypo">Severely hypokinetic</option>
+                <option value="moderate-hypo">Moderately hypokinetic</option>
+                <option value="mild-hypo">Mildly hypokinetic</option>
+                <option value="normal">Normal</option>
+              </select>
+              <div id="fdg-wrap-LCx" style="display:none">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;margin-bottom:.28rem">FDG Viability</div>
+                <div id="sf-LCx" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
+                <div style="flex:1">
+                  <div style="font-size:.6rem;font-weight:600;color:#15803d;margin-bottom:.18rem">Qualifier</div>
+                  <select id="tq-LCx" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
+                    <option value="LCx">LCx territory</option>
+                    <option value="Distal LCx">Distal LCx territory</option>
+                    <option value="Proximal LCx">Proximal LCx territory</option>
+                    <option value="OM">OM territory</option>
+                  </select>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ RCA ═══ -->
+          <div style="border:1.5px solid #fed7aa;border-radius:10px;overflow:hidden">
+            <div id="th-RCA" onclick="toggleTerr('RCA')" style="padding:.55rem .7rem;background:#ffedd5;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
+              <span style="font-size:.75rem;font-weight:800;color:#c2410c;letter-spacing:.07em">RCA</span>
+              <span id="thi-RCA" style="font-size:.6rem;font-weight:600;color:#fdba74">TAP TO ENABLE</span>
+            </div>
+            <div id="tb-RCA" style="display:none;padding:.6rem .65rem">
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.3rem">Segments</div>
+              <div id="sc-RCA" style="margin-bottom:.55rem;display:flex;flex-direction:column;gap:.18rem"></div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Stress Perfusion</div>
+              <div id="ss-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              <div id="tr-wrap-RCA">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Rest Result</div>
+                <div id="sr-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">Wall Motion</div>
+              <select id="twm-RCA" onchange="T.RCA.wm=this.value" style="width:100%;font-size:.72rem;padding:.3rem .45rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;margin-bottom:.5rem">
+                <option value="">-- select --</option>
+                <option value="akinetic">Akinetic</option>
+                <option value="severe-hypo">Severely hypokinetic</option>
+                <option value="moderate-hypo">Moderately hypokinetic</option>
+                <option value="mild-hypo">Mildly hypokinetic</option>
+                <option value="normal">Normal</option>
+              </select>
+              <div id="fdg-wrap-RCA" style="display:none">
+                <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;margin-bottom:.28rem">FDG Viability</div>
+                <div id="sf-RCA" style="display:flex;flex-wrap:wrap;gap:.22rem;margin-bottom:.5rem"></div>
+              </div>
+              <div style="display:flex;gap:.35rem;margin-bottom:.3rem">
+                <div style="flex:1">
+                  <div style="font-size:.6rem;font-weight:600;color:#c2410c;margin-bottom:.18rem">Qualifier</div>
+                  <select id="tq-RCA" style="width:100%;font-size:.7rem;padding:.28rem .4rem;border:1.5px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif">
+                    <option value="RCA">RCA territory</option>
+                    <option value="Distal RCA">Distal RCA territory</option>
+                    <option value="Proximal RCA">Proximal RCA territory</option>
+                    <option value="PDA">PDA territory</option>
+                  </select>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end 3-col grid -->
+      </div><!-- end territory section -->
+
+      <!-- GATED SPECT -->
+      <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0369a1;margin-bottom:.7rem">Gated SPECT</div>
+        <div class="fgrid">
+          <div class="fgrp" id="m-efs-wrap"><label>LVEF at Stress (%)</label><input class="ipt" id="m-efs" type="number" min="5" max="80" placeholder="e.g. 58"/></div>
+          <div class="fgrp"><label>LVEF at Rest (%)</label><input class="ipt" id="m-efr" type="number" min="5" max="80" placeholder="e.g. 66"/></div>
+          <div class="fgrp"><label>Overall Wall Motion</label>
+            <select id="m-gwm" class="ipt">
+              <option value="normal">Normal global wall motion</option>
+              <option value="global-hypo">Global hypokinesia</option>
+              <option value="regional">Regional wall motion abnormality</option>
+            </select>
+          </div>
+        </div>
+        <div class="fgrp"><label>Additional Gated SPECT / Clinical context (optional)</label>
+          <textarea id="m-ctx" style="min-height:45px;border-color:var(--border)" placeholder="e.g. LVEF overestimated due to partial volume effect. Known CAD. Post CABG."></textarea>
+        </div>
+      </div>
+
+      <div class="arow">
+        <button class="btn" style="background:#0369a1;box-shadow:0 0 14px rgba(3,105,161,.2)" id="btn-mpi" onclick="genMPI()">Generate Report</button>
+        <button class="btn btn-ghost" onclick="resetMPI()">Reset All</button>
+      </div>
+
+      <div class="obox" id="mpi-out" style="border-color:#0369a1;border-top:3px solid #0369a1">
+        <div class="ldg" id="ld-mpi"><span class="spin">*</span> Generating report...</div>
+        <div id="mpi-md" style="white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.5;color:#000;padding:.5rem 0;user-select:text"></div>
+      </div>
+    </div>
+
+    <!-- RADIOLOGY WRITER -->
+    <div class="pane" id="pane-rad">
+      <div class="hbar" style="border-left-color:#0f766e;background:#f0fdfa;color:#0f766e">
+        Radiology Report Writer -- CT, MRI, USG. Describe your findings and get compact, accurate report sentences.
+      </div>
+
+      <!-- MODALITY + REGION -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem" id="rad-mod-row">
+        <button class="tgl on" id="rm-ct"  onclick="setRMod('CT',this)">CT</button>
+        <button class="tgl"    id="rm-mri" onclick="setRMod('MRI',this)">MRI</button>
+        <button class="tgl"    id="rm-usg" onclick="setRMod('USG',this)">USG</button>
+      </div>
+
+      <!-- ORGAN / REGION -->
+      <div class="fgrp" style="margin-bottom:.75rem">
+        <label style="color:#0f766e">Organ / Region</label>
+        <select id="rad-organ" class="ipt" onchange="buildRadForm()" style="border-color:#0f766e">
+          <optgroup label="Abdomen">
+            <option value="liver">Liver</option>
+            <option value="gallbladder">Gallbladder &amp; Biliary</option>
+            <option value="pancreas">Pancreas</option>
+            <option value="spleen">Spleen</option>
+            <option value="kidney">Kidney</option>
+            <option value="adrenal">Adrenal</option>
+            <option value="bowel">Bowel / Mesentery</option>
+            <option value="lymph-abd">Lymph Nodes (Abdomen/Pelvis)</option>
+          </optgroup>
+          <optgroup label="Pelvis">
+            <option value="uterus">Uterus &amp; Endometrium</option>
+            <option value="ovary">Ovary</option>
+            <option value="prostate">Prostate</option>
+            <option value="bladder">Urinary Bladder</option>
+          </optgroup>
+          <optgroup label="Chest">
+            <option value="lung">Lung / Pulmonary</option>
+            <option value="mediastinum">Mediastinum</option>
+            <option value="pleura">Pleura &amp; Pericardium</option>
+            <option value="lymph-chest">Lymph Nodes (Chest)</option>
+          </optgroup>
+          <optgroup label="Head &amp; Neck">
+            <option value="thyroid">Thyroid</option>
+            <option value="neck-lymph">Lymph Nodes (Neck)</option>
+            <option value="salivary">Salivary Glands</option>
+            <option value="neck-soft">Neck Soft Tissue</option>
+          </optgroup>
+          <optgroup label="Neuro">
+            <option value="brain">Brain</option>
+            <option value="spine">Spine</option>
+          </optgroup>
+          <optgroup label="MSK">
+            <option value="bone">Bone Lesion</option>
+            <option value="soft-tissue">Soft Tissue Mass</option>
+          </optgroup>
+          <optgroup label="Vascular">
+            <option value="aorta">Aorta &amp; Great Vessels</option>
+          </optgroup>
         </select>
       </div>
-    </div>
-    <div class="fgrp"><label>Additional Gated SPECT / Clinical context (optional)</label>
-      <textarea id="m-ctx" style="min-height:45px;border-color:var(--border)" placeholder="e.g. LVEF overestimated due to partial volume effect. Known CAD. Post CABG."></textarea>
-    </div>
-  </div>
 
-  <div class="arow">
-    <button class="btn" style="background:#0369a1;box-shadow:0 0 14px rgba(3,105,161,.2)" id="btn-mpi" onclick="genMPI()">Generate Report</button>
-    <button class="btn btn-ghost" onclick="resetMPI()">Reset All</button>
-  </div>
+      <!-- DYNAMIC FORM AREA -->
+      <div id="rad-form" style="background:var(--surface2);border:1.5px solid #ccfbf1;border-radius:var(--r12);padding:1rem;margin-bottom:.9rem">
+        <!-- filled by buildRadForm() -->
+      </div>
 
-  <div class="obox" id="mpi-out" style="border-color:#0369a1;border-top:3px solid #0369a1">
-    <div class="ldg" id="ld-mpi"><span class="spin">*</span> Generating report...</div>
-    <div id="mpi-md" style="white-space:pre-wrap;font-family:'Times New Roman',Times,serif;font-size:12pt;line-height:1.5;color:#000;padding:.5rem 0;user-select:text"></div>
-  </div>
-</div>
+      <!-- FREE TEXT for anything extra -->
+      <div class="fgrp" style="margin-bottom:.75rem">
+        <label style="color:#0f766e">Additional findings / clinical context (optional)</label>
+        <textarea id="rad-extra" style="min-height:55px;border-color:#99f6e4" placeholder="e.g. Background cirrhosis. Prior surgery. Relevant history."></textarea>
+      </div>
 
-<!-- IMPROVE AI -->
-<div class="pane" id="pane-dev">
-  <div class="hbar r">Improve AI — Log any mistake here. These corrections are automatically injected into every future AI prompt so it learns and never repeats the mistake.</div>
-  <div id="dev-banner"></div>
-  <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.4rem">
-    <span class="qlbl">Add a correction or instruction</span>
-    <textarea id="dev-inp" style="min-height:80px;border-color:var(--border)" placeholder="E.g.: Always mention AERB 1110 MBq outpatient limit for I-131 in India&#10;Or: Adult FDG dose is 3-5 MBq/kg not a fixed dose&#10;Or: PSMA expression inversely correlates with Gleason score for low-grade tumours"></textarea>
-    <div class="arow">
-      <button class="btn btn-r" onclick="addDev()">Add Correction</button>
-      <span style="font-size:.72rem;color:var(--dim);align-self:center">Injected into every AI prompt automatically</span>
+      <div class="arow">
+        <button class="btn" style="background:#0f766e;box-shadow:0 0 14px rgba(15,118,110,.2)" id="btn-rad" onclick="genRad()">Generate Report Sentences</button>
+        <button class="btn btn-ghost" onclick="resetRad()">Reset</button>
+      </div>
+
+      <div class="obox" id="rad-out" style="border-color:#0f766e;border-top:3px solid #0f766e">
+        <div class="ldg" id="ld-rad"><span class="spin">*</span> Writing report...</div>
+        <div id="rad-md" class="md"></div>
+      </div>
     </div>
-  </div>
-  <div id="dev-list"></div>
-</div>
-```
+
+    <!-- IMPROVE AI -->
+    <div class="pane" id="pane-dev">
+      <div class="hbar r">Improve AI — Log any mistake here. These corrections are automatically injected into every future AI prompt so it learns and never repeats the mistake.</div>
+      <div id="dev-banner"></div>
+      <div style="display:flex;flex-direction:column;gap:.65rem;margin-bottom:1.4rem">
+        <span class="qlbl">Add a correction or instruction</span>
+        <textarea id="dev-inp" style="min-height:80px;border-color:var(--border)" placeholder="E.g.: Always mention AERB 1110 MBq outpatient limit for I-131 in India&#10;Or: Adult FDG dose is 3-5 MBq/kg not a fixed dose&#10;Or: PSMA expression inversely correlates with Gleason score for low-grade tumours"></textarea>
+        <div class="arow">
+          <button class="btn btn-r" onclick="addDev()">Add Correction</button>
+          <span style="font-size:.72rem;color:var(--dim);align-self:center">Injected into every AI prompt automatically</span>
+        </div>
+      </div>
+      <div id="dev-list"></div>
+    </div>
 
   </div></main>
 </div>
@@ -1674,6 +1751,324 @@ var _tt;
 function toast(msg,type){var el=document.getElementById('toast');el.textContent=msg;el.className='on '+(type==='er'?'er':'ok');clearTimeout(_tt);_tt=setTimeout(function(){el.className='';},2500);}
 
 // INIT
+// ============================================================
+// RADIOLOGY WRITER
+// ============================================================
+
+var RMOD = 'CT';
+
+function setRMod(mod, btn) {
+  RMOD = mod;
+  document.querySelectorAll('#rad-mod-row .tgl').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  buildRadForm();
+}
+
+// Question definitions per organ
+// Each question: {id, label, type:'select'|'text'|'number'|'multi', options:[], required:bool, mods:['CT','MRI','USG'] or null=all}
+var RAD_Q = {
+  liver: [
+    {id:'rl-num',    label:'Number of lesions',              type:'select', options:['Single','Multiple (2-5)','Multiple (>5 / innumerable)']},
+    {id:'rl-loc',    label:'Location (segment / lobe)',       type:'text',   placeholder:'e.g. Segment IVa, right lobe'},
+    {id:'rl-size',   label:'Size (largest lesion)',           type:'text',   placeholder:'e.g. 3.2 x 2.8 x 2.5 cm'},
+    {id:'rl-margin', label:'Margins',                         type:'select', options:['Well-defined','Ill-defined','Lobulated','Irregular/spiculated']},
+    {id:'rl-shape',  label:'Shape',                           type:'select', options:['Round/Oval','Lobulated','Irregular']},
+    {id:'rl-dens',   label:'Density / Signal / Echogenicity', type:'select', options:['Hypodense/T2-bright/Anechoic','Hyperdense/T1-bright/Echogenic','Heterogeneous','Isoattenuating','Cystic with internal debris','Complex cystic','Mixed solid-cystic']},
+    {id:'rl-enh',    label:'Enhancement pattern',             type:'select', options:['Arterial hyperenhancement with washout (APHE+washout)','Arterial hyperenhancement without washout','Peripheral nodular enhancement (centripetal fill-in)','Peripheral rim enhancement','Homogeneous enhancement','Heterogeneous enhancement','No significant enhancement','Progressive enhancement'], mods:['CT','MRI']},
+    {id:'rl-cap',    label:'Capsule / Pseudocapsule',         type:'select', options:['Present','Absent'], mods:['CT','MRI']},
+    {id:'rl-calc',   label:'Calcification',                   type:'select', options:['None','Present - coarse','Present - fine/punctate','Present - peripheral','Present - central']},
+    {id:'rl-fat',    label:'Intralesional fat',               type:'select', options:['Absent','Present (focal)','Present (diffuse)'], mods:['CT','MRI']},
+    {id:'rl-haem',   label:'Haemorrhage / T1 bright foci',   type:'select', options:['Absent','Present'], mods:['MRI']},
+    {id:'rl-pv',     label:'Portal vein involvement',         type:'select', options:['None','Portal vein thrombosis (bland)','Tumour thrombus in portal vein','Portal vein compression']},
+    {id:'rl-bile',   label:'Biliary involvement',             type:'select', options:['None','Biliary dilatation upstream','Biliary invasion']},
+    {id:'rl-surr',   label:'Surrounding parenchyma',          type:'select', options:['Normal','Cirrhotic morphology','Fatty infiltration','Background nodularity']},
+    {id:'rl-lirads', label:'LI-RADS category (if applicable)',type:'select', options:['Not applicable','LR-1 (definitely benign)','LR-2 (probably benign)','LR-3 (intermediate)','LR-4 (probably HCC)','LR-5 (definitely HCC)','LR-M (malignant, not HCC)','LR-TIV (tumour in vein)']},
+  ],
+  gallbladder: [
+    {id:'gb-wall',   label:'Gallbladder wall thickness',      type:'select', options:['Normal (<3mm)','Mildly thickened (3-5mm)','Thickened (>5mm)','Focal thickening']},
+    {id:'gb-lumen',  label:'Lumen contents',                  type:'select', options:['Clear / anechoic','Stones (shadowing)','Sludge','Polyp','Mass / soft tissue']},
+    {id:'gb-polyp',  label:'Polyp details (if present)',      type:'text',   placeholder:'e.g. 8 mm sessile echogenic polyp without acoustic shadow'},
+    {id:'gb-perf',   label:'Pericholecystic changes',         type:'select', options:['None','Pericholecystic fat stranding','Pericholecystic fluid','Oedema']},
+    {id:'gb-cbd',    label:'CBD diameter',                    type:'text',   placeholder:'e.g. 5 mm / dilated to 12 mm'},
+    {id:'gb-ihd',    label:'Intrahepatic biliary dilatation', type:'select', options:['Absent','Mild','Moderate','Marked']},
+    {id:'gb-stone',  label:'CBD / CHD calculi',               type:'select', options:['None','Present - single','Present - multiple']},
+  ],
+  kidney: [
+    {id:'rk-side',   label:'Side',                            type:'select', options:['Right','Left','Bilateral']},
+    {id:'rk-size',   label:'Size / cortical thickness',       type:'text',   placeholder:'e.g. 11.5 x 5.2 cm, cortex 11 mm'},
+    {id:'rk-lesion', label:'Lesion type',                     type:'select', options:['Simple cyst','Complex cyst','Solid mass','Angiomyolipoma','Calculus']},
+    {id:'rk-loc2',   label:'Location',                        type:'select', options:['Upper pole','Mid pole','Lower pole','Interpolar region','Renal hilum']},
+    {id:'rk-sz',     label:'Lesion size',                     type:'text',   placeholder:'e.g. 3.4 x 2.9 cm'},
+    {id:'rk-marg',   label:'Margins',                         type:'select', options:['Well-defined','Ill-defined','Lobulated']},
+    {id:'rk-dens2',  label:'Density / echogenicity',          type:'select', options:['Hypodense/Anechoic','Hyperdense/Echogenic','Heterogeneous','Isoattenuating','Fat-containing (HU -20 to -80)']},
+    {id:'rk-enh2',   label:'Enhancement',                     type:'select', options:['No enhancement','Thin smooth rim enhancement','Thick/nodular enhancement','Homogeneous enhancement','Heterogeneous enhancement'], mods:['CT','MRI']},
+    {id:'rk-boss',   label:'Bosniak category (cysts)',        type:'select', options:['Not applicable','Bosniak I','Bosniak II','Bosniak IIF','Bosniak III','Bosniak IV']},
+    {id:'rk-throm',  label:'Renal vein / IVC',                type:'select', options:['Normal','Renal vein thrombosis','IVC tumour thrombus','IVC bland thrombus']},
+    {id:'rk-pelv',   label:'Collecting system',               type:'select', options:['Normal','Mild hydronephrosis','Moderate hydronephrosis','Severe hydronephrosis','Calculus in PUJ/ureter']},
+    {id:'rk-peri',   label:'Perinephric space',               type:'select', options:['Clear','Fat stranding','Perinephric collection','Perinephric haematoma']},
+  ],
+  thyroid: [
+    {id:'th-gland',  label:'Overall gland size',              type:'text',   placeholder:'e.g. RT lobe 4.5x2x2 cm, LT lobe 4x1.8x1.8 cm, isthmus 3 mm'},
+    {id:'th-echo',   label:'Gland echogenicity',              type:'select', options:['Normal homogeneous','Mildly heterogeneous','Markedly heterogeneous','Diffusely hypoechoic'], mods:['USG']},
+    {id:'th-loc3',   label:'Nodule location',                 type:'select', options:['Right lobe - upper','Right lobe - mid','Right lobe - lower','Left lobe - upper','Left lobe - mid','Left lobe - lower','Isthmus','Bilateral']},
+    {id:'th-sz2',    label:'Nodule size',                     type:'text',   placeholder:'e.g. 1.8 x 1.4 x 1.2 cm'},
+    {id:'th-comp',   label:'Composition',                     type:'select', options:['Solid','Predominantly solid (>50% solid)','Mixed solid-cystic','Predominantly cystic (>50% cystic)','Spongiform','Pure cyst']},
+    {id:'th-echon',  label:'Nodule echogenicity',             type:'select', options:['Hyperechoic','Isoechoic','Hypoechoic','Markedly hypoechoic','Anechoic'], mods:['USG']},
+    {id:'th-mrn',    label:'Signal (MRI)',                    type:'select', options:['T1 hypointense T2 hyperintense','T1 hyperintense (colloid/haemorrhage)','Heterogeneous signal'], mods:['MRI']},
+    {id:'th-marg2',  label:'Margins',                         type:'select', options:['Smooth','Ill-defined','Lobulated/irregular','Spiculated','Extra-thyroidal extension']},
+    {id:'th-calc2',  label:'Calcification',                   type:'select', options:['Absent','Macrocalcification','Peripheral eggshell calcification','Microcalcification (punctate echogenic foci)','Rim calcification with soft tissue']},
+    {id:'th-vasc',   label:'Vascularity (Doppler)',           type:'select', options:['Absent / non-vascular','Peripheral vascularity','Internal vascularity','Marked internal vascularity'], mods:['USG']},
+    {id:'th-shape',  label:'Shape (taller-than-wide)',        type:'select', options:['Wider-than-tall','Taller-than-wide (suspicious)'], mods:['USG']},
+    {id:'th-tirads', label:'TI-RADS category',                type:'select', options:['Not assigned','TR1 (benign)','TR2 (not suspicious)','TR3 (mildly suspicious)','TR4 (moderately suspicious)','TR5 (highly suspicious)']},
+    {id:'th-lymph',  label:'Central compartment lymph nodes', type:'select', options:['Not enlarged','Enlarged / suspicious','Level VI nodes enlarged']},
+  ],
+  lung: [
+    {id:'lu-num',    label:'Number of nodules/lesions',       type:'select', options:['Solitary','2-5','Multiple (>5)','Diffuse / miliary']},
+    {id:'lu-loc4',   label:'Location',                        type:'text',   placeholder:'e.g. Right lower lobe posterior basal segment'},
+    {id:'lu-sz3',    label:'Size',                            type:'text',   placeholder:'e.g. 12 mm (average of long and short axis per Fleischner)'},
+    {id:'lu-marg3',  label:'Margins',                         type:'select', options:['Smooth','Lobulated','Spiculated','Irregular','Pleural tag / tethering']},
+    {id:'lu-dens3',  label:'Attenuation / density',           type:'select', options:['Solid','Part-solid (subsolid)','Pure ground-glass opacity (GGO)','Hyperdense','Calcified (benign pattern)','Cavitating','Fat-containing']},
+    {id:'lu-calc3',  label:'Calcification pattern',           type:'select', options:['None','Central','Popcorn','Laminated / concentric','Eccentric (suspicious)','Diffuse']},
+    {id:'lu-pleura', label:'Pleural involvement',             type:'select', options:['None','Pleural tethering','Pleural thickening','Pleural effusion - small','Pleural effusion - moderate','Pleural effusion - large','Pleural nodularity']},
+    {id:'lu-fleis',  label:'Fleischner category (if solid nodule &lt;6mm risk)', type:'select', options:['Not applicable','Low risk - No follow-up','High risk - Optional 12m CT','6-8mm Low risk - 6-12m CT','6-8mm High risk - 6-12m then 18-24m CT','>8mm - 3m CT or PET-CT']},
+    {id:'lu-airo',   label:'Airspace / parenchymal changes',  type:'select', options:['None','Consolidation','Ground glass opacity','Interstitial thickening','Honeycombing','Atelectasis','Air bronchogram present']},
+    {id:'lu-medl',   label:'Mediastinal lymph nodes',         type:'select', options:['Not enlarged (<10mm short axis)','Borderline (10-15mm)','Enlarged (>15mm)','Conglomerate / matted','Calcified']},
+  ],
+  neck_lymph: [
+    {id:'nl-side',   label:'Side / level',                    type:'text',   placeholder:'e.g. Right level II, left levels III-IV'},
+    {id:'nl-num',    label:'Number',                           type:'select', options:['Single','2-3','Multiple','Conglomerate / matted']},
+    {id:'nl-sz4',    label:'Size (largest node)',              type:'text',   placeholder:'e.g. 2.8 x 1.6 cm'},
+    {id:'nl-shape2', label:'Shape',                           type:'select', options:['Oval (normal)','Round (loss of normal oval shape)','Irregular']},
+    {id:'nl-hilum',  label:'Fatty hilum',                     type:'select', options:['Present (reactive / benign)','Absent (suspicious)','Replaced by soft tissue'], mods:['USG']},
+    {id:'nl-echo2',  label:'Echogenicity / density',          type:'select', options:['Homogeneous','Heterogeneous','Cystic change within node','Calcification','Necrosis (central)']},
+    {id:'nl-enh3',   label:'Enhancement pattern',             type:'select', options:['Homogeneous enhancement','Heterogeneous enhancement','Rim enhancement (necrotic)','No enhancement'], mods:['CT','MRI']},
+    {id:'nl-ext',    label:'Extranodal extension',            type:'select', options:['None','Suspected (irregular margins / fat stranding)','Definite (invading adjacent structures)']},
+    {id:'nl-vasc2',  label:'Vascularity',                     type:'select', options:['Hilar (normal)','Peripheral','Mixed / chaotic (suspicious)','Absent'], mods:['USG']},
+  ],
+  brain: [
+    {id:'br-loc5',   label:'Location',                        type:'text',   placeholder:'e.g. Right frontal lobe, involving grey and white matter'},
+    {id:'br-sz5',    label:'Size',                            type:'text',   placeholder:'e.g. 3.5 x 2.8 x 3.0 cm'},
+    {id:'br-marg4',  label:'Margins',                         type:'select', options:['Well-defined','Ill-defined','Irregular','Infiltrative']},
+    {id:'br-sig',    label:'Signal characteristics',          type:'select', options:['T1 hypo / T2 hyper (typical oedema/tumour)','T1 hyper (blood/fat/protein)','T1 hypo T2 hypo (haemosiderin/dense)','Heterogeneous mixed signal','Restricted diffusion (DWI bright ADC dark)','No restricted diffusion']},
+    {id:'br-enh4',   label:'Enhancement pattern',             type:'select', options:['No enhancement','Homogeneous solid enhancement','Ring enhancement','Peripheral nodular enhancement','Heterogeneous enhancement','Leptomeningeal enhancement']},
+    {id:'br-oed',    label:'Perilesional oedema',             type:'select', options:['None','Mild (finger-like)','Moderate','Marked / extensive']},
+    {id:'br-mass',   label:'Mass effect / midline shift',     type:'select', options:['None','Mild sulcal effacement','Midline shift <5mm','Midline shift 5-10mm','Midline shift >10mm','Uncal herniation']},
+    {id:'br-hem',    label:'Haemorrhage',                     type:'select', options:['None','Petechial haemorrhage','Blood-fluid level','Haemorrhagic transformation','Haematoma']},
+    {id:'br-dif',    label:'Diffusion restriction (DWI)',     type:'select', options:['No restriction','Present (abscess / infarct / dense tumour)','Peripheral restriction'], mods:['MRI']},
+    {id:'br-peri',   label:'Surrounding brain',               type:'select', options:['Normal','Gliosis','Encephalomalacia','Leukoencephalopathy']},
+  ],
+  adrenal: [
+    {id:'ad-side2',  label:'Side',                            type:'select', options:['Right','Left','Bilateral']},
+    {id:'ad-sz6',    label:'Size',                            type:'text',   placeholder:'e.g. 3.0 x 2.2 cm'},
+    {id:'ad-hu',     label:'Unenhanced HU (CT)',              type:'text',   placeholder:'e.g. 8 HU (lipid-rich adenoma if <=10 HU)', mods:['CT']},
+    {id:'ad-wash',   label:'Washout (if contrast given)',     type:'text',   placeholder:'e.g. APW 70% / RPW 42%', mods:['CT']},
+    {id:'ad-mri2',   label:'Chemical shift MRI',              type:'select', options:['Not done','Signal loss on out-of-phase (adenoma)','No signal loss (non-adenoma)'], mods:['MRI']},
+    {id:'ad-marg5',  label:'Margins',                         type:'select', options:['Well-defined / smooth','Ill-defined','Irregular / lobulated']},
+    {id:'ad-homo',   label:'Homogeneity',                     type:'select', options:['Homogeneous','Heterogeneous','Contains necrosis/haemorrhage','Contains calcification']},
+    {id:'ad-inv',    label:'Invasion of adjacent structures', type:'select', options:['None','IVC involvement','Renal vein involvement','Hepatic invasion']},
+  ],
+  prostate: [
+    {id:'pr-vol',    label:'Prostate volume (cc)',            type:'text',   placeholder:'e.g. 45 cc (volume = 0.52 x L x W x H)'},
+    {id:'pr-zone',   label:'Zone of lesion',                  type:'select', options:['Peripheral zone','Transition zone','Central zone','Diffuse']},
+    {id:'pr-loc6',   label:'Location (clock face / base-mid-apex)', type:'text', placeholder:'e.g. Left posterolateral PZ, mid-gland, 7 o\'clock'},
+    {id:'pr-sz7',    label:'Lesion size',                     type:'text',   placeholder:'e.g. 1.5 cm'},
+    {id:'pr-t2',     label:'T2 signal',                       type:'select', options:['Hypointense (suspicious)','Heterogeneous','Hyperintense (normal PZ)','Isointense'], mods:['MRI']},
+    {id:'pr-dw',     label:'DWI',                             type:'select', options:['No restriction','Focal restricted diffusion (high DWI / low ADC)','Diffuse restriction'], mods:['MRI']},
+    {id:'pr-dce',    label:'DCE (dynamic contrast enhancement)', type:'select', options:['Positive (early focal enhancement)','Negative','Not performed'], mods:['MRI']},
+    {id:'pr-cap',    label:'Capsular integrity',               type:'select', options:['Intact','Bulging / indentation','Capsular contact >1cm','Extracapsular extension (ECE)']},
+    {id:'pr-sv',     label:'Seminal vesicle invasion',         type:'select', options:['None','Suspected','Definite']},
+    {id:'pr-pirads', label:'PI-RADS v2.1 score',              type:'select', options:['Not assigned','PI-RADS 1','PI-RADS 2','PI-RADS 3','PI-RADS 4','PI-RADS 5']},
+  ],
+  bone: [
+    {id:'bn-bone',   label:'Bone involved',                   type:'text',   placeholder:'e.g. L2 vertebral body, right iliac wing'},
+    {id:'bn-sz8',    label:'Size',                            type:'text',   placeholder:'e.g. 3 x 2.5 cm'},
+    {id:'bn-type',   label:'Lesion type',                     type:'select', options:['Lytic','Sclerotic','Mixed lytic-sclerotic','Expansile','Intramedullary','Cortical','Periosteal']},
+    {id:'bn-marg6',  label:'Zone of transition',              type:'select', options:['Narrow zone (benign pattern)','Wide zone (aggressive)','Permeative (aggressive)']},
+    {id:'bn-matr',   label:'Matrix',                          type:'select', options:['No matrix','Chondroid (arcs and rings)','Osteoid (cloud-like / ivory)','Fibrous (ground glass)']},
+    {id:'bn-peri',   label:'Periosteal reaction',             type:'select', options:['None','Solid / uninterrupted','Lamellated (onion-skin)','Sunburst','Codman triangle']},
+    {id:'bn-soft',   label:'Soft tissue component',           type:'select', options:['None','Present - small','Present - large','Encasing neurovascular']},
+    {id:'bn-enh5',   label:'Enhancement',                     type:'select', options:['Not assessed','Avid enhancement','Mild enhancement','No enhancement'], mods:['CT','MRI']},
+    {id:'bn-mets',   label:'Other lesions / multifocal',      type:'select', options:['Solitary','Additional lesions present','Diffuse / innumerable']},
+  ],
+  soft_tissue: [
+    {id:'st-loc7',   label:'Location',                        type:'text',   placeholder:'e.g. Anterior compartment right thigh, deep to rectus femoris'},
+    {id:'st-sz9',    label:'Size',                            type:'text',   placeholder:'e.g. 8 x 5 x 4 cm'},
+    {id:'st-marg7',  label:'Margins',                         type:'select', options:['Well-defined / encapsulated','Ill-defined / infiltrative','Pseudocapsule present']},
+    {id:'st-comp2',  label:'Composition',                     type:'select', options:['Solid','Predominantly solid','Cystic / myxoid','Mixed solid-cystic','Haemorrhagic']},
+    {id:'st-fat',    label:'Fat content',                     type:'select', options:['None','Macroscopic fat (lipoma / ALT)','Microscopic fat on MRI','Ossification / mineralisation']},
+    {id:'st-t1',     label:'MRI signal',                      type:'select', options:['T1 intermediate T2 hyperintense','T1 hyperintense (fat/blood)','T1 hypointense T2 hypointense (fibrous)','Heterogeneous'], mods:['MRI']},
+    {id:'st-enh6',   label:'Enhancement',                     type:'select', options:['Absent','Thin rim enhancement','Nodular enhancement','Avid heterogeneous enhancement','Septal enhancement'], mods:['CT','MRI']},
+    {id:'st-bone2',  label:'Bone involvement',                type:'select', options:['None','Cortical erosion','Cortical invasion','Intramedullary invasion']},
+    {id:'st-nv',     label:'Neurovascular bundle',            type:'select', options:['Not involved','Adjacent / abutting','Encasing']},
+  ],
+  pancreas: [
+    {id:'pa-loc8',   label:'Location',                        type:'select', options:['Head','Neck','Body','Tail','Diffuse']},
+    {id:'pa-sz10',   label:'Size / dimensions',               type:'text',   placeholder:'e.g. 3.2 x 2.4 cm mass in the head'},
+    {id:'pa-duct',   label:'Main pancreatic duct',            type:'select', options:['Normal (<3mm)','Dilated (3-5mm)','Dilated (>5mm)','Abrupt cutoff','Double duct sign']},
+    {id:'pa-marg8',  label:'Margins',                         type:'select', options:['Well-defined','Ill-defined','Infiltrating peripancreatic fat']},
+    {id:'pa-dens4',  label:'Density / signal',                type:'select', options:['Hypovascular (hypodense to pancreas)','Hypervascular','Isoattenuating','Cystic - unilocular','Cystic - multilocular','Mixed solid-cystic']},
+    {id:'pa-vasc2',  label:'Vascular involvement',            type:'select', options:['None','SMV/PV contact <180 degrees','SMV/PV contact >180 degrees (borderline resectable)','SMA contact <180 degrees','SMA contact >180 degrees (unresectable)','Celiac axis involvement']},
+    {id:'pa-bile2',  label:'Bile duct involvement',           type:'select', options:['None','CBD dilatation','CBD encasement']},
+    {id:'pa-peri2',  label:'Peripancreatic changes',          type:'select', options:['Normal','Fat stranding','Peripancreatic fluid','Vascular engorgement']},
+  ],
+  ovary: [
+    {id:'ov-side3',  label:'Side',                            type:'select', options:['Right','Left','Bilateral']},
+    {id:'ov-sz11',   label:'Size',                            type:'text',   placeholder:'e.g. 7 x 5 x 4 cm'},
+    {id:'ov-comp3',  label:'Composition',                     type:'select', options:['Simple cyst','Complex cyst','Predominantly cystic','Mixed solid-cystic','Predominantly solid','Solid']},
+    {id:'ov-sep',    label:'Septations',                      type:'select', options:['None','Single thin septum','Multiple thin septa','Thick septa (>3mm)','Incomplete septa']},
+    {id:'ov-pap',    label:'Papillary projections / mural nodule', type:'select', options:['Absent','Present - small (<3mm)','Present - large (>3mm)','Multiple']},
+    {id:'ov-echo3',  label:'Internal echoes / signal',        type:'select', options:['Anechoic / T2 bright (simple fluid)','Ground-glass echoes (endometrioma)','Low-level echoes','Hyperechoic / T1 bright foci','Heterogeneous']},
+    {id:'ov-calc4',  label:'Calcification / fat (dermoid)',   type:'select', options:['None','Calcification present','Fat / Rokitansky nodule (dermoid)','Teeth / bone (dermoid)']},
+    {id:'ov-vasc3',  label:'Vascularity',                     type:'select', options:['Absent (benign)','Peripheral','Central solid nodule vascularity','Septal vascularity'], mods:['USG']},
+    {id:'ov-ascit',  label:'Ascites / peritoneal deposits',   type:'select', options:['None','Minimal ascites','Moderate ascites','Peritoneal nodularity / deposits']},
+    {id:'ov-iota',   label:'IOTA classification (if USG)',    type:'select', options:['Not applied','B-rule (benign)','M-rule (malignant)','Indeterminate - ADNEX model needed'], mods:['USG']},
+  ],
+  uterus: [
+    {id:'ut-size',   label:'Uterine size',                    type:'text',   placeholder:'e.g. 10 x 6 x 5 cm'},
+    {id:'ut-endo',   label:'Endometrial thickness',           type:'text',   placeholder:'e.g. 8 mm double layer / 4 mm single layer'},
+    {id:'ut-jz',     label:'Junctional zone (MRI)',           type:'select', options:['Regular (<12mm)','Irregular','Thickened (>12mm - adenomyosis)','Disrupted / not identifiable'], mods:['MRI']},
+    {id:'ut-fibr',   label:'Fibroids (leiomyoma)',            type:'select', options:['None','Single','Multiple','Dominant fibroid']},
+    {id:'ut-floc',   label:'Fibroid location',                type:'select', options:['Submucosal','Intramural','Subserosal','Pedunculated']},
+    {id:'ut-fsz',    label:'Fibroid size (largest)',          type:'text',   placeholder:'e.g. 4.5 cm intramural fibroid posterior wall'},
+    {id:'ut-mass',   label:'Endometrial / cervical mass',     type:'select', options:['None','Endometrial thickening with distension','Endometrial polyp','Endometrial mass','Cervical mass']},
+    {id:'ut-inv',    label:'Myometrial invasion depth (if Ca)', type:'select', options:['Not applicable','Endometrium only (Stage IA)','<50% myometrium (Stage IA)','>=50% myometrium (Stage IB)','Cervical stroma (Stage II)','Parametrial / pelvic wall (Stage III)']},
+    {id:'ut-cx',     label:'Cervix',                          type:'select', options:['Normal','Mass in cervix','Cervical os involvement','Parametrial invasion']},
+  ],
+  spine: [
+    {id:'sp-lev',    label:'Level(s) involved',               type:'text',   placeholder:'e.g. L4-L5 disc, C5-C6'},
+    {id:'sp-type',   label:'Pathology type',                  type:'select', options:['Disc herniation / protrusion','Disc extrusion','Sequestrated disc','Degenerative changes','Vertebral body lesion','Canal stenosis','Foraminal stenosis','Cord signal change']},
+    {id:'sp-dir',    label:'Direction (disc)',                 type:'select', options:['Central','Paracentral right','Paracentral left','Right foraminal','Left foraminal','Right far lateral','Left far lateral','Diffuse posterior']},
+    {id:'sp-comp4',  label:'Compression',                     type:'select', options:['No cord/cauda compression','Mild thecal sac indentation','Moderate compression','Severe compression / myelopathy']},
+    {id:'sp-cord',   label:'Cord signal (MRI)',               type:'select', options:['Normal','T2 hyperintensity (myelopathy)','T1 hypointensity','Expansion of cord','Cord atrophy'], mods:['MRI']},
+    {id:'sp-vert',   label:'Vertebral body',                  type:'select', options:['Normal','Compression fracture','Burst fracture','Lytic lesion','Sclerotic lesion','End-plate changes (Modic)','Loss of disc height']},
+    {id:'sp-sten',   label:'Canal / foraminal grading',       type:'select', options:['Not graded','Mild stenosis','Moderate stenosis','Severe stenosis']},
+  ],
+  aorta: [
+    {id:'ao-seg',    label:'Segment involved',                type:'select', options:['Ascending aorta','Aortic arch','Descending thoracic aorta','Thoracoabdominal','Infrarenal abdominal aorta','Iliac arteries']},
+    {id:'ao-diam',   label:'Maximum diameter',                type:'text',   placeholder:'e.g. 5.8 cm at infrarenal aorta'},
+    {id:'ao-type',   label:'Pathology type',                  type:'select', options:['Aneurysm - fusiform','Aneurysm - saccular','Dissection (type A)','Dissection (type B)','Intramural haematoma','Atherosclerotic / calcification','Stenosis / occlusion']},
+    {id:'ao-throm',  label:'Mural thrombus',                  type:'select', options:['None','Eccentric','Circumferential','Obstructing flow']},
+    {id:'ao-iliac',  label:'Iliac vessels',                   type:'select', options:['Normal','Aneurysmal dilatation','Stenosis / occlusion','Dissection extending into iliacs']},
+  ]
+};
+
+// Map organ select values to RAD_Q keys
+var ORGAN_MAP = {
+  'liver':       'liver',
+  'gallbladder': 'gallbladder',
+  'kidney':      'kidney',
+  'thyroid':     'thyroid',
+  'lung':        'lung',
+  'neck-lymph':  'neck_lymph',
+  'lymph-abd':   'neck_lymph',
+  'lymph-chest': 'neck_lymph',
+  'brain':       'brain',
+  'adrenal':     'adrenal',
+  'prostate':    'prostate',
+  'bone':        'bone',
+  'soft-tissue': 'soft_tissue',
+  'pancreas':    'pancreas',
+  'ovary':       'ovary',
+  'uterus':      'uterus',
+  'spine':       'spine',
+  'aorta':       'aorta'
+};
+
+function buildRadForm() {
+  var organ = document.getElementById('rad-organ').value;
+  var key   = ORGAN_MAP[organ] || organ;
+  var qs    = RAD_Q[key];
+  var el    = document.getElementById('rad-form');
+  if (!qs) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:.82rem">Select an organ above to see relevant questions.</p>';
+    return;
+  }
+  var html = '<div class="fgrid">';
+  for (var i=0; i<qs.length; i++) {
+    var q = qs[i];
+    // Skip if not applicable to current modality
+    if (q.mods && q.mods.indexOf(RMOD) === -1) continue;
+    html += '<div class="fgrp">';
+    html += '<label style="color:#0f766e;font-size:.66rem">' + q.label + '</label>';
+    if (q.type === 'select') {
+      html += '<select id="rq-'+q.id+'" class="ipt" style="border-color:#99f6e4;font-size:.82rem"><option value="">-- not selected --</option>';
+      for (var j=0; j<q.options.length; j++) {
+        html += '<option value="'+escH(q.options[j])+'">'+q.options[j]+'</option>';
+      }
+      html += '</select>';
+    } else {
+      html += '<input id="rq-'+q.id+'" class="ipt" style="border-color:#99f6e4" placeholder="'+(q.placeholder||'')+'" type="'+(q.type==='number'?'number':'text')+'">';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function collectRadData() {
+  var organ = document.getElementById('rad-organ').value;
+  var key   = ORGAN_MAP[organ] || organ;
+  var qs    = RAD_Q[key] || [];
+  var data  = [];
+  for (var i=0; i<qs.length; i++) {
+    var q  = qs[i];
+    if (q.mods && q.mods.indexOf(RMOD) === -1) continue;
+    var el = document.getElementById('rq-'+q.id);
+    if (!el) continue;
+    var val = el.value.trim();
+    if (val && val !== '-- not selected --') {
+      data.push(q.label + ': ' + val);
+    }
+  }
+  return data;
+}
+
+function pRad() {
+  var organ = (document.getElementById('rad-organ').options[document.getElementById('rad-organ').selectedIndex]||{}).text || '';
+  return 'You are a senior radiologist writing formal imaging report sentences. The clinician has filled in a structured form. Generate compact, precise, scientifically accurate report sentences.\n\n'
+    + 'RULES:\n'
+    + '1. Write in the third person passive voice as used in radiology reports.\n'
+    + '2. Be maximally compact - no unnecessary words. Every word must carry information.\n'
+    + '3. Use standard radiology terminology exactly (e.g. "arterial phase hyperenhancement with washout" not "lights up and fades").\n'
+    + '4. Include the appropriate scoring system sentence at the end if data provided (LI-RADS, TI-RADS, PI-RADS, Bosniak, Fleischner etc).\n'
+    + '5. Group related findings into logical sentence flow.\n'
+    + '6. If findings suggest a specific diagnosis or differential, state it concisely at the end as a separate impression sentence.\n'
+    + '7. Do NOT add headers or bullet points - output only prose sentences that can be directly pasted into a report.\n'
+    + '8. If enhancement data is given, use the full contrast pattern description (e.g. "demonstrating arterial phase hyperenhancement with subsequent washout appearance and peripheral pseudocapsule on delayed phase").\n'
+    + '9. Modality is ' + RMOD + '. Organ/region: ' + organ + '.\n'
+    + '10. Output: (a) FINDINGS sentence(s), then (b) IMPRESSION sentence(s) on a new line starting with "IMPRESSION:"';
+}
+
+function genRad() {
+  var key = gk(); if(!key){toast('Enter API key first','er');resetKey();return;}
+  var data = collectRadData();
+  var extra = (document.getElementById('rad-extra')||{}).value || '';
+  var organ = (document.getElementById('rad-organ').options[document.getElementById('rad-organ').selectedIndex]||{}).text || '';
+  if (!data.length && !extra) { toast('Fill in at least one finding','er'); return; }
+  var msg = 'Modality: ' + RMOD + '\nOrgan: ' + organ + '\n\nFINDINGS DATA:\n' + data.join('\n');
+  if (extra) msg += '\n\nADDITIONAL CONTEXT:\n' + extra;
+  var oEl=document.getElementById('rad-out'),lEl=document.getElementById('ld-rad'),mEl=document.getElementById('rad-md'),btn=document.getElementById('btn-rad');
+  oEl.classList.add('on');lEl.style.display='flex';mEl.innerHTML='';
+  btn.disabled=true;btn.textContent='Writing...';
+  callAPI(pRad(), msg, false).then(function(full){
+    lEl.style.display='none';
+    mEl.innerHTML = rMD(full,'doubt');
+    addLib({tab:'doubt',marker:null,label:RMOD+' '+organ+' Report Sentences',input:msg,output:full},false);
+    toast('Done');
+  }).catch(function(e){
+    lEl.style.display='none';
+    mEl.innerHTML='<p style="color:var(--red)">Error: '+e.message+'</p>';
+  }).then(function(){btn.disabled=false;btn.textContent='Generate Report Sentences';});
+}
+
+function resetRad() {
+  buildRadForm();
+  var ex=document.getElementById('rad-extra'); if(ex) ex.value='';
+  var oEl=document.getElementById('rad-out'); if(oEl) oEl.classList.remove('on');
+  var mEl=document.getElementById('rad-md'); if(mEl) mEl.innerHTML='';
+  toast('Reset');
+}
+
 window.onload=function(){
   try{if(gk())document.getElementById('api-modal').classList.add('off');}catch(e){}
   try{initSB();}catch(e){console.warn('initSB error:',e);}
@@ -1681,6 +2076,7 @@ window.onload=function(){
   try{renderLib();}catch(e){}
   try{updBanner();}catch(e){}
   try{initMPI();}catch(e){console.warn('initMPI error:',e);}
+  try{buildRadForm();}catch(e){console.warn('buildRadForm error:',e);}
 };
 
 
@@ -2342,6 +2738,5 @@ function resetMPI() {
 }
 
 </script>
-
 </body>
 </html>
